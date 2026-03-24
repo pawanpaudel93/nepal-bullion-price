@@ -1,15 +1,13 @@
 import { useState } from 'react';
-import type { TaxBreakdown as TaxBreakdownType } from 'nepal-bullion-price';
+import type { TaxBreakdown as TaxBreakdownType, TaxRates } from 'nepal-bullion-price';
+import { formatNpr } from '../utils/format';
 
 interface TaxBreakdownProps {
   breakdown: TaxBreakdownType;
+  rates: TaxRates;
 }
 
-function formatNpr(value: number): string {
-  return `Rs ${value.toLocaleString('en-IN')}`;
-}
-
-export function TaxBreakdown({ breakdown }: TaxBreakdownProps) {
+export function TaxBreakdown({ breakdown, rates }: TaxBreakdownProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -27,15 +25,15 @@ export function TaxBreakdown({ breakdown }: TaxBreakdownProps) {
             <span>{formatNpr(breakdown.basePrice)}</span>
           </div>
           <div className="flex justify-between">
-            <span>+ Custom duty (10%)</span>
+            <span>+ Custom duty ({(rates.customDuty * 100).toFixed(1)}%)</span>
             <span>{formatNpr(breakdown.customDuty)}</span>
           </div>
           <div className="flex justify-between">
-            <span>+ Bank margin (0.5%)</span>
+            <span>+ Bank margin ({(rates.bankMargin * 100).toFixed(1)}%)</span>
             <span>{formatNpr(breakdown.bankMargin)}</span>
           </div>
           <div className="flex justify-between">
-            <span>+ Dealer margin (0.5%)</span>
+            <span>+ Dealer margin ({(rates.dealerMargin * 100).toFixed(1)}%)</span>
             <span>{formatNpr(breakdown.dealerMargin)}</span>
           </div>
           <div className="flex justify-between font-medium border-t border-gray-200 dark:border-gray-700 pt-1">
@@ -43,7 +41,7 @@ export function TaxBreakdown({ breakdown }: TaxBreakdownProps) {
             <span>{formatNpr(breakdown.estimatedPrice)}</span>
           </div>
           <div className="flex justify-between">
-            <span>+ Luxury tax (2%)</span>
+            <span>+ Luxury tax ({(rates.luxuryTax * 100).toFixed(1)}%)</span>
             <span>{formatNpr(breakdown.luxuryTax)}</span>
           </div>
           <div className="flex justify-between font-bold border-t border-gray-200 dark:border-gray-700 pt-1">

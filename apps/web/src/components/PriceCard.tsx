@@ -1,5 +1,6 @@
 import type { NepalGoldPrice, NepalSilverPrice, LiveMetalPrice } from 'nepal-bullion-price';
 import { TaxBreakdown } from './TaxBreakdown';
+import { formatNpr } from '../utils/format';
 
 interface PriceCardProps {
   title: string;
@@ -8,10 +9,6 @@ interface PriceCardProps {
   nepalPrice: NepalGoldPrice | NepalSilverPrice | null;
   livePrice: LiveMetalPrice | null;
   accentColor: string;
-}
-
-function formatNpr(value: number): string {
-  return `Rs ${value.toLocaleString('en-IN')}`;
 }
 
 function getNepalPriceTola(price: NepalGoldPrice | NepalSilverPrice): number {
@@ -72,7 +69,7 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, accentCo
                 <span className="ml-1 text-amber-500">(stale)</span>
               )}
             </p>
-            <TaxBreakdown breakdown={livePrice.perTola} />
+            <TaxBreakdown breakdown={livePrice.perTola} rates={livePrice.rates} />
           </>
         ) : (
           <p className="text-lg text-gray-400">Unavailable</p>

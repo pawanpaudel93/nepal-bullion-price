@@ -10,6 +10,7 @@ import {
 
 const app = new Hono().basePath('/api');
 
+// CORS: Allow all origins — this is a public price API
 app.use('/*', cors());
 
 app.onError((err, c) => {
