@@ -58,7 +58,7 @@ const gold = await getNepalGoldPrice();
 const silver = await getNepalSilverPrice();
 // { price: 4505, unit: 'tola', perGram10: 3862, ... }
 
-// Live international price with Nepal tax breakdown
+// Live international price with Nepal duty breakdown
 const live = await getLiveGoldPrice();
 // {
 //   raw: { usdPerOz: 4333.40, usdToNpr: 150.07 },
@@ -67,11 +67,9 @@ const live = await getLiveGoldPrice();
 //     customDuty: 24387,
 //     bankMargin: 1341,
 //     dealerMargin: 1348,
-//     estimatedPrice: 270943,
-//     luxuryTax: 5419,
-//     consumerPrice: 276362
+//     estimatedPrice: 270943
 //   },
-//   rates: { customDuty: 0.1, bankMargin: 0.005, dealerMargin: 0.005, luxuryTax: 0.02 },
+//   rates: { customDuty: 0.1, bankMargin: 0.005, dealerMargin: 0.005 },
 //   source: 'gold-api.com',
 //   updatedAt: '2026-03-24T04:26:12Z',
 //   isStale: false
@@ -98,8 +96,8 @@ configure({
 |----------|---------|-------------|
 | `getNepalGoldPrice()` | `Promise<NepalGoldPrice>` | FENEGOSIDA daily gold rate (hallmark + tajabi) |
 | `getNepalSilverPrice()` | `Promise<NepalSilverPrice>` | FENEGOSIDA daily silver rate |
-| `getLiveGoldPrice()` | `Promise<LiveMetalPrice>` | Live XAU/USD → NPR with tax breakdown |
-| `getLiveSilverPrice()` | `Promise<LiveMetalPrice>` | Live XAG/USD → NPR with tax breakdown |
+| `getLiveGoldPrice()` | `Promise<LiveMetalPrice>` | Live XAU/USD → NPR with duty breakdown |
+| `getLiveSilverPrice()` | `Promise<LiveMetalPrice>` | Live XAG/USD → NPR with duty breakdown |
 | `getAllPrices()` | `Promise<AllPrices>` | All four in parallel (null on failure) |
 | `configure(opts)` | `void` | Override rates, API keys, or cache TTL |
 | `resetConfig()` | `void` | Restore all settings to defaults |
@@ -112,7 +110,6 @@ configure({
 | `rates.customDuty` | `number` | `0.10` | Custom duty rate (10%) |
 | `rates.bankMargin` | `number` | `0.005` | Bank margin (0.5%) |
 | `rates.dealerMargin` | `number` | `0.005` | Dealer margin (0.5%) |
-| `rates.luxuryTax` | `number` | `0.02` | Luxury tax (2%) |
 | `apiKeys.goldApiIo` | `string` | — | goldapi.io API key (enables fallback) |
 | `apiKeys.asheshApiKey` | `string` | — | Ashesh widget API key (has public default) |
 | `cacheTtl` | `number` | `300000` | Cache TTL in ms (5 minutes) |
@@ -145,7 +142,7 @@ Each category tries providers in order. If all fail, cached (stale) data is retu
 | Fallback | fawazahmed0/currency-api | None |
 | Fallback | open.er-api.com | None |
 
-## Tax Breakdown
+## Duty Breakdown
 
 Live prices are converted from USD/oz to NPR/tola (1 tola = 11.6638g, 1 troy oz = 31.1035g), then Nepal import charges are applied sequentially:
 
@@ -156,10 +153,10 @@ afterCustoms   = basePrice + customDuty
 bankMargin     = round(afterCustoms × 0.005)
 afterBank      = afterCustoms + bankMargin
 dealerMargin   = round(afterBank × 0.005)
-estimatedPrice = afterBank + dealerMargin        ← approx. FENEGOSIDA rate
-luxuryTax      = round(estimatedPrice × 0.02)
-consumerPrice  = estimatedPrice + luxuryTax      ← what consumers pay
+estimatedPrice = afterBank + dealerMargin        ← approx. FENEGOSIDA shop rate
 ```
+
+The `estimatedPrice` approximates what FENEGOSIDA publishes as the daily gold/silver rate. A separate 2% luxury tax is charged at the point of sale but is not part of the published rate.
 
 All rates are configurable via `configure({ rates: { ... } })`.
 

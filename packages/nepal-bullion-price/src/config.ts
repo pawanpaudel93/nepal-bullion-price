@@ -5,7 +5,6 @@ const DEFAULT_RATES: TaxRates = {
   customDuty: 0.10,
   bankMargin: 0.005,
   dealerMargin: 0.005,
-  luxuryTax: 0.02,
 };
 
 const DEFAULT_CONFIG: Config = {

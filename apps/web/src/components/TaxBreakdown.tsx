@@ -37,13 +37,6 @@ export function TaxBreakdown({ breakdown, rates }: TaxBreakdownProps) {
               <span>Est. Shop Price</span>
               <span className="font-mono tabular-nums">{formatNpr(breakdown.estimatedPrice)}</span>
             </div>
-            <div className="mt-3 pt-3 border-t border-dashed border-ink/[0.06] dark:border-white/[0.06] text-ink-faint dark:text-ink-faint">
-              <Row label={`+ Luxury tax ${(rates.luxuryTax * 100).toFixed(0)}% (on billing)`} value={breakdown.luxuryTax} />
-              <div className="flex justify-between mt-1">
-                <span className="text-[11px]">With tax</span>
-                <span className="font-mono tabular-nums text-[11px]">{formatNpr(breakdown.consumerPrice)}</span>
-              </div>
-            </div>
           </div>
         </div>
       </div>

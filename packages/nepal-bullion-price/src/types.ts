@@ -25,8 +25,6 @@ export interface TaxBreakdown {
   bankMargin: number;
   dealerMargin: number;
   estimatedPrice: number;
-  luxuryTax: number;
-  consumerPrice: number;
 }
 
 export interface LiveMetalPrice {
@@ -45,7 +43,6 @@ export interface TaxRates {
   customDuty: number;
   bankMargin: number;
   dealerMargin: number;
-  luxuryTax: number;
 }
 
 export interface Config {

@@ -19,16 +19,11 @@ export function calculateTaxBreakdown(
   const dealerMargin = Math.round(afterBank * rates.dealerMargin);
   const estimatedPrice = afterBank + dealerMargin;
 
-  const luxuryTax = Math.round(estimatedPrice * rates.luxuryTax);
-  const consumerPrice = estimatedPrice + luxuryTax;
-
   return {
     basePrice,
     customDuty,
     bankMargin,
     dealerMargin,
     estimatedPrice,
-    luxuryTax,
-    consumerPrice,
   };
 }
