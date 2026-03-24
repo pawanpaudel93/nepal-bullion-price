@@ -34,7 +34,7 @@ export function TaxBreakdown({ breakdown, rates }: TaxBreakdownProps) {
             </div>
             <div className="h-px bg-ink/[0.04] dark:bg-white/[0.04] my-3" />
             <div className="flex justify-between font-semibold text-ink dark:text-white">
-              <span>Est. Shop Price</span>
+              <span>Est. FENEGOSIDA Rate</span>
               <span className="font-mono tabular-nums">{formatNpr(breakdown.estimatedPrice)}</span>
             </div>
           </div>
