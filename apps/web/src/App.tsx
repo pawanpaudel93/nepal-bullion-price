@@ -19,23 +19,23 @@ export default function App() {
   }, [data]);
 
   return (
-    <div className="min-h-screen bg-paper dark:bg-ink bg-noise transition-colors duration-300">
-      <div className="relative z-10 max-w-4xl mx-auto px-5 sm:px-8 py-10 sm:py-16">
+    <div className="min-h-screen bg-paper dark:bg-ink bg-mesh transition-colors duration-500">
+      <div className="relative max-w-5xl mx-auto px-6 sm:px-10 py-12 sm:py-20">
         <Header lastFetched={lastFetched} onRefresh={refresh} isLoading={isLoading} />
 
-        {error && (
-          <div className="mb-8 p-4 bg-red-50 dark:bg-red-950/30 border border-red-200/60 dark:border-red-800/30 rounded-xl text-red-700 dark:text-red-400 text-sm" role="alert">
+        {error ? (
+          <div className="mb-8 p-4 glass-card rounded-2xl text-red-700 dark:text-red-400 text-sm animate-fade-up" role="alert">
             {error}
           </div>
-        )}
+        ) : null}
 
         {isLoading && !data ? (
-          <div className="flex flex-col items-center justify-center py-24 gap-4">
-            <div className="animate-spin rounded-full h-8 w-8 border-2 border-gold-200 dark:border-gold-700 border-t-gold-500" />
-            <p className="text-sm text-ink-muted dark:text-ink-faint">Fetching latest prices</p>
+          <div className="flex flex-col items-center justify-center py-32 gap-5 animate-fade-up">
+            <div className="animate-spin rounded-full h-7 w-7 border-[1.5px] border-gold-200 dark:border-gold-700 border-t-gold-500" />
+            <p className="text-[13px] text-ink-faint font-light tracking-wide">Fetching latest prices</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-7">
             <PriceCard
               title="Gold"
               icon={<GoldIcon className="w-8 h-8" />}
@@ -43,6 +43,7 @@ export default function App() {
               nepalPrice={data?.gold.nepal ?? null}
               livePrice={data?.gold.live ?? null}
               shimmerClass="text-gold-shimmer"
+              delay="50ms"
             />
             <PriceCard
               title="Silver"
@@ -51,18 +52,16 @@ export default function App() {
               nepalPrice={data?.silver.nepal ?? null}
               livePrice={data?.silver.live ?? null}
               shimmerClass="text-silver-shimmer"
+              delay="150ms"
             />
           </div>
         )}
 
         {sources.length > 0 ? <LastUpdated sources={sources} /> : null}
 
-        <footer className="mt-16 text-center">
-          <p className="text-[11px] text-ink-faint dark:text-ink-faint tracking-wide">
-            Data from FENEGOSIDA &middot; gold-api.com &middot; Nepal Rastra Bank
-          </p>
-          <p className="text-[11px] text-ink-faint/60 dark:text-ink-faint/40 mt-1">
-            Prices are approximate. Actual prices may vary.
+        <footer className="mt-20 text-center animate-fade-up" style={{ animationDelay: '300ms' }}>
+          <p className="text-[11px] text-ink-faint/80 dark:text-ink-faint/60 tracking-widest uppercase font-light">
+            FENEGOSIDA &middot; gold-api.com &middot; Nepal Rastra Bank
           </p>
         </footer>
       </div>
