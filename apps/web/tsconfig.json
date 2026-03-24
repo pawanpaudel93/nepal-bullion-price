@@ -9,5 +9,5 @@
     "skipLibCheck": true,
     "outDir": "dist"
   },
-  "include": ["src", "server.ts"]
+  "include": ["src", "server.ts", "app.ts", "api"]
 }

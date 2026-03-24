@@ -1,0 +1,9 @@
+{
+  "buildCommand": "cd ../.. && pnpm --filter nepal-bullion-price build && pnpm --filter nepal-bullion-web build",
+  "outputDirectory": "dist",
+  "installCommand": "cd ../.. && pnpm install",
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api" },
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
+  ]
+}
