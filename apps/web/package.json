@@ -1,0 +1,27 @@
+{
+  "name": "nepal-bullion-web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch server.ts",
+    "build": "vite build",
+    "preview": "tsx server.ts"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1",
+    "hono": "^4",
+    "nepal-bullion-price": "workspace:*",
+    "react": "^19",
+    "react-dom": "^19"
+  },
+  "devDependencies": {
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^4",
+    "tailwindcss": "^4",
+    "@tailwindcss/vite": "^4",
+    "tsx": "^4",
+    "typescript": "^5",
+    "vite": "^6"
+  }
+}
