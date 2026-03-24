@@ -4,7 +4,7 @@ import { formatNpr } from '../utils/format';
 
 interface PriceCardProps {
   title: string;
-  icon: string;
+  icon: React.ReactNode;
   symbol: 'XAU' | 'XAG';
   nepalPrice: NepalGoldPrice | NepalSilverPrice | null;
   livePrice: LiveMetalPrice | null;
@@ -25,62 +25,68 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, accentCo
       : null;
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-      <div className="flex items-center gap-2 mb-4">
-        <span className="text-2xl">{icon}</span>
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h2>
+    <div className="bg-white dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700/60 p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
+      <div className="flex items-center gap-3 mb-5">
+        {icon}
+        <h2 className="text-lg font-semibold text-primary dark:text-white">{title}</h2>
       </div>
 
       {/* Nepal FENEGOSIDA Price */}
-      <div className="mb-4">
-        <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
+      <div className="mb-5">
+        <p className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">
           Nepal Price (FENEGOSIDA)
         </p>
         {nepalPrice ? (
           <>
-            <p className={`text-3xl font-bold ${accentColor}`}>
+            <p className={`text-3xl font-bold tracking-tight ${accentColor}`}>
               {nepalTola !== null ? formatNpr(nepalTola) : '\u2014'}
             </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5">
               per tola &middot; {nepalPrice.source}
               {nepalPrice.isStale && (
-                <span className="ml-1 text-amber-500">(stale)</span>
+                <span className="ml-1.5 inline-flex items-center gap-1 text-amber-600 dark:text-amber-400">
+                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-500" />
+                  stale
+                </span>
               )}
             </p>
           </>
         ) : (
-          <p className="text-xl text-gray-400">Unavailable</p>
+          <p className="text-xl text-slate-400">Unavailable</p>
         )}
       </div>
 
       {/* Live International Price */}
-      <div className="border-t border-gray-100 dark:border-gray-700 pt-4">
-        <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
+      <div className="border-t border-slate-100 dark:border-slate-700/60 pt-5">
+        <p className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">
           Live Est. Consumer Price
         </p>
         {livePrice ? (
           <>
-            <p className="text-xl font-semibold text-gray-900 dark:text-white">
+            <p className="text-xl font-semibold text-primary dark:text-white">
               {liveTola !== null ? formatNpr(liveTola) : '\u2014'}
             </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              {symbol}/USD: ${livePrice.raw.usdPerOz.toFixed(2)} &middot; Rate: {livePrice.raw.usdToNpr.toFixed(2)}
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5">
+              {symbol}/USD: ${livePrice.raw.usdPerOz.toFixed(2)} &middot; NPR: {livePrice.raw.usdToNpr.toFixed(2)}
               {livePrice.isStale && (
-                <span className="ml-1 text-amber-500">(stale)</span>
+                <span className="ml-1.5 inline-flex items-center gap-1 text-amber-600 dark:text-amber-400">
+                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-500" />
+                  stale
+                </span>
               )}
             </p>
             <TaxBreakdown breakdown={livePrice.perTola} rates={livePrice.rates} />
           </>
         ) : (
-          <p className="text-lg text-gray-400">Unavailable</p>
+          <p className="text-lg text-slate-400">Unavailable</p>
         )}
       </div>
 
       {/* Premium Indicator */}
       {premium !== null && (
-        <div className="mt-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3 text-center">
-          <p className="text-xs text-gray-500 dark:text-gray-400">Nepal premium over international</p>
-          <p className="text-lg font-bold text-gray-900 dark:text-white">{premium}%</p>
+        <div className="mt-5 bg-slate-50 dark:bg-slate-900/50 rounded-xl p-3 text-center border border-slate-100 dark:border-slate-700/40">
+          <p className="text-[11px] font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wider">Nepal premium</p>
+          <p className="text-xl font-bold text-primary dark:text-white mt-0.5">{premium}%</p>
         </div>
       )}
     </div>

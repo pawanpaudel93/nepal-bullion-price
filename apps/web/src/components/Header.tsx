@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { SunIcon, MoonIcon, RefreshIcon } from './Icons';
 
 interface HeaderProps {
   lastFetched: Date | null;
@@ -20,31 +21,32 @@ export function Header({ lastFetched, onRefresh, isLoading }: HeaderProps) {
   }, [isDark]);
 
   return (
-    <header className="flex items-center justify-between mb-8">
+    <header className="flex items-center justify-between mb-10">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-primary dark:text-white">
           Nepal Bullion Price
         </h1>
         {lastFetched && (
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Last updated: {lastFetched.toLocaleTimeString()}
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+            Updated {lastFetched.toLocaleTimeString()}
           </p>
         )}
       </div>
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
         <button
           onClick={onRefresh}
           disabled={isLoading}
-          className="px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-secondary text-white hover:bg-secondary/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900 disabled:opacity-50 cursor-pointer transition-colors duration-200"
         >
-          {isLoading ? 'Refreshing...' : 'Refresh'}
+          <RefreshIcon className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+          {isLoading ? 'Refreshing' : 'Refresh'}
         </button>
         <button
           onClick={() => setIsDark(!isDark)}
-          className="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+          className="p-2.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900 cursor-pointer transition-colors duration-200"
           aria-label="Toggle dark mode"
         >
-          {isDark ? String.fromCodePoint(0x2600, 0xFE0F) : String.fromCodePoint(0x1F319)}
+          {isDark ? <SunIcon /> : <MoonIcon />}
         </button>
       </div>
     </header>
