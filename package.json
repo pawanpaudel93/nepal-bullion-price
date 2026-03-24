@@ -5,7 +5,8 @@
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
-    "test": "turbo test"
+    "test": "turbo test",
+    "release": "pnpm --filter nepal-bullion-price release"
   },
   "devDependencies": {
     "turbo": "^2"
