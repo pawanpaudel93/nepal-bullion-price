@@ -40,7 +40,7 @@ export function Header({ lastFetched, onRefresh, isLoading }: HeaderProps) {
           className="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
           aria-label="Toggle dark mode"
         >
-          {isDark ? '\u2600\uFE0F' : '\uD83C\uDF19'}
+          {isDark ? String.fromCodePoint(0x2600, 0xFE0F) : String.fromCodePoint(0x1F319)}
         </button>
       </div>
     </header>

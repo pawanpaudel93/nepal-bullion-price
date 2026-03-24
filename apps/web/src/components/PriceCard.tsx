@@ -45,7 +45,7 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, accentCo
               {nepalTola !== null ? formatNpr(nepalTola) : '\u2014'}
             </p>
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              per tola \u00B7 {nepalPrice.source}
+              per tola &middot; {nepalPrice.source}
               {nepalPrice.isStale && (
                 <span className="ml-1 text-amber-500">(stale)</span>
               )}
@@ -67,7 +67,7 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, accentCo
               {liveTola !== null ? formatNpr(liveTola) : '\u2014'}
             </p>
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              {symbol}/USD: ${livePrice.raw.usdPerOz.toFixed(2)} \u00B7 Rate: {livePrice.raw.usdToNpr.toFixed(2)}
+              {symbol}/USD: ${livePrice.raw.usdPerOz.toFixed(2)} &middot; Rate: {livePrice.raw.usdToNpr.toFixed(2)}
               {livePrice.isStale && (
                 <span className="ml-1 text-amber-500">(stale)</span>
               )}

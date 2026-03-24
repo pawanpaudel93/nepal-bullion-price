@@ -25,7 +25,7 @@ export default function App() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <PriceCard
               title="Gold"
-              icon="\uD83E\uDD47"
+              icon={String.fromCodePoint(0x1F947)}
               symbol="XAU"
               nepalPrice={data?.gold.nepal ?? null}
               livePrice={data?.gold.live ?? null}
@@ -33,7 +33,7 @@ export default function App() {
             />
             <PriceCard
               title="Silver"
-              icon="\uD83E\uDD48"
+              icon={String.fromCodePoint(0x1F948)}
               symbol="XAG"
               nepalPrice={data?.silver.nepal ?? null}
               livePrice={data?.silver.live ?? null}
