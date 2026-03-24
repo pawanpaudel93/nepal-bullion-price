@@ -5,7 +5,7 @@ export async function fetchNrb(): Promise<ForexData> {
   const to = new Date();
   const from = new Date(to);
   from.setDate(from.getDate() - 7);
-  const url = `https://www.nrb.org.np/api/forex/v1/rates?page=1&per_page=1&from=${from.toISOString().split('T')[0]}&to=${to.toISOString().split('T')[0]}`;
+  const url = `https://www.nrb.org.np/api/forex/v1/rates?page=1&per_page=10&from=${from.toISOString().split('T')[0]}&to=${to.toISOString().split('T')[0]}`;
 
   const res = await fetch(url, {
     signal: AbortSignal.timeout(DEFAULT_TIMEOUT_MS),
