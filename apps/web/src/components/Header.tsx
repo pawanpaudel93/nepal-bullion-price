@@ -10,8 +10,10 @@ interface HeaderProps {
 export function Header({ lastFetched, onRefresh, isLoading }: HeaderProps) {
   const [isDark, setIsDark] = useState(() => {
     if (typeof window === 'undefined') return false;
-    const stored = localStorage.getItem('theme');
-    if (stored) return stored === 'dark';
+    try {
+      const stored = localStorage.getItem('theme');
+      if (stored) return stored === 'dark';
+    } catch { /* corrupted localStorage */ }
     return window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
 
@@ -45,7 +47,7 @@ export function Header({ lastFetched, onRefresh, isLoading }: HeaderProps) {
           {isLoading ? 'Loading' : 'Refresh'}
         </button>
         <button
-          onClick={() => setIsDark(!isDark)}
+          onClick={() => setIsDark(prev => !prev)}
           className="p-2.5 rounded-xl border border-ink/10 dark:border-white/10 text-ink-muted dark:text-ink-faint hover:bg-ink/5 dark:hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 cursor-pointer transition-all duration-200"
           aria-label="Toggle dark mode"
         >

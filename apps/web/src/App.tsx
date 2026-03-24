@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useBullionPrices } from './hooks/useBullionPrices';
 import { Header } from './components/Header';
 import { PriceCard } from './components/PriceCard';
@@ -6,6 +7,16 @@ import { GoldIcon, SilverIcon } from './components/Icons';
 
 export default function App() {
   const { data, isLoading, error, lastFetched, refresh } = useBullionPrices();
+
+  const sources = useMemo(() => {
+    if (!data) return [];
+    return [
+      ...(data.gold.nepal ? [{ label: 'Nepal Gold', source: data.gold.nepal.source, updatedAt: data.gold.nepal.updatedAt, isStale: data.gold.nepal.isStale }] : []),
+      ...(data.gold.live ? [{ label: 'Live Gold', source: data.gold.live.source, updatedAt: data.gold.live.updatedAt, isStale: data.gold.live.isStale }] : []),
+      ...(data.silver.nepal ? [{ label: 'Nepal Silver', source: data.silver.nepal.source, updatedAt: data.silver.nepal.updatedAt, isStale: data.silver.nepal.isStale }] : []),
+      ...(data.silver.live ? [{ label: 'Live Silver', source: data.silver.live.source, updatedAt: data.silver.live.updatedAt, isStale: data.silver.live.isStale }] : []),
+    ];
+  }, [data]);
 
   return (
     <div className="min-h-screen bg-paper dark:bg-ink bg-noise transition-colors duration-300">
@@ -44,16 +55,7 @@ export default function App() {
           </div>
         )}
 
-        {data && (
-          <LastUpdated
-            sources={[
-              ...(data.gold.nepal ? [{ label: 'Nepal Gold', source: data.gold.nepal.source, updatedAt: data.gold.nepal.updatedAt, isStale: data.gold.nepal.isStale }] : []),
-              ...(data.gold.live ? [{ label: 'Live Gold', source: data.gold.live.source, updatedAt: data.gold.live.updatedAt, isStale: data.gold.live.isStale }] : []),
-              ...(data.silver.nepal ? [{ label: 'Nepal Silver', source: data.silver.nepal.source, updatedAt: data.silver.nepal.updatedAt, isStale: data.silver.nepal.isStale }] : []),
-              ...(data.silver.live ? [{ label: 'Live Silver', source: data.silver.live.source, updatedAt: data.silver.live.updatedAt, isStale: data.silver.live.isStale }] : []),
-            ]}
-          />
-        )}
+        {sources.length > 0 ? <LastUpdated sources={sources} /> : null}
 
         <footer className="mt-16 text-center">
           <p className="text-[11px] text-ink-faint dark:text-ink-faint tracking-wide">

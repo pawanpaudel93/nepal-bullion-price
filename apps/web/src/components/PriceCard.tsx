@@ -32,11 +32,11 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, shimmerC
           {icon}
           <h2 className="font-display text-xl font-bold text-ink dark:text-white">{title}</h2>
         </div>
-        {premium !== null && (
+        {premium !== null ? (
           <span className="text-xs font-mono font-semibold px-2.5 py-1 rounded-lg bg-gold-50 dark:bg-gold-700/20 text-gold-600 dark:text-gold-400 border border-gold-200/60 dark:border-gold-700/30">
             +{premium}%
           </span>
-        )}
+        ) : null}
       </div>
 
       {/* Nepal FENEGOSIDA Price — The Hero */}

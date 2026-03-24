@@ -14,7 +14,7 @@ export function TaxBreakdown({ breakdown, rates }: TaxBreakdownProps) {
   return (
     <div className="mt-3">
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => setIsOpen(prev => !prev)}
         className="inline-flex items-center gap-1.5 text-xs font-medium text-gold-600 dark:text-gold-400 hover:text-gold-700 dark:hover:text-gold-200 cursor-pointer transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 rounded"
       >
         {isOpen ? 'Hide' : 'Show'} breakdown
