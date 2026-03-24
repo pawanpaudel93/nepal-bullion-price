@@ -11,29 +11,36 @@ export async function fetchFenegosida(): Promise<NepalPriceData> {
   const html = await res.text();
   const $ = cheerio.load(html);
 
+  // Block 0 = per 10g (labels "10 grm"), Block 1 = per tola (labels "1 tola")
+  // Silver only appears in the tola block
   const headerRates = $('#header-rate');
-  const tolaBlock = headerRates.first();
-  const gramBlock = headerRates.last();
+  const gramBlock = headerRates.first();
+  const tolaBlock = headerRates.last();
 
-  const tolaValues = tolaBlock.find('.rate-gold.post b, .rate-silver.post b')
-    .map((_, el) => parseInt($(el).text().replace(/,/g, ''), 10))
-    .get();
+  const parseBlock = (block: ReturnType<typeof $>) => {
+    const golds = block.find('.rate-gold.post b')
+      .map((_, el) => parseInt($(el).text().replace(/,/g, ''), 10))
+      .get();
+    const silvers = block.find('.rate-silver.post b')
+      .map((_, el) => parseInt($(el).text().replace(/,/g, ''), 10))
+      .get();
+    return { golds, silver: silvers[0] ?? 0 };
+  };
 
-  const gramValues = gramBlock.find('.rate-gold.post b, .rate-silver.post b')
-    .map((_, el) => parseInt($(el).text().replace(/,/g, ''), 10))
-    .get();
+  const tola = parseBlock(tolaBlock);
+  const gram = parseBlock(gramBlock);
 
-  if (tolaValues.length < 3) {
+  if (tola.golds.length < 2) {
     throw new Error('Failed to parse fenegosida.org prices');
   }
 
   return {
-    goldHallmark: tolaValues[0],
-    goldTajabi: tolaValues[1],
-    silver: tolaValues[2],
-    goldHallmarkPerGram10: gramValues[0] ?? 0,
-    goldTajabiPerGram10: gramValues[1] ?? 0,
-    silverPerGram10: gramValues[2] ?? 0,
+    goldHallmark: tola.golds[0],
+    goldTajabi: tola.golds[1],
+    silver: tola.silver,
+    goldHallmarkPerGram10: gram.golds[0] ?? 0,
+    goldTajabiPerGram10: gram.golds[1] ?? 0,
+    silverPerGram10: gram.silver,
     date: new Date().toISOString().split('T')[0],
   };
 }
