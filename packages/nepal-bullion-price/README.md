@@ -1,5 +1,8 @@
 # nepal-bullion-price
 
+[![npm version](https://img.shields.io/npm/v/nepal-bullion-price)](https://www.npmjs.com/package/nepal-bullion-price)
+[![license](https://img.shields.io/npm/l/nepal-bullion-price)](https://github.com/pawanpaudel93/nepal-bullion-price/blob/main/LICENSE)
+
 Nepal gold and silver prices — FENEGOSIDA daily rates + live international prices with full tax breakdown.
 
 ## Features

@@ -38,6 +38,15 @@
     "nepal-gold-price"
   ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pawanpaudel93/nepal-bullion-price.git",
+    "directory": "packages/nepal-bullion-price"
+  },
+  "homepage": "https://github.com/pawanpaudel93/nepal-bullion-price#readme",
+  "bugs": {
+    "url": "https://github.com/pawanpaudel93/nepal-bullion-price/issues"
+  },
   "dependencies": {
     "cheerio": "^1.0.0"
   },
