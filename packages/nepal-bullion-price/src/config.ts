@@ -16,10 +16,21 @@ const DEFAULT_CONFIG: Config = {
 
 let currentConfig: Config = structuredClone(DEFAULT_CONFIG);
 
-export function getConfig(): Readonly<Config> {
-  return currentConfig;
+export function getConfig(): Config {
+  return structuredClone(currentConfig);
 }
 
+/**
+ * Configure module-level singleton state.
+ *
+ * NOTE: This mutates shared module state. All callers in the same process
+ * see the updated config immediately. For isolated configs (e.g. tests or
+ * multi-tenant use), call `resetConfig()` between uses or use `refreshCaches()`
+ * after changing `cacheTtl` to pick up the new TTL.
+ *
+ * @limitation Singleton — not suitable for concurrent multi-tenant use without
+ *   explicit reset/refresh calls between tenants.
+ */
 export function configure(partial: {
   rates?: Partial<TaxRates>;
   apiKeys?: Config['apiKeys'];

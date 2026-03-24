@@ -34,6 +34,10 @@ export async function fetchFenegosida(): Promise<NepalPriceData> {
     throw new Error('Failed to parse fenegosida.org prices');
   }
 
+  if (!tola.golds[0] || tola.golds[0] < 1000) {
+    throw new Error('Suspicious gold price from fenegosida.org: ' + tola.golds[0]);
+  }
+
   return {
     goldHallmark: tola.golds[0],
     goldTajabi: tola.golds[1],

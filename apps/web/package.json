@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node --import tsx/esm server.ts & vite dev",
+    "dev": "concurrently --kill-others \"node --import tsx/esm server.ts\" \"vite dev\"",
     "dev:api": "tsx watch server.ts",
     "dev:web": "vite dev",
     "build": "vite build",
@@ -17,11 +17,12 @@
     "react-dom": "^19"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^4",
+    "concurrently": "^9.2.1",
     "tailwindcss": "^4",
-    "@tailwindcss/vite": "^4",
     "tsx": "^4",
     "typescript": "^5",
     "vite": "^6"

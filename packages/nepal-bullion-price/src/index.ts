@@ -174,20 +174,38 @@ export async function getLiveSilverPrice(): Promise<LiveMetalPrice> {
 }
 
 export async function getAllPrices(): Promise<AllPrices> {
-  const [nepalGold, nepalSilver, liveGold, liveSilver] = await Promise.allSettled([
-    getNepalGoldPrice(),
-    getNepalSilverPrice(),
-    getLiveGoldPrice(),
-    getLiveSilverPrice(),
+  const [nepalData, liveGold, liveSilver] = await Promise.allSettled([
+    fetchNepalPrices(),
+    buildLivePrice('XAU'),
+    buildLivePrice('XAG'),
   ]);
+
+  const nepal = nepalData.status === 'fulfilled' ? nepalData.value : null;
 
   return {
     gold: {
-      nepal: nepalGold.status === 'fulfilled' ? nepalGold.value : null,
+      nepal: nepal ? {
+        hallmark: nepal.data.goldHallmark,
+        tajabi: nepal.data.goldTajabi,
+        unit: 'tola' as const,
+        perGram10: nepal.data.goldHallmarkPerGram10,
+        source: nepal.source,
+        date: nepal.data.date,
+        updatedAt: new Date().toISOString(),
+        isStale: nepal.isStale,
+      } : null,
       live: liveGold.status === 'fulfilled' ? liveGold.value : null,
     },
     silver: {
-      nepal: nepalSilver.status === 'fulfilled' ? nepalSilver.value : null,
+      nepal: nepal ? {
+        price: nepal.data.silver,
+        unit: 'tola' as const,
+        perGram10: nepal.data.silverPerGram10,
+        source: nepal.source,
+        date: nepal.data.date,
+        updatedAt: new Date().toISOString(),
+        isStale: nepal.isStale,
+      } : null,
       live: liveSilver.status === 'fulfilled' ? liveSilver.value : null,
     },
   };

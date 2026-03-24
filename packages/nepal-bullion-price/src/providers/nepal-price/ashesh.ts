@@ -29,6 +29,10 @@ export async function fetchAshesh(): Promise<NepalPriceData> {
     throw new Error('Failed to parse ashesh.com.np widget');
   }
 
+  if (!prices[0] || prices[0] < 1000) {
+    throw new Error('Suspicious gold price from ashesh.com.np: ' + prices[0]);
+  }
+
   const dateMatch = $('.header_date').text().match(/\d{4}-\d{2}-\d{2}/);
   const date = dateMatch?.[0] ?? new Date().toISOString().split('T')[0];
 
