@@ -1,8 +1,7 @@
 {
   "name": "nepal-bullion-price-monorepo",
   "private": true,
-  "packageManager": "npm@10.9.2",
-  "workspaces": ["packages/*"],
+  "packageManager": "pnpm@8.8.0",
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
