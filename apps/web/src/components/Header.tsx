@@ -21,14 +21,17 @@ export function Header({ lastFetched, onRefresh, isLoading }: HeaderProps) {
   }, [isDark]);
 
   return (
-    <header className="flex items-center justify-between mb-10">
+    <header className="flex items-end justify-between mb-12">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-primary dark:text-white">
-          Nepal Bullion Price
+        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gold-500 dark:text-gold-400 mb-2">
+          Live Rates
+        </p>
+        <h1 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-ink dark:text-white leading-none">
+          Nepal Bullion
         </h1>
         {lastFetched && (
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Updated {lastFetched.toLocaleTimeString()}
+          <p className="text-sm text-ink-muted dark:text-ink-faint mt-2">
+            Updated {lastFetched.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           </p>
         )}
       </div>
@@ -36,14 +39,14 @@ export function Header({ lastFetched, onRefresh, isLoading }: HeaderProps) {
         <button
           onClick={onRefresh}
           disabled={isLoading}
-          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-secondary text-white hover:bg-secondary/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900 disabled:opacity-50 cursor-pointer transition-colors duration-200"
+          className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl bg-ink dark:bg-white text-white dark:text-ink hover:bg-ink-light dark:hover:bg-paper-warm focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-ink disabled:opacity-40 cursor-pointer transition-all duration-200"
         >
           <RefreshIcon className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
-          {isLoading ? 'Refreshing' : 'Refresh'}
+          {isLoading ? 'Loading' : 'Refresh'}
         </button>
         <button
           onClick={() => setIsDark(!isDark)}
-          className="p-2.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900 cursor-pointer transition-colors duration-200"
+          className="p-2.5 rounded-xl border border-ink/10 dark:border-white/10 text-ink-muted dark:text-ink-faint hover:bg-ink/5 dark:hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 cursor-pointer transition-all duration-200"
           aria-label="Toggle dark mode"
         >
           {isDark ? <SunIcon /> : <MoonIcon />}

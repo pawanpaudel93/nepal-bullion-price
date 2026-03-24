@@ -8,14 +8,14 @@ interface PriceCardProps {
   symbol: 'XAU' | 'XAG';
   nepalPrice: NepalGoldPrice | NepalSilverPrice | null;
   livePrice: LiveMetalPrice | null;
-  accentColor: string;
+  shimmerClass: string;
 }
 
 function getNepalPriceTola(price: NepalGoldPrice | NepalSilverPrice): number {
   return 'hallmark' in price ? price.hallmark : price.price;
 }
 
-export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, accentColor }: PriceCardProps) {
+export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, shimmerClass }: PriceCardProps) {
   const nepalTola = nepalPrice ? getNepalPriceTola(nepalPrice) : null;
   const liveTola = livePrice?.perTola.consumerPrice ?? null;
 
@@ -25,70 +25,77 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, accentCo
       : null;
 
   return (
-    <div className="bg-white dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700/60 p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
-      <div className="flex items-center gap-3 mb-5">
-        {icon}
-        <h2 className="text-lg font-semibold text-primary dark:text-white">{title}</h2>
+    <div className="bg-white dark:bg-ink-light/80 rounded-2xl card-glow border border-black/[0.04] dark:border-white/[0.06] p-7 transition-shadow duration-300">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          {icon}
+          <h2 className="font-display text-xl font-bold text-ink dark:text-white">{title}</h2>
+        </div>
+        {premium !== null && (
+          <span className="text-xs font-mono font-semibold px-2.5 py-1 rounded-lg bg-gold-50 dark:bg-gold-700/20 text-gold-600 dark:text-gold-400 border border-gold-200/60 dark:border-gold-700/30">
+            +{premium}%
+          </span>
+        )}
       </div>
 
-      {/* Nepal FENEGOSIDA Price */}
-      <div className="mb-5">
-        <p className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">
-          Nepal Price (FENEGOSIDA)
+      {/* Nepal FENEGOSIDA Price — The Hero */}
+      <div className="mb-6">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-ink-faint dark:text-ink-faint mb-2">
+          Nepal Price &middot; FENEGOSIDA
         </p>
         {nepalPrice ? (
           <>
-            <p className={`text-3xl font-bold tracking-tight ${accentColor}`}>
+            <p className={`font-mono text-4xl font-bold tracking-tight ${shimmerClass}`}>
               {nepalTola !== null ? formatNpr(nepalTola) : '\u2014'}
             </p>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5">
-              per tola &middot; {nepalPrice.source}
+            <p className="text-xs text-ink-muted dark:text-ink-faint mt-2 flex items-center gap-2">
+              <span>per tola</span>
+              <span className="w-1 h-1 rounded-full bg-ink-faint/40" />
+              <span>{nepalPrice.source}</span>
               {nepalPrice.isStale && (
-                <span className="ml-1.5 inline-flex items-center gap-1 text-amber-600 dark:text-amber-400">
-                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-500" />
+                <span className="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400 font-medium">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
                   stale
                 </span>
               )}
             </p>
           </>
         ) : (
-          <p className="text-xl text-slate-400">Unavailable</p>
+          <p className="text-xl text-ink-faint">Unavailable</p>
         )}
       </div>
 
+      {/* Divider */}
+      <div className="h-px bg-gradient-to-r from-transparent via-black/[0.06] dark:via-white/[0.06] to-transparent mb-6" />
+
       {/* Live International Price */}
-      <div className="border-t border-slate-100 dark:border-slate-700/60 pt-5">
-        <p className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">
+      <div>
+        <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-ink-faint dark:text-ink-faint mb-2">
           Live Est. Consumer Price
         </p>
         {livePrice ? (
           <>
-            <p className="text-xl font-semibold text-primary dark:text-white">
+            <p className="font-mono text-2xl font-semibold text-ink dark:text-white tracking-tight">
               {liveTola !== null ? formatNpr(liveTola) : '\u2014'}
             </p>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5">
-              {symbol}/USD: ${livePrice.raw.usdPerOz.toFixed(2)} &middot; NPR: {livePrice.raw.usdToNpr.toFixed(2)}
+            <div className="flex items-center gap-2 text-xs text-ink-muted dark:text-ink-faint mt-2">
+              <span className="font-mono">{symbol}/USD ${livePrice.raw.usdPerOz.toFixed(2)}</span>
+              <span className="w-1 h-1 rounded-full bg-ink-faint/40" />
+              <span className="font-mono">NPR {livePrice.raw.usdToNpr.toFixed(2)}</span>
               {livePrice.isStale && (
-                <span className="ml-1.5 inline-flex items-center gap-1 text-amber-600 dark:text-amber-400">
-                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-500" />
+                <span className="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400 font-medium">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
                   stale
                 </span>
               )}
-            </p>
+            </div>
             <TaxBreakdown breakdown={livePrice.perTola} rates={livePrice.rates} />
           </>
         ) : (
-          <p className="text-lg text-slate-400">Unavailable</p>
+          <p className="text-lg text-ink-faint">Unavailable</p>
         )}
       </div>
-
-      {/* Premium Indicator */}
-      {premium !== null && (
-        <div className="mt-5 bg-slate-50 dark:bg-slate-900/50 rounded-xl p-3 text-center border border-slate-100 dark:border-slate-700/40">
-          <p className="text-[11px] font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wider">Nepal premium</p>
-          <p className="text-xl font-bold text-primary dark:text-white mt-0.5">{premium}%</p>
-        </div>
-      )}
     </div>
   );
 }
