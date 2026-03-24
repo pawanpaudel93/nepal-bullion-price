@@ -33,17 +33,16 @@ export function TaxBreakdown({ breakdown, rates }: TaxBreakdownProps) {
               <Row label={`Dealer margin ${(rates.dealerMargin * 100).toFixed(1)}%`} value={breakdown.dealerMargin} prefix="+" />
             </div>
             <div className="h-px bg-ink/[0.04] dark:bg-white/[0.04] my-3" />
-            <div className="flex justify-between font-medium text-ink dark:text-white">
-              <span>Est. FENEGOSIDA</span>
+            <div className="flex justify-between font-semibold text-ink dark:text-white">
+              <span>Est. Shop Price</span>
               <span className="font-mono tabular-nums">{formatNpr(breakdown.estimatedPrice)}</span>
             </div>
-            <div className="mt-2.5 text-ink-muted dark:text-ink-faint">
-              <Row label={`Luxury tax ${(rates.luxuryTax * 100).toFixed(0)}%`} value={breakdown.luxuryTax} prefix="+" />
-            </div>
-            <div className="h-px bg-ink/[0.04] dark:bg-white/[0.04] my-3" />
-            <div className="flex justify-between font-semibold text-ink dark:text-white">
-              <span>Consumer price</span>
-              <span className="font-mono tabular-nums">{formatNpr(breakdown.consumerPrice)}</span>
+            <div className="mt-3 pt-3 border-t border-dashed border-ink/[0.06] dark:border-white/[0.06] text-ink-faint dark:text-ink-faint">
+              <Row label={`+ Luxury tax ${(rates.luxuryTax * 100).toFixed(0)}% (on billing)`} value={breakdown.luxuryTax} />
+              <div className="flex justify-between mt-1">
+                <span className="text-[11px]">With tax</span>
+                <span className="font-mono tabular-nums text-[11px]">{formatNpr(breakdown.consumerPrice)}</span>
+              </div>
             </div>
           </div>
         </div>

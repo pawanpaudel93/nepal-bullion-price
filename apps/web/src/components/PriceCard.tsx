@@ -18,7 +18,7 @@ function getNepalPriceTola(price: NepalGoldPrice | NepalSilverPrice): number {
 
 export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, shimmerClass, delay = '0ms' }: PriceCardProps) {
   const nepalTola = nepalPrice ? getNepalPriceTola(nepalPrice) : null;
-  const liveTola = livePrice?.perTola.consumerPrice ?? null;
+  const liveTola = livePrice?.perTola.estimatedPrice ?? null;
 
   const premium =
     nepalTola && livePrice
@@ -79,7 +79,7 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, shimmerC
       {/* Live International Price */}
       <div>
         <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-ink-faint dark:text-ink-faint mb-3">
-          Live Est. Consumer Price
+          Live Est. Price
         </p>
         {livePrice ? (
           <>
