@@ -64,13 +64,32 @@ Nepal's FENEGOSIDA price includes duties and margins over the raw international 
 - The actual FENEGOSIDA price uses a 75/25 blend of international and Indian market prices. Our calculation uses 100% international price and notes this as an approximation.
 - All rates are configurable via `configure()`.
 
+**Rounding:** All intermediate and final NPR values are rounded to the nearest integer using `Math.round()`. Each component (customDuty, bankMargin, etc.) is computed and rounded independently before being summed.
+
 **Formula:**
 ```
-basePrice = (xauUsd / 31.1035) × 11.6638 × usdToNpr
-afterCustoms = basePrice × 1.10
-afterBank = afterCustoms × 1.005
-afterDealer = afterBank × 1.005  // estimatedPrice
-consumerPrice = afterDealer × 1.02
+basePrice      = round((xauUsd / 31.1035) × 11.6638 × usdToNpr)
+customDuty     = round(basePrice × 0.10)
+afterCustoms   = basePrice + customDuty
+bankMargin     = round(afterCustoms × 0.005)
+afterBank      = afterCustoms + bankMargin
+dealerMargin   = round(afterBank × 0.005)
+estimatedPrice = afterBank + dealerMargin
+luxuryTax      = round(estimatedPrice × 0.02)
+consumerPrice  = estimatedPrice + luxuryTax
+```
+
+**Worked example** (xauUsd = 4333.40, usdToNpr = 150.07):
+```
+basePrice      = round((4333.40 / 31.1035) × 11.6638 × 150.07) = 243867
+customDuty     = round(243867 × 0.10)   = 24387
+afterCustoms   = 243867 + 24387         = 268254
+bankMargin     = round(268254 × 0.005)  = 1341
+afterBank      = 268254 + 1341          = 269595
+dealerMargin   = round(269595 × 0.005)  = 1348
+estimatedPrice = 269595 + 1348          = 270943
+luxuryTax      = round(270943 × 0.02)   = 5419
+consumerPrice  = 270943 + 5419          = 276362
 ```
 
 Same formula applies for silver using XAG/USD.
@@ -113,13 +132,13 @@ const liveGold = await getLiveGoldPrice();
 // {
 //   raw: { usdPerOz: 4333.40, usdToNpr: 150.07 },
 //   perTola: {
-//     basePrice: 243892,
-//     customDuty: 24389,
+//     basePrice: 243867,
+//     customDuty: 24387,
 //     bankMargin: 1341,
-//     dealerMargin: 1354,
-//     estimatedPrice: 270976,
-//     luxuryTax: 5420,
-//     consumerPrice: 276396
+//     dealerMargin: 1348,
+//     estimatedPrice: 270943,
+//     luxuryTax: 5419,
+//     consumerPrice: 276362
 //   },
 //   rates: { customDuty: 0.10, bankMargin: 0.005, dealerMargin: 0.005, luxuryTax: 0.02 },
 //   source: 'gold-api.com',
@@ -180,6 +199,7 @@ nepal-bullion-price/
         ├── package.json
         ├── vite.config.ts
         ├── tailwind.config.ts
+        ├── server.ts             # Hono API server wrapping the package
         └── src/
             ├── App.tsx
             ├── main.tsx
@@ -188,8 +208,43 @@ nepal-bullion-price/
             │   ├── TaxBreakdown.tsx
             │   └── LastUpdated.tsx
             └── hooks/
-                └── useBullionPrices.ts
+                └── useBullionPrices.ts  # fetches /api/prices
 ```
+
+## Architecture: Server vs Browser
+
+The npm package (`nepal-bullion-price`) is **server-side only** (Node.js). It scrapes HTML from Nepal websites which would be blocked by CORS in browsers. Additionally, Swissquote's forex feed has no CORS headers.
+
+The React web app uses a **lightweight API server** (Hono) that wraps the package:
+
+```
+Browser (React SPA) → /api/prices → Hono server → nepal-bullion-price → external sources
+```
+
+The `apps/web` project runs Hono as a server with the React SPA served as static files. In production, this deploys as a single Node.js process (or serverless via Vercel/Netlify adapter).
+
+Updated file tree for `apps/web`:
+```
+apps/web/
+├── package.json
+├── vite.config.ts
+├── tailwind.config.ts
+├── server.ts              # Hono API server
+├── src/                   # React SPA
+│   ├── App.tsx
+│   ├── main.tsx
+│   ├── components/
+│   │   ├── PriceCard.tsx
+│   │   ├── TaxBreakdown.tsx
+│   │   └── LastUpdated.tsx
+│   └── hooks/
+│       └── useBullionPrices.ts  # fetches from /api/prices
+```
+
+API endpoints:
+- `GET /api/prices` — returns `getAllPrices()` result
+- `GET /api/gold` — returns `{ nepal, live }` for gold only
+- `GET /api/silver` — returns `{ nepal, live }` for silver only
 
 ## React UI
 
