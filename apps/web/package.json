@@ -3,9 +3,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx watch server.ts",
+    "dev": "node --import tsx/esm server.ts & vite dev",
+    "dev:api": "tsx watch server.ts",
+    "dev:web": "vite dev",
     "build": "vite build",
-    "preview": "tsx server.ts"
+    "start": "node --import tsx/esm server.ts"
   },
   "dependencies": {
     "@hono/node-server": "^1",
