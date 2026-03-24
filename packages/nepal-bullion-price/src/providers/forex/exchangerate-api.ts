@@ -9,8 +9,8 @@ export async function fetchExchangeRateApi(): Promise<ForexData> {
 
   const data = await res.json();
   const npr = data?.rates?.NPR;
-  if (typeof npr !== 'number') {
-    throw new Error('NPR rate not found in exchangerate-api response');
+  if (typeof npr !== 'number' || isNaN(npr) || npr <= 0) {
+    throw new Error('NPR rate not found or invalid in exchangerate-api response');
   }
 
   return {

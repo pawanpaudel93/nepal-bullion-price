@@ -18,7 +18,7 @@ export async function fetchFawazahmed0(): Promise<ForexData> {
 
       const data = await res.json();
       const npr = data?.usd?.npr;
-      if (typeof npr !== 'number') continue;
+      if (typeof npr !== 'number' || isNaN(npr) || npr <= 0) continue;
 
       return {
         usdToNpr: npr,

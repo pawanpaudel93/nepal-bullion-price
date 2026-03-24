@@ -15,6 +15,9 @@ export async function fetchSwissquote(symbol: 'XAU' | 'XAG'): Promise<LivePriceD
   }
 
   const first = profiles[0];
+  if (typeof first.bid !== 'number' || isNaN(first.bid) || typeof first.ask !== 'number' || isNaN(first.ask)) {
+    throw new Error('Invalid bid/ask values from swissquote');
+  }
   const midPrice = (first.bid + first.ask) / 2;
 
   return {

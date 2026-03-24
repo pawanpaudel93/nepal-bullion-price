@@ -14,6 +14,11 @@ const app = new Hono();
 
 app.use('/api/*', cors());
 
+app.onError((err, c) => {
+  console.error('API error:', err.message);
+  return c.json({ error: err.message }, 500);
+});
+
 app.get('/api/prices', async (c) => {
   const prices = await getAllPrices();
   return c.json(prices);

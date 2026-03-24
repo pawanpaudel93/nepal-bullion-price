@@ -52,6 +52,7 @@ export interface Config {
   rates: TaxRates;
   apiKeys: {
     goldApiIo?: string;
+    asheshApiKey?: string;
   };
   cacheTtl: number;
 }
