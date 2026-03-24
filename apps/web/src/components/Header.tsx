@@ -28,8 +28,8 @@ export function Header({ lastFetched, onRefresh, isLoading }: HeaderProps) {
         <p className="text-[10px] font-medium uppercase tracking-[0.25em] text-gold-500 dark:text-gold-400 mb-3 font-body">
           Live Rates
         </p>
-        <h1 className="font-display text-3xl sm:text-4xl font-bold text-ink dark:text-white leading-none tracking-tight">
-          Nepal <span className="text-gold-shimmer">Bullion</span>
+        <h1 className="font-display text-4xl sm:text-3xl md:text-4xl font-bold text-ink dark:text-white leading-[0.95] sm:leading-none tracking-tight">
+          Nepal<br className="sm:hidden" /> <span className="text-gold-shimmer">Bullion</span>
         </h1>
         {lastFetched ? (
           <p className="text-[13px] text-ink-faint dark:text-ink-faint mt-3 font-light">
