@@ -20,7 +20,7 @@ import type {
 function createCaches() {
   const ttl = getConfig().cacheTtl;
   return {
-    nepal: new Cache<NepalPriceData>(ttl),
+    nepal: new Cache<{ data: NepalPriceData; source: string }>(ttl),
     live: new Cache<{ data: LivePriceData; source: string }>(ttl),
     forex: new Cache<{ data: ForexData; source: string }>(ttl),
   };
@@ -65,16 +65,16 @@ function getForexProviders() {
 
 async function fetchNepalPrices(): Promise<{ data: NepalPriceData; source: string; isStale: boolean }> {
   const cached = caches.nepal.get('nepal');
-  if (cached) return { data: cached, source: 'cache', isStale: false };
+  if (cached) return { ...cached, isStale: false };
 
   const result = await tryProviders(getNepalProviders());
   if (result) {
-    caches.nepal.set('nepal', result.data);
+    caches.nepal.set('nepal', result);
     return { data: result.data, source: result.source, isStale: false };
   }
 
   const stale = caches.nepal.getStale('nepal');
-  if (stale) return { data: stale, source: 'cache', isStale: true };
+  if (stale) return { ...stale, isStale: true };
 
   throw new Error('All Nepal price providers failed and no cached data available');
 }
