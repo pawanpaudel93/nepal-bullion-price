@@ -37,9 +37,12 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, shimmerC
           <h2 className="font-display text-2xl font-bold text-ink dark:text-white tracking-tight">{title}</h2>
         </div>
         {premium !== null ? (
-          <span className="text-[11px] font-mono font-semibold px-3 py-1.5 rounded-full bg-gold-500/10 text-gold-600 dark:text-gold-400 border border-gold-500/15">
-            +{premium}%
-          </span>
+          <div className="flex flex-col items-end gap-0.5" title="How much more Nepal charges compared to the raw international price (duties, margins, taxes)">
+            <span className="text-[11px] font-mono font-semibold px-3 py-1.5 rounded-full bg-gold-500/10 text-gold-600 dark:text-gold-400 border border-gold-500/15">
+              +{premium}%
+            </span>
+            <span className="text-[9px] text-ink-faint dark:text-ink-faint tracking-wide uppercase">Nepal premium</span>
+          </div>
         ) : null}
       </div>
 
