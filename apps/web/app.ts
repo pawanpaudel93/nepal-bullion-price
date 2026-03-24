@@ -18,8 +18,12 @@ app.onError((err, c) => {
   return c.json({ error: err.message }, 500);
 });
 
+// Cache at Vercel edge: 60s fresh, serve stale up to 5min while revalidating
+const CACHE_HEADER = 'public, s-maxage=60, stale-while-revalidate=300';
+
 app.get('/prices', async (c) => {
   const prices = await getAllPrices();
+  c.header('Cache-Control', CACHE_HEADER);
   return c.json(prices);
 });
 
@@ -28,6 +32,7 @@ app.get('/gold', async (c) => {
     getNepalGoldPrice(),
     getLiveGoldPrice(),
   ]);
+  c.header('Cache-Control', CACHE_HEADER);
   return c.json({
     nepal: nepal.status === 'fulfilled' ? nepal.value : null,
     live: live.status === 'fulfilled' ? live.value : null,
@@ -39,6 +44,7 @@ app.get('/silver', async (c) => {
     getNepalSilverPrice(),
     getLiveSilverPrice(),
   ]);
+  c.header('Cache-Control', CACHE_HEADER);
   return c.json({
     nepal: nepal.status === 'fulfilled' ? nepal.value : null,
     live: live.status === 'fulfilled' ? live.value : null,
