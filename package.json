@@ -1,0 +1,14 @@
+{
+  "name": "nepal-bullion-price-monorepo",
+  "private": true,
+  "packageManager": "npm@10.9.2",
+  "workspaces": ["packages/*"],
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "test": "turbo test"
+  },
+  "devDependencies": {
+    "turbo": "^2"
+  }
+}
