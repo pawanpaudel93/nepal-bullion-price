@@ -9,7 +9,7 @@ Nepal gold and silver prices — FENEGOSIDA daily rates + live international pri
 
 - **Nepal daily rates** from FENEGOSIDA (3 fallback sources)
 - **Live international prices** (XAU/XAG → NPR per tola)
-- **Full tax breakdown** — custom duty, bank margin, dealer margin, luxury tax
+- **Full tax breakdown** — custom duty, bank margin, dealer margin (separate rates for gold & silver)
 - **USD/NPR forex** from Nepal Rastra Bank (2 fallbacks)
 - **In-memory caching** with configurable TTL and stale fallback
 - **TypeScript** — full type definitions included
@@ -61,17 +61,17 @@ const silver = await getNepalSilverPrice();
 // Live international price with Nepal duty breakdown
 const live = await getLiveGoldPrice();
 // {
-//   raw: { usdPerOz: 4333.40, usdToNpr: 150.07 },
+//   raw: { usdPerOz: 4569.40, usdToNpr: 150.67 },
 //   perTola: {
-//     basePrice: 243867,
-//     customDuty: 24387,
-//     bankMargin: 1341,
-//     dealerMargin: 1348,
-//     estimatedPrice: 270943
+//     basePrice: 258140,
+//     customDuty: 25814,
+//     bankMargin: 1420,
+//     dealerMargin: 1427,
+//     estimatedPrice: 286801
 //   },
 //   rates: { customDuty: 0.1, bankMargin: 0.005, dealerMargin: 0.005 },
 //   source: 'gold-api.com',
-//   updatedAt: '2026-03-24T04:26:12Z',
+//   updatedAt: '2026-03-25T04:26:12Z',
 //   isStale: false
 // }
 
@@ -82,9 +82,12 @@ const liveSilver = await getLiveSilverPrice();
 const all = await getAllPrices();
 // { gold: { nepal, live }, silver: { nepal, live } }
 
-// Override tax rates or add API keys
+// Override tax rates per metal or add API keys
 configure({
-  rates: { customDuty: 0.06 },
+  rates: {
+    gold: { customDuty: 0.06 },
+    silver: { customDuty: 0.10 },
+  },
   apiKeys: { goldApiIo: 'your-key' },
   cacheTtl: 10 * 60 * 1000, // 10 minutes
 });
@@ -105,14 +108,16 @@ configure({
 
 ### `configure(options)`
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `rates.customDuty` | `number` | `0.10` | Custom duty rate (10%) |
-| `rates.bankMargin` | `number` | `0.005` | Bank margin (0.5%) |
-| `rates.dealerMargin` | `number` | `0.005` | Dealer margin (0.5%) |
-| `apiKeys.goldApiIo` | `string` | — | goldapi.io API key (enables fallback) |
-| `apiKeys.asheshApiKey` | `string` | — | Ashesh widget API key (has public default) |
-| `cacheTtl` | `number` | `300000` | Cache TTL in ms (5 minutes) |
+Rates are configured **per metal** via `rates.gold` and `rates.silver`:
+
+| Option | Type | Gold Default | Silver Default | Description |
+|--------|------|-------------|----------------|-------------|
+| `rates.{metal}.customDuty` | `number` | `0.10` (10%) | `0.15` (15%) | Custom duty rate |
+| `rates.{metal}.bankMargin` | `number` | `0.005` (0.5%) | `0.005` (0.5%) | Bank margin |
+| `rates.{metal}.dealerMargin` | `number` | `0.005` (0.5%) | `0.005` (0.5%) | Dealer margin |
+| `apiKeys.goldApiIo` | `string` | — | — | goldapi.io API key (enables fallback) |
+| `apiKeys.asheshApiKey` | `string` | — | — | Ashesh widget API key (has public default) |
+| `cacheTtl` | `number` | `300000` | `300000` | Cache TTL in ms (5 minutes) |
 
 ## Data Sources
 
@@ -144,21 +149,29 @@ Each category tries providers in order. If all fail, cached (stale) data is retu
 
 ## Duty Breakdown
 
-Live prices are converted from USD/oz to NPR/tola (1 tola = 11.6638g, 1 troy oz = 31.1035g), then Nepal import charges are applied sequentially:
+Live prices are converted from USD/oz to NPR/tola (1 tola = 11.6638 g, 1 troy oz = 31.1035 g) using the **NRB sell rate** (the rate importers pay when buying USD), then Nepal import charges are applied sequentially:
 
 ```
 basePrice      = round((usdPerOz / 31.1035) × 11.6638 × usdToNpr)
-customDuty     = round(basePrice × 0.10)
+customDuty     = round(basePrice × customDutyRate)
 afterCustoms   = basePrice + customDuty
-bankMargin     = round(afterCustoms × 0.005)
+bankMargin     = round(afterCustoms × bankMarginRate)
 afterBank      = afterCustoms + bankMargin
-dealerMargin   = round(afterBank × 0.005)
-estimatedPrice = afterBank + dealerMargin        ← approx. FENEGOSIDA shop rate
+dealerMargin   = round(afterBank × dealerMarginRate)
+estimatedPrice = afterBank + dealerMargin        ← approx. FENEGOSIDA rate
 ```
 
-The `estimatedPrice` approximates what FENEGOSIDA publishes as the daily gold/silver rate. A separate 2% luxury tax is charged at the point of sale but is not part of the published rate.
+### Default rates
 
-All rates are configurable via `configure({ rates: { ... } })`.
+| Charge | Gold | Silver |
+|--------|------|--------|
+| Custom duty | 10% | 15% |
+| Bank margin (NRB cap) | 0.5% | 0.5% |
+| Dealer margin (NRB cap) | 0.5% | 0.5% |
+
+The `estimatedPrice` approximates what FENEGOSIDA publishes as the daily rate. A separate 2% luxury tax is charged at the point of sale but is not part of the published rate.
+
+All rates are configurable per metal via `configure({ rates: { gold: { ... }, silver: { ... } } })`.
 
 ## License
 

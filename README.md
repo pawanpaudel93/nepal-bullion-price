@@ -40,7 +40,7 @@ const gold = await getNepalGoldPrice();
 console.log(gold.hallmark); // Rs per tola
 
 const live = await getLiveGoldPrice();
-console.log(live.perTola.consumerPrice); // estimated consumer price
+console.log(live.perTola.estimatedPrice); // estimated FENEGOSIDA rate
 ```
 
 See [`packages/nepal-bullion-price/README.md`](packages/nepal-bullion-price/README.md) for full API docs.
