@@ -1,14 +1,20 @@
-import type { Config, TaxRates } from './types.js';
+import type { Config, TaxRates, MetalRates } from './types.js';
 import { DEFAULT_CACHE_TTL_MS } from './constants.js';
 
-const DEFAULT_RATES: TaxRates = {
+const DEFAULT_GOLD_RATES: TaxRates = {
   customDuty: 0.10,
   bankMargin: 0.005,
   dealerMargin: 0.005,
 };
 
+const DEFAULT_SILVER_RATES: TaxRates = {
+  customDuty: 0.15,
+  bankMargin: 0.005,
+  dealerMargin: 0.005,
+};
+
 const DEFAULT_CONFIG: Config = {
-  rates: { ...DEFAULT_RATES },
+  rates: { gold: { ...DEFAULT_GOLD_RATES }, silver: { ...DEFAULT_SILVER_RATES } },
   apiKeys: {},
   cacheTtl: DEFAULT_CACHE_TTL_MS,
 };
@@ -31,12 +37,17 @@ export function getConfig(): Config {
  *   explicit reset/refresh calls between tenants.
  */
 export function configure(partial: {
-  rates?: Partial<TaxRates>;
+  rates?: { gold?: Partial<TaxRates>; silver?: Partial<TaxRates> };
   apiKeys?: Config['apiKeys'];
   cacheTtl?: number;
 }): void {
   if (partial.rates) {
-    currentConfig.rates = { ...currentConfig.rates, ...partial.rates };
+    if (partial.rates.gold) {
+      currentConfig.rates.gold = { ...currentConfig.rates.gold, ...partial.rates.gold };
+    }
+    if (partial.rates.silver) {
+      currentConfig.rates.silver = { ...currentConfig.rates.silver, ...partial.rates.silver };
+    }
   }
   if (partial.apiKeys) {
     currentConfig.apiKeys = { ...currentConfig.apiKeys, ...partial.apiKeys };

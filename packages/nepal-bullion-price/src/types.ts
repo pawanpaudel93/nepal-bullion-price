@@ -45,8 +45,13 @@ export interface TaxRates {
   dealerMargin: number;
 }
 
+export interface MetalRates {
+  gold: TaxRates;
+  silver: TaxRates;
+}
+
 export interface Config {
-  rates: TaxRates;
+  rates: MetalRates;
   apiKeys: {
     goldApiIo?: string;
     asheshApiKey?: string;

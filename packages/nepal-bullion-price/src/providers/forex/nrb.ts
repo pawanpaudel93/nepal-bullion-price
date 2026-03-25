@@ -26,9 +26,9 @@ export async function fetchNrb(): Promise<ForexData> {
   );
   if (!usd) throw new Error('USD rate not found in NRB response');
 
-  const usdToNpr = parseFloat(usd.buy);
+  const usdToNpr = parseFloat(usd.sell);
   if (isNaN(usdToNpr) || usdToNpr <= 0) {
-    throw new Error(`Invalid USD/NPR rate from NRB: ${usd.buy}`);
+    throw new Error(`Invalid USD/NPR rate from NRB: ${usd.sell}`);
   }
 
   return {

@@ -146,10 +146,11 @@ async function buildLivePrice(symbol: 'XAU' | 'XAG'): Promise<LiveMetalPrice> {
   ]);
 
   const config = getConfig();
+  const metalRates = symbol === 'XAU' ? config.rates.gold : config.rates.silver;
   const breakdown = calculateTaxBreakdown(
     live.data.priceUsd,
     forex.data.usdToNpr,
-    config.rates,
+    metalRates,
   );
 
   return {
@@ -158,7 +159,7 @@ async function buildLivePrice(symbol: 'XAU' | 'XAG'): Promise<LiveMetalPrice> {
       usdToNpr: forex.data.usdToNpr,
     },
     perTola: breakdown,
-    rates: { ...config.rates },
+    rates: { ...metalRates },
     source: live.source,
     updatedAt: live.data.updatedAt,
     isStale: live.isStale || forex.isStale,
@@ -215,5 +216,5 @@ export async function getAllPrices(): Promise<AllPrices> {
 export { configure, resetConfig } from './config.js';
 export type {
   NepalGoldPrice, NepalSilverPrice, LiveMetalPrice,
-  TaxBreakdown, TaxRates, AllPrices, Config,
+  TaxBreakdown, TaxRates, MetalRates, AllPrices, Config,
 } from './types.js';
