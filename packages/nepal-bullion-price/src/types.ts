@@ -21,7 +21,7 @@ export interface NepalSilverPrice {
 
 export interface TaxBreakdown {
   basePrice: number;
-  customDuty: number;
+  customsDuty: number;
   bankMargin: number;
   dealerMargin: number;
   estimatedPrice: number;
@@ -40,7 +40,7 @@ export interface LiveMetalPrice {
 }
 
 export interface TaxRates {
-  customDuty: number;
+  customsDuty: number;
   bankMargin: number;
   dealerMargin: number;
 }
@@ -94,4 +94,9 @@ export interface ForexData {
 export interface Provider<T> {
   name: string;
   fetch: () => Promise<T>;
+}
+
+export interface ProviderResult<T> {
+  data: T;
+  source: string;
 }

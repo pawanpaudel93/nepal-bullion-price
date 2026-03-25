@@ -1,7 +1,7 @@
 import { DEFAULT_TIMEOUT_MS } from '../../constants.js';
 import type { LivePriceData } from '../../types.js';
 
-export async function fetchGoldApi(symbol: 'XAU' | 'XAG'): Promise<LivePriceData> {
+export async function fetchGoldApiCom(symbol: 'XAU' | 'XAG'): Promise<LivePriceData> {
   const res = await fetch(`https://api.gold-api.com/price/${symbol}`, {
     signal: AbortSignal.timeout(DEFAULT_TIMEOUT_MS),
   });

@@ -28,7 +28,7 @@ export function TaxBreakdown({ breakdown, rates }: TaxBreakdownProps) {
           <div className="mt-3 text-[13px] bg-paper-warm/80 dark:bg-ink/40 rounded-2xl p-5 border border-ink/[0.03] dark:border-white/[0.03] backdrop-blur-sm">
             <div className="space-y-2.5 text-ink-muted dark:text-ink-faint">
               <Row label="International base" value={breakdown.basePrice} />
-              <Row label={`Custom duty ${(rates.customDuty * 100).toFixed(0)}%`} value={breakdown.customDuty} prefix="+" />
+              <Row label={`Customs duty ${(rates.customsDuty * 100).toFixed(0)}%`} value={breakdown.customsDuty} prefix="+" />
               <Row label={`Bank margin ${(rates.bankMargin * 100).toFixed(1)}%`} value={breakdown.bankMargin} prefix="+" />
               <Row label={`Dealer margin ${(rates.dealerMargin * 100).toFixed(1)}%`} value={breakdown.dealerMargin} prefix="+" />
             </div>

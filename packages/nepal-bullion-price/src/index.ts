@@ -1,11 +1,11 @@
 import { Cache } from './cache.js';
 import { getConfig, configure, resetConfig } from './config.js';
-import { tryProviders } from './fallback.js';
+import { fetchWithFallback } from './fallback.js';
 import { calculateTaxBreakdown } from './calculator.js';
 import { fetchFenegosida } from './providers/nepal-price/fenegosida.js';
 import { fetchAshesh } from './providers/nepal-price/ashesh.js';
 import { fetchHamropatro } from './providers/nepal-price/hamropatro.js';
-import { fetchGoldApi } from './providers/live-price/gold-api.js';
+import { fetchGoldApiCom } from './providers/live-price/gold-api.js';
 import { fetchSwissquote } from './providers/live-price/swissquote.js';
 import { fetchGoldApiIo } from './providers/live-price/goldapi-io.js';
 import { fetchNrb } from './providers/forex/nrb.js';
@@ -28,7 +28,7 @@ function createCaches() {
 let caches = createCaches();
 
 // Call after configure() to pick up new TTL
-export function refreshCaches(): void {
+export function resetCaches(): void {
   caches = createCaches();
 }
 
@@ -43,7 +43,7 @@ function getNepalProviders() {
 function getLiveProviders(symbol: 'XAU' | 'XAG') {
   const config = getConfig();
   const providers = [
-    { name: 'gold-api.com', fetch: () => fetchGoldApi(symbol) },
+    { name: 'gold-api.com', fetch: () => fetchGoldApiCom(symbol) },
     { name: 'swissquote', fetch: () => fetchSwissquote(symbol) },
   ];
   if (config.apiKeys.goldApiIo) {
@@ -67,7 +67,7 @@ async function fetchNepalPrices(): Promise<{ data: NepalPriceData; source: strin
   const cached = caches.nepal.get('nepal');
   if (cached) return { ...cached, isStale: false };
 
-  const result = await tryProviders(getNepalProviders());
+  const result = await fetchWithFallback(getNepalProviders());
   if (result) {
     caches.nepal.set('nepal', result);
     return { data: result.data, source: result.source, isStale: false };
@@ -84,7 +84,7 @@ async function fetchLivePrice(symbol: 'XAU' | 'XAG'): Promise<{ data: LivePriceD
   const cached = caches.live.get(cacheKey);
   if (cached) return { ...cached, isStale: false };
 
-  const result = await tryProviders(getLiveProviders(symbol));
+  const result = await fetchWithFallback(getLiveProviders(symbol));
   if (result) {
     caches.live.set(cacheKey, result);
     return { data: result.data, source: result.source, isStale: false };
@@ -100,7 +100,7 @@ async function fetchForex(): Promise<{ data: ForexData; source: string; isStale:
   const cached = caches.forex.get('forex');
   if (cached) return { ...cached, isStale: false };
 
-  const result = await tryProviders(getForexProviders());
+  const result = await fetchWithFallback(getForexProviders());
   if (result) {
     caches.forex.set('forex', result);
     return { data: result.data, source: result.source, isStale: false };
@@ -112,8 +112,7 @@ async function fetchForex(): Promise<{ data: ForexData; source: string; isStale:
   throw new Error('All forex providers failed and no cached data available');
 }
 
-export async function getNepalGoldPrice(): Promise<NepalGoldPrice> {
-  const { data, source, isStale } = await fetchNepalPrices();
+function toNepalGoldPrice(data: NepalPriceData, source: string, isStale: boolean): NepalGoldPrice {
   return {
     hallmark: data.goldHallmark,
     tajabi: data.goldTajabi,
@@ -126,8 +125,7 @@ export async function getNepalGoldPrice(): Promise<NepalGoldPrice> {
   };
 }
 
-export async function getNepalSilverPrice(): Promise<NepalSilverPrice> {
-  const { data, source, isStale } = await fetchNepalPrices();
+function toNepalSilverPrice(data: NepalPriceData, source: string, isStale: boolean): NepalSilverPrice {
   return {
     price: data.silver,
     unit: 'tola',
@@ -137,6 +135,16 @@ export async function getNepalSilverPrice(): Promise<NepalSilverPrice> {
     updatedAt: new Date().toISOString(),
     isStale,
   };
+}
+
+export async function getNepalGoldPrice(): Promise<NepalGoldPrice> {
+  const { data, source, isStale } = await fetchNepalPrices();
+  return toNepalGoldPrice(data, source, isStale);
+}
+
+export async function getNepalSilverPrice(): Promise<NepalSilverPrice> {
+  const { data, source, isStale } = await fetchNepalPrices();
+  return toNepalSilverPrice(data, source, isStale);
 }
 
 async function buildLivePrice(symbol: 'XAU' | 'XAG'): Promise<LiveMetalPrice> {
@@ -185,28 +193,11 @@ export async function getAllPrices(): Promise<AllPrices> {
 
   return {
     gold: {
-      nepal: nepal ? {
-        hallmark: nepal.data.goldHallmark,
-        tajabi: nepal.data.goldTajabi,
-        unit: 'tola' as const,
-        perGram10: nepal.data.goldHallmarkPerGram10,
-        source: nepal.source,
-        date: nepal.data.date,
-        updatedAt: new Date().toISOString(),
-        isStale: nepal.isStale,
-      } : null,
+      nepal: nepal ? toNepalGoldPrice(nepal.data, nepal.source, nepal.isStale) : null,
       live: liveGold.status === 'fulfilled' ? liveGold.value : null,
     },
     silver: {
-      nepal: nepal ? {
-        price: nepal.data.silver,
-        unit: 'tola' as const,
-        perGram10: nepal.data.silverPerGram10,
-        source: nepal.source,
-        date: nepal.data.date,
-        updatedAt: new Date().toISOString(),
-        isStale: nepal.isStale,
-      } : null,
+      nepal: nepal ? toNepalSilverPrice(nepal.data, nepal.source, nepal.isStale) : null,
       live: liveSilver.status === 'fulfilled' ? liveSilver.value : null,
     },
   };
@@ -217,4 +208,5 @@ export { configure, resetConfig } from './config.js';
 export type {
   NepalGoldPrice, NepalSilverPrice, LiveMetalPrice,
   TaxBreakdown, TaxRates, MetalRates, AllPrices, Config,
+  ProviderResult,
 } from './types.js';

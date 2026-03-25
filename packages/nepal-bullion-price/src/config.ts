@@ -2,13 +2,13 @@ import type { Config, TaxRates, MetalRates } from './types.js';
 import { DEFAULT_CACHE_TTL_MS } from './constants.js';
 
 const DEFAULT_GOLD_RATES: TaxRates = {
-  customDuty: 0.10,
+  customsDuty: 0.10,
   bankMargin: 0.005,
   dealerMargin: 0.005,
 };
 
 const DEFAULT_SILVER_RATES: TaxRates = {
-  customDuty: 0.15,
+  customsDuty: 0.15,
   bankMargin: 0.005,
   dealerMargin: 0.005,
 };
@@ -30,7 +30,7 @@ export function getConfig(): Config {
  *
  * NOTE: This mutates shared module state. All callers in the same process
  * see the updated config immediately. For isolated configs (e.g. tests or
- * multi-tenant use), call `resetConfig()` between uses or use `refreshCaches()`
+ * multi-tenant use), call `resetConfig()` between uses or use `resetCaches()`
  * after changing `cacheTtl` to pick up the new TTL.
  *
  * @limitation Singleton — not suitable for concurrent multi-tenant use without

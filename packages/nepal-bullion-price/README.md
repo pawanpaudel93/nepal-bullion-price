@@ -9,7 +9,7 @@ Nepal gold and silver prices — FENEGOSIDA daily rates + live international pri
 
 - **Nepal daily rates** from FENEGOSIDA (3 fallback sources)
 - **Live international prices** (XAU/XAG → NPR per tola)
-- **Full tax breakdown** — custom duty, bank margin, dealer margin (separate rates for gold & silver)
+- **Full tax breakdown** — customs duty, bank margin, dealer margin (separate rates for gold & silver)
 - **USD/NPR forex** from Nepal Rastra Bank (2 fallbacks)
 - **In-memory caching** with configurable TTL and stale fallback
 - **TypeScript** — full type definitions included
@@ -64,12 +64,12 @@ const live = await getLiveGoldPrice();
 //   raw: { usdPerOz: 4569.40, usdToNpr: 150.67 },
 //   perTola: {
 //     basePrice: 258140,
-//     customDuty: 25814,
+//     customsDuty: 25814,
 //     bankMargin: 1420,
 //     dealerMargin: 1427,
 //     estimatedPrice: 286801
 //   },
-//   rates: { customDuty: 0.1, bankMargin: 0.005, dealerMargin: 0.005 },
+//   rates: { customsDuty: 0.1, bankMargin: 0.005, dealerMargin: 0.005 },
 //   source: 'gold-api.com',
 //   updatedAt: '2026-03-25T04:26:12Z',
 //   isStale: false
@@ -85,8 +85,8 @@ const all = await getAllPrices();
 // Override tax rates per metal or add API keys
 configure({
   rates: {
-    gold: { customDuty: 0.06 },
-    silver: { customDuty: 0.10 },
+    gold: { customsDuty: 0.06 },
+    silver: { customsDuty: 0.10 },
   },
   apiKeys: { goldApiIo: 'your-key' },
   cacheTtl: 10 * 60 * 1000, // 10 minutes
@@ -104,7 +104,7 @@ configure({
 | `getAllPrices()` | `Promise<AllPrices>` | All four in parallel (null on failure) |
 | `configure(opts)` | `void` | Override rates, API keys, or cache TTL |
 | `resetConfig()` | `void` | Restore all settings to defaults |
-| `refreshCaches()` | `void` | Clear caches (call after changing TTL) |
+| `resetCaches()` | `void` | Clear caches (call after changing TTL) |
 
 ### `configure(options)`
 
@@ -112,7 +112,7 @@ Rates are configured **per metal** via `rates.gold` and `rates.silver`:
 
 | Option | Type | Gold Default | Silver Default | Description |
 |--------|------|-------------|----------------|-------------|
-| `rates.{metal}.customDuty` | `number` | `0.10` (10%) | `0.15` (15%) | Custom duty rate |
+| `rates.{metal}.customsDuty` | `number` | `0.10` (10%) | `0.15` (15%) | Customs duty rate |
 | `rates.{metal}.bankMargin` | `number` | `0.005` (0.5%) | `0.005` (0.5%) | Bank margin |
 | `rates.{metal}.dealerMargin` | `number` | `0.005` (0.5%) | `0.005` (0.5%) | Dealer margin |
 | `apiKeys.goldApiIo` | `string` | — | — | goldapi.io API key (enables fallback) |
@@ -153,8 +153,8 @@ Live prices are converted from USD/oz to NPR/tola (1 tola = 11.6638 g, 1 troy oz
 
 ```
 basePrice      = round((usdPerOz / 31.1035) × 11.6638 × usdToNpr)
-customDuty     = round(basePrice × customDutyRate)
-afterCustoms   = basePrice + customDuty
+customsDuty     = round(basePrice × customsDutyRate)
+afterCustoms   = basePrice + customsDuty
 bankMargin     = round(afterCustoms × bankMarginRate)
 afterBank      = afterCustoms + bankMargin
 dealerMargin   = round(afterBank × dealerMarginRate)
@@ -165,7 +165,7 @@ estimatedPrice = afterBank + dealerMargin        ← approx. FENEGOSIDA rate
 
 | Charge | Gold | Silver |
 |--------|------|--------|
-| Custom duty | 10% | 15% |
+| Customs duty | 10% | 15% |
 | Bank margin (NRB cap) | 0.5% | 0.5% |
 | Dealer margin (NRB cap) | 0.5% | 0.5% |
 

@@ -10,8 +10,8 @@ export function calculateTaxBreakdown(
     (usdPerOz / GRAMS_PER_TROY_OZ) * GRAMS_PER_TOLA * usdToNpr,
   );
 
-  const customDuty = Math.round(basePrice * rates.customDuty);
-  const afterCustoms = basePrice + customDuty;
+  const customsDuty = Math.round(basePrice * rates.customsDuty);
+  const afterCustoms = basePrice + customsDuty;
 
   const bankMargin = Math.round(afterCustoms * rates.bankMargin);
   const afterBank = afterCustoms + bankMargin;
@@ -21,7 +21,7 @@ export function calculateTaxBreakdown(
 
   return {
     basePrice,
-    customDuty,
+    customsDuty,
     bankMargin,
     dealerMargin,
     estimatedPrice,

@@ -1,14 +1,14 @@
 import { describe, it, expect } from 'vitest';
-import { tryProviders } from '../fallback.js';
+import { fetchWithFallback } from '../fallback.js';
 import type { Provider } from '../types.js';
 
-describe('tryProviders', () => {
+describe('fetchWithFallback', () => {
   it('returns first successful provider result', async () => {
     const providers: Provider<number>[] = [
       { name: 'first', fetch: async () => 42 },
       { name: 'second', fetch: async () => 99 },
     ];
-    const result = await tryProviders(providers);
+    const result = await fetchWithFallback(providers);
     expect(result).toEqual({ data: 42, source: 'first' });
   });
 
@@ -17,7 +17,7 @@ describe('tryProviders', () => {
       { name: 'fail', fetch: async () => { throw new Error('down'); } },
       { name: 'ok', fetch: async () => 42 },
     ];
-    const result = await tryProviders(providers);
+    const result = await fetchWithFallback(providers);
     expect(result).toEqual({ data: 42, source: 'ok' });
   });
 
@@ -26,7 +26,7 @@ describe('tryProviders', () => {
       { name: 'a', fetch: async () => { throw new Error('a'); } },
       { name: 'b', fetch: async () => { throw new Error('b'); } },
     ];
-    const result = await tryProviders(providers);
+    const result = await fetchWithFallback(providers);
     expect(result).toBeNull();
   });
 });

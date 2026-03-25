@@ -1,11 +1,6 @@
-import type { Provider } from './types.js';
+import type { Provider, ProviderResult } from './types.js';
 
-export interface ProviderResult<T> {
-  data: T;
-  source: string;
-}
-
-export async function tryProviders<T>(
+export async function fetchWithFallback<T>(
   providers: Provider<T>[],
 ): Promise<ProviderResult<T> | null> {
   for (const provider of providers) {
