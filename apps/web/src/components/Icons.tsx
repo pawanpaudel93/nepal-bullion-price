@@ -5,9 +5,21 @@ interface IconProps {
 export function GoldIcon({ className = 'w-6 h-6' }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
-      <path d="M6 3h12l3 8H3l3-8z" fill="#CA8A04" stroke="#A16207" strokeWidth="1.5" />
+      {/* Bucket body */}
       <path d="M3 11h18l-2 10H5L3 11z" fill="#EAB308" stroke="#CA8A04" strokeWidth="1.5" />
-      <path d="M8 11v10M12 11v10M16 11v10" stroke="#CA8A04" strokeWidth="0.75" opacity="0.3" />
+      {/* Bucket rim */}
+      <path d="M2.5 10.5h19a1 1 0 0 1 0 2h-19a1 1 0 0 1 0-2z" fill="#CA8A04" stroke="#A16207" strokeWidth="0.75" />
+      {/* Vertical rivet lines on bucket */}
+      <path d="M8 12v8.5M16 12v8.5" stroke="#CA8A04" strokeWidth="0.5" opacity="0.3" />
+      {/* Gold balls overflowing — back row */}
+      <circle cx="9" cy="7.5" r="2" fill="#FACC15" stroke="#CA8A04" strokeWidth="0.75" />
+      <circle cx="15" cy="7.5" r="2" fill="#EAB308" stroke="#A16207" strokeWidth="0.75" />
+      {/* Gold balls — front row */}
+      <circle cx="12" cy="6" r="2.2" fill="#FDE047" stroke="#CA8A04" strokeWidth="0.75" />
+      {/* Gold bar peeking out */}
+      <rect x="7" y="9" width="10" height="2.5" rx="0.5" fill="#FACC15" stroke="#CA8A04" strokeWidth="0.5" />
+      {/* Shine on top ball */}
+      <circle cx="11.2" cy="5.2" r="0.6" fill="white" opacity="0.5" />
     </svg>
   );
 }
@@ -15,9 +27,21 @@ export function GoldIcon({ className = 'w-6 h-6' }: IconProps) {
 export function SilverIcon({ className = 'w-6 h-6' }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
-      <path d="M6 3h12l3 8H3l3-8z" fill="#94A3B8" stroke="#64748B" strokeWidth="1.5" />
+      {/* Bucket body */}
       <path d="M3 11h18l-2 10H5L3 11z" fill="#CBD5E1" stroke="#94A3B8" strokeWidth="1.5" />
-      <path d="M8 11v10M12 11v10M16 11v10" stroke="#94A3B8" strokeWidth="0.75" opacity="0.3" />
+      {/* Bucket rim */}
+      <path d="M2.5 10.5h19a1 1 0 0 1 0 2h-19a1 1 0 0 1 0-2z" fill="#94A3B8" stroke="#64748B" strokeWidth="0.75" />
+      {/* Vertical rivet lines on bucket */}
+      <path d="M8 12v8.5M16 12v8.5" stroke="#94A3B8" strokeWidth="0.5" opacity="0.3" />
+      {/* Silver balls overflowing — back row */}
+      <circle cx="9" cy="7.5" r="2" fill="#E2E8F0" stroke="#94A3B8" strokeWidth="0.75" />
+      <circle cx="15" cy="7.5" r="2" fill="#CBD5E1" stroke="#64748B" strokeWidth="0.75" />
+      {/* Silver balls — front row */}
+      <circle cx="12" cy="6" r="2.2" fill="#F1F5F9" stroke="#94A3B8" strokeWidth="0.75" />
+      {/* Silver bar peeking out */}
+      <rect x="7" y="9" width="10" height="2.5" rx="0.5" fill="#E2E8F0" stroke="#94A3B8" strokeWidth="0.5" />
+      {/* Shine on top ball */}
+      <circle cx="11.2" cy="5.2" r="0.6" fill="white" opacity="0.6" />
     </svg>
   );
 }
