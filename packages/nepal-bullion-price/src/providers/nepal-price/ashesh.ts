@@ -43,6 +43,8 @@ export async function fetchAshesh(): Promise<NepalPriceData> {
     goldHallmarkPerGram10: prices[3],
     goldTajabiPerGram10: prices[4],
     silverPerGram10: prices[5],
+    previousGoldHallmark: null,
+    previousSilver: null,
     date,
   };
 }

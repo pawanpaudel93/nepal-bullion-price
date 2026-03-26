@@ -35,6 +35,8 @@ export async function fetchHamropatro(): Promise<NepalPriceData> {
     goldHallmarkPerGram10: parsePrice(items[7]),
     goldTajabiPerGram10: parsePrice(items[9]),
     silverPerGram10: parsePrice(items[11]),
+    previousGoldHallmark: null,
+    previousSilver: null,
     date: new Date().toISOString().split('T')[0],
   };
 }

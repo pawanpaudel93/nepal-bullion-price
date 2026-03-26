@@ -47,6 +47,9 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, delay = 
               <span>per tola</span>
               <span className="w-[3px] h-[3px] rounded-full bg-ink-faint/30" />
               <SourceLink name={nepalPrice.source} />
+              {nepalPrice.previousPrice != null && nepalTola !== null ? (
+                <PriceChange current={nepalTola} previous={nepalPrice.previousPrice} />
+              ) : null}
               {nepalPrice.isStale ? (
                 <span className="inline-flex items-center gap-1.5 text-amber-600 dark:text-amber-400 font-normal">
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
@@ -93,6 +96,23 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, delay = 
         )}
       </div>
     </div>
+  );
+}
+
+function PriceChange({ current, previous }: { current: number; previous: number }) {
+  const diff = current - previous;
+  if (diff === 0) return null;
+
+  const pct = ((diff / previous) * 100).toFixed(1);
+  const isUp = diff > 0;
+
+  return (
+    <span className={`inline-flex items-center gap-1 font-mono font-normal text-[12px] ${isUp ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500 dark:text-red-400'}`}>
+      <svg viewBox="0 0 12 12" fill="currentColor" className={`w-3 h-3 ${isUp ? '' : 'rotate-180'}`}>
+        <path d="M6 2l4 5H2l4-5z" />
+      </svg>
+      {isUp ? '+' : ''}{diff.toLocaleString('en-IN')} ({pct}%)
+    </span>
   );
 }
 

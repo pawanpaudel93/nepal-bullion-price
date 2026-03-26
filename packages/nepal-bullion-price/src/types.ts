@@ -3,6 +3,7 @@ export interface NepalGoldPrice {
   tajabi: number;
   unit: 'tola';
   perGram10: number;
+  previousPrice: number | null;
   source: string;
   date: string;
   updatedAt: string;
@@ -13,6 +14,7 @@ export interface NepalSilverPrice {
   price: number;
   unit: 'tola';
   perGram10: number;
+  previousPrice: number | null;
   source: string;
   date: string;
   updatedAt: string;
@@ -77,6 +79,8 @@ export interface NepalPriceData {
   goldHallmarkPerGram10: number;
   goldTajabiPerGram10: number;
   silverPerGram10: number;
+  previousGoldHallmark: number | null;
+  previousSilver: number | null;
   date: string;
 }
 
