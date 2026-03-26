@@ -79,9 +79,27 @@
     animation: shimmer 5s ease-in-out infinite;
   }
 
+  .text-gold-color-shimmer {
+    animation: gold-color-shimmer 5s ease-in-out infinite;
+  }
+
+  .text-silver-color-shimmer {
+    animation: silver-color-shimmer 5s ease-in-out infinite;
+  }
+
   @keyframes shimmer {
     0%, 100% { background-position: 0% center; }
     50% { background-position: 250% center; }
+  }
+
+  @keyframes gold-color-shimmer {
+    0%, 100% { color: var(--color-gold-500); }
+    50% { color: var(--color-gold-200); }
+  }
+
+  @keyframes silver-color-shimmer {
+    0%, 100% { color: var(--color-silver-500); }
+    50% { color: var(--color-silver-300); }
   }
 
   .glass-card {

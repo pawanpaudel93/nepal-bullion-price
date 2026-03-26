@@ -38,7 +38,7 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, delay = 
         </p>
         {nepalPrice ? (
           <>
-            <p className={`font-mono text-[42px] font-bold leading-none tracking-tighter ${symbol === 'XAU' ? 'text-gold-500 dark:text-gold-400' : 'text-silver-400 dark:text-silver-300'}`}>
+            <p className={`font-mono text-[42px] font-bold leading-none tracking-tighter ${symbol === 'XAU' ? 'text-gold-color-shimmer' : 'text-silver-color-shimmer'}`}>
               {nepalTola !== null ? (
                 <>Rs <NumberFlow value={nepalTola} locales="en-IN" /></>
               ) : '\u2014'}
