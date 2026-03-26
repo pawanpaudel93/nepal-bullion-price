@@ -37,6 +37,14 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
+  :lang(ne) {
+    font-family: 'Mukta', system-ui, sans-serif;
+  }
+
+  :lang(ne) .font-display {
+    font-family: 'Tiro Devanagari Hindi', 'Mukta', Georgia, serif;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
       animation-duration: 0.01ms !important;

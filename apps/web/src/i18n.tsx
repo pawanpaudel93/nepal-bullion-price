@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, useMemo, type ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect, useMemo, type ReactNode } from 'react';
 
 export type Lang = 'en' | 'ne';
 
@@ -98,6 +98,10 @@ function getStoredLang(): Lang {
 
 export function LocaleProvider({ children }: { children: ReactNode }) {
   const [lang, setLang] = useState<Lang>(getStoredLang);
+
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
 
   const toggleLang = useCallback(() => {
     setLang(prev => {
