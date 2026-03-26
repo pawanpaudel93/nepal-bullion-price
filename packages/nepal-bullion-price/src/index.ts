@@ -16,14 +16,12 @@ import type {
   AllPrices, NepalPriceData, LivePriceData, ForexData,
 } from './types.js';
 
-// FENEGOSIDA updates at ~10:30 AM NPT. We use 11:00 AM as a safe buffer.
-const FENEGOSIDA_UPDATE_HOUR = 11;
+// Nepal prices update once daily. We poll until the price changes from
+// yesterday's, then cache for the rest of the day.
+const NEPAL_POLL_INTERVAL_MS = 10 * 60 * 1000; // 10 minutes while waiting for update
 
-function getNepalNow(): { date: string; hour: number } {
-  const now = new Date();
-  const date = now.toLocaleDateString('en-CA', { timeZone: 'Asia/Kathmandu' });
-  const hour = parseInt(now.toLocaleString('en-US', { timeZone: 'Asia/Kathmandu', hour: 'numeric', hour12: false }), 10);
-  return { date, hour };
+function getNepalDate(): string {
+  return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kathmandu' });
 }
 
 // Caches — use lazy getter so configure() changes are respected
@@ -32,7 +30,8 @@ function createCaches() {
   return {
     nepal: null as { data: NepalPriceData; source: string } | null,
     nepalDate: '' as string,
-    nepalFetchedAfterUpdate: false,
+    nepalPriceConfirmed: false, // true once we've seen a price change for today
+    nepalLastFetchedAt: 0,
     live: new Cache<{ data: LivePriceData; source: string }>(ttl),
     forex: new Cache<{ data: ForexData; source: string }>(ttl),
   };
@@ -76,19 +75,43 @@ function getForexProviders() {
 }
 
 async function fetchNepalPrices(): Promise<{ data: NepalPriceData; source: string; isStale: boolean }> {
-  const { date: today, hour } = getNepalNow();
-  const isAfterUpdate = hour >= FENEGOSIDA_UPDATE_HOUR;
+  const today = getNepalDate();
+  const now = Date.now();
 
-  // Use cache if: same date AND (either we fetched after the update time, or it's still before update time)
-  if (caches.nepal && caches.nepalDate === today && (caches.nepalFetchedAfterUpdate || !isAfterUpdate)) {
+  // New day — reset confirmation flag
+  if (caches.nepalDate !== today) {
+    caches.nepalPriceConfirmed = false;
+  }
+
+  // If we have today's confirmed price, use cache all day
+  if (caches.nepal && caches.nepalDate === today && caches.nepalPriceConfirmed) {
+    return { ...caches.nepal, isStale: false };
+  }
+
+  // If price isn't confirmed yet, re-fetch every 10 minutes until it changes
+  if (caches.nepal && now - caches.nepalLastFetchedAt < NEPAL_POLL_INTERVAL_MS) {
     return { ...caches.nepal, isStale: false };
   }
 
   const result = await fetchWithFallback(getNepalProviders());
   if (result) {
+    const previousPrice = caches.nepal?.data.goldHallmark;
+    const priceChanged = previousPrice != null && previousPrice !== result.data.goldHallmark;
+
+    caches.nepalLastFetchedAt = now;
+
+    if (caches.nepalDate !== today && !priceChanged) {
+      // New day but price hasn't changed yet — FENEGOSIDA hasn't updated
+      // Keep polling but serve what we have
+      caches.nepal = result;
+      caches.nepalDate = today;
+      return { data: result.data, source: result.source, isStale: false };
+    }
+
+    // Price changed or first fetch — confirm and cache for the day
     caches.nepal = result;
     caches.nepalDate = today;
-    caches.nepalFetchedAfterUpdate = isAfterUpdate;
+    caches.nepalPriceConfirmed = true;
     return { data: result.data, source: result.source, isStale: false };
   }
 
