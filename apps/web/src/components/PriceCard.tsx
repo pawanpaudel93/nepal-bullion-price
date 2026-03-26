@@ -116,7 +116,7 @@ function PriceChange({ current, previous }: { current: number; previous: number 
       </svg>
       <span className="font-mono font-normal">{isUp ? '+' : ''}{diff.toLocaleString('en-IN')}</span>
       <span>({pct}%)</span>
-      <span className="text-ink-faint">from Rs {previous.toLocaleString('en-IN')}</span>
+      <span className="text-ink-muted dark:text-ink-faint">yesterday Rs {previous.toLocaleString('en-IN')}</span>
     </p>
   );
 }
