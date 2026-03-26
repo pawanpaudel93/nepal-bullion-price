@@ -46,6 +46,12 @@
     letter-spacing: 0 !important;
   }
 
+  /* Devanagari is denser than Latin — boost small text for readability */
+  :lang(ne) .ne-text-boost {
+    font-size: 13px !important;
+  }
+
+
   :lang(ne) .font-display {
     font-family: 'Tiro Devanagari Hindi', 'Mukta', Georgia, serif;
   }

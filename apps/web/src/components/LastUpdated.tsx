@@ -18,7 +18,7 @@ export function LastUpdated({ sources }: LastUpdatedProps) {
 
   return (
     <div className="mt-12 animate-fade-up" style={{ animationDelay: '200ms' }}>
-      <h3 className="text-[10px] font-medium uppercase tracking-[0.25em] text-ink-faint dark:text-ink-faint mb-4 px-1">
+      <h3 className="text-[10px] ne-text-boost font-medium uppercase tracking-[0.25em] text-ink-faint dark:text-ink-faint mb-4 px-1">
         {t.sources}
       </h3>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-8 gap-y-3 px-1">

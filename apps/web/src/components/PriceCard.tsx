@@ -35,7 +35,7 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, delay = 
 
       {/* Nepal FENEGOSIDA Price — The Hero */}
       <div className="mb-8">
-        <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-ink-faint dark:text-ink-faint mb-3">
+        <p className="text-[10px] ne-text-boost font-medium uppercase tracking-[0.2em] text-ink-faint dark:text-ink-faint mb-3">
           {t.nepalPrice} &middot; {t.fenegosida}
         </p>
         {nepalPrice ? (
@@ -70,7 +70,7 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, delay = 
 
       {/* Live International Price */}
       <div>
-        <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-ink-faint dark:text-ink-faint mb-3">
+        <p className="text-[10px] ne-text-boost font-medium uppercase tracking-[0.2em] text-ink-faint dark:text-ink-faint mb-3">
           {t.liveEstimatedPrice}
         </p>
         {livePrice ? (
