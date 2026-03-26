@@ -1,6 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { QueryClient } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister';
 import './index.css';
@@ -18,17 +18,29 @@ const queryClient = new QueryClient({
   },
 });
 
-const persister = createSyncStoragePersister({
-  storage: window.localStorage,
-  key: 'bullion-cache',
-});
+// localStorage may be unavailable in private browsing or restricted environments
+let persister: ReturnType<typeof createSyncStoragePersister> | undefined;
+try {
+  persister = createSyncStoragePersister({
+    storage: window.localStorage,
+    key: 'bullion-cache',
+  });
+} catch {
+  persister = undefined;
+}
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ErrorBoundary>
-      <PersistQueryClientProvider client={queryClient} persistOptions={{ persister }}>
-        <App />
-      </PersistQueryClientProvider>
+      {persister ? (
+        <PersistQueryClientProvider client={queryClient} persistOptions={{ persister }}>
+          <App />
+        </PersistQueryClientProvider>
+      ) : (
+        <QueryClientProvider client={queryClient}>
+          <App />
+        </QueryClientProvider>
+      )}
     </ErrorBoundary>
   </StrictMode>,
 );

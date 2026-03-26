@@ -20,7 +20,7 @@ export function Header({ lastFetched, onRefresh, isLoading, isFetching }: Header
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', isDark);
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    try { localStorage.setItem('theme', isDark ? 'dark' : 'light'); } catch { /* quota exceeded */ }
   }, [isDark]);
 
   return (

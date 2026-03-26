@@ -9,7 +9,10 @@ export async function fetchSwissquote(symbol: 'XAU' | 'XAG'): Promise<LivePriceD
   if (!res.ok) throw new Error(`swissquote returned ${res.status}`);
 
   const data = await res.json();
-  const profiles = data?.[0]?.spreadProfilePrices;
+  if (!Array.isArray(data) || data.length === 0) {
+    throw new Error('Invalid response from swissquote');
+  }
+  const profiles = data[0]?.spreadProfilePrices;
   if (!Array.isArray(profiles) || profiles.length === 0) {
     throw new Error('Invalid response from swissquote');
   }

@@ -18,6 +18,10 @@ import type {
 
 // FENEGOSIDA updates at ~10:30 AM NPT. Poll frequently during the
 // update window, cache longer outside it.
+// NOTE: The Nepal cache intentionally uses its own adaptive TTL logic based on
+// time of day, and does NOT use the global configure({ cacheTtl }) value.
+// This is by design — the adaptive TTL is necessary to catch daily price updates
+// promptly while avoiding unnecessary requests during off-hours.
 const NEPAL_UPDATE_WINDOW = { startHour: 10, endHour: 12 }; // 10 AM - 12 PM NPT
 const NEPAL_CACHE_TTL_ACTIVE_MS = 5 * 60 * 1000;  // 5 min during update window
 const NEPAL_CACHE_TTL_IDLE_MS = 60 * 60 * 1000;    // 1 hour outside window
