@@ -107,8 +107,11 @@ function PriceChange({ current, previous }: { current: number; previous: number 
   const isUp = diff > 0;
 
   return (
-    <p className={`flex items-center gap-1.5 mt-2 text-[12px] font-light ${isUp ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500 dark:text-red-400'}`}>
-      <svg viewBox="0 0 12 12" fill="currentColor" className={`w-3 h-3 shrink-0 ${isUp ? '' : 'rotate-180'}`}>
+    <p
+      className={`flex items-center gap-1.5 mt-2 text-[12px] font-light ${isUp ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500 dark:text-red-400'}`}
+      aria-label={`Price ${isUp ? 'increased' : 'decreased'} by Rs ${Math.abs(diff).toLocaleString('en-IN')}, ${pct} percent ${isUp ? 'up' : 'down'} from Rs ${previous.toLocaleString('en-IN')}`}
+    >
+      <svg viewBox="0 0 12 12" fill="currentColor" className={`w-3 h-3 shrink-0 ${isUp ? '' : 'rotate-180'}`} aria-hidden="true">
         <path d="M6 2l4 5H2l4-5z" />
       </svg>
       <span className="font-mono font-normal">{isUp ? '+' : ''}{diff.toLocaleString('en-IN')}</span>
