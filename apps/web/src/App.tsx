@@ -57,11 +57,6 @@ export default function App() {
 
         {sources.length > 0 ? <LastUpdated sources={sources} /> : null}
 
-        <footer className="mt-20 text-center animate-fade-up" style={{ animationDelay: '300ms' }}>
-          <p className="text-[11px] text-ink-faint/80 dark:text-ink-faint/60 tracking-widest uppercase font-light">
-            FENEGOSIDA &middot; gold-api.com &middot; Nepal Rastra Bank
-          </p>
-        </footer>
       </div>
     </div>
   );
