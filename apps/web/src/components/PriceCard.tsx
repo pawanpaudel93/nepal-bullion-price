@@ -69,7 +69,7 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, delay = 
       {/* Live International Price */}
       <div>
         <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-ink-faint dark:text-ink-faint mb-3">
-          Live Est. Price
+          Live Estimated Price
         </p>
         {livePrice ? (
           <>
