@@ -2,7 +2,7 @@ import type { NepalGoldPrice, NepalSilverPrice, LiveMetalPrice } from 'nepal-bul
 import NumberFlow from '@number-flow/react';
 import { TaxBreakdown } from './TaxBreakdown';
 import { getSourceUrl } from '../utils/sourceUrls';
-import { useLocale } from '../i18n';
+import { useLocale, type Translations } from '../i18n';
 
 interface PriceCardProps {
   title: string;
@@ -46,7 +46,7 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, delay = 
               ) : '\u2014'}
             </p>
             {nepalPrice.previousPrice != null && nepalTola !== null ? (
-              <PriceChange current={nepalTola} previous={nepalPrice.previousPrice} />
+              <PriceChange current={nepalTola} previous={nepalPrice.previousPrice} t={t} numberLocale={numberLocale} />
             ) : null}
             <p className="text-[13px] text-ink-muted dark:text-ink-faint mt-3 flex items-center gap-2.5 font-light">
               <span>{t.perTola}</span>
@@ -101,8 +101,7 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, delay = 
   );
 }
 
-function PriceChange({ current, previous }: { current: number; previous: number }) {
-  const { t, numberLocale } = useLocale();
+function PriceChange({ current, previous, t, numberLocale }: { current: number; previous: number; t: Translations; numberLocale: string }) {
   const diff = current - previous;
   if (diff === 0) return null;
 
@@ -112,7 +111,7 @@ function PriceChange({ current, previous }: { current: number; previous: number 
   return (
     <p
       className={`flex items-center gap-1.5 mt-2 text-[12px] font-light ${isUp ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500 dark:text-red-400'}`}
-      aria-label={`Price ${isUp ? 'increased' : 'decreased'} by Rs ${Math.abs(diff).toLocaleString(numberLocale)}, ${pct} percent ${isUp ? 'up' : 'down'} from Rs ${previous.toLocaleString(numberLocale)}`}
+      aria-label={`${isUp ? t.priceUp : t.priceDown} Rs ${Math.abs(diff).toLocaleString(numberLocale)}, ${pct}% ${t.from} Rs ${previous.toLocaleString(numberLocale)}`}
     >
       <svg viewBox="0 0 12 12" fill="currentColor" className={`w-3 h-3 shrink-0 ${isUp ? '' : 'rotate-180'}`} aria-hidden="true">
         <path d="M6 2l4 5H2l4-5z" />

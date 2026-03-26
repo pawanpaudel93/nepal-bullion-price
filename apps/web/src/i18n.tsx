@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo, type ReactNode } from 'react';
 
 export type Lang = 'en' | 'ne';
 
@@ -35,6 +35,9 @@ const translations = {
     clearCacheReload: 'Clear cache & reload',
     stale: 'stale',
     updated: 'Updated',
+    priceUp: 'Price increased by',
+    priceDown: 'Price decreased by',
+    from: 'from',
   },
   ne: {
     liveRates: 'प्रत्यक्ष दरहरू',
@@ -68,6 +71,9 @@ const translations = {
     clearCacheReload: 'क्यास खाली गरी पुन: लोड',
     stale: 'पुरानो',
     updated: 'अपडेट',
+    priceUp: 'मूल्य बढ्यो',
+    priceDown: 'मूल्य घट्यो',
+    from: 'बाट',
   },
 } as const;
 
@@ -101,12 +107,12 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  const value: LocaleContextValue = {
+  const value = useMemo<LocaleContextValue>(() => ({
     lang,
     t: translations[lang],
     numberLocale: lang === 'ne' ? 'ne-NP' : 'en-IN',
     toggleLang,
-  };
+  }), [lang, toggleLang]);
 
   return <LocaleContext value={value}>{children}</LocaleContext>;
 }
