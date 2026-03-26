@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { TaxBreakdown as TaxBreakdownType, TaxRates } from 'nepal-bullion-price';
-import { formatNpr } from '../utils/format';
+import NumberFlow from '@number-flow/react';
 import { ChevronDownIcon } from './Icons';
 
 interface TaxBreakdownProps {
@@ -35,7 +35,7 @@ export function TaxBreakdown({ breakdown, rates }: TaxBreakdownProps) {
             <div className="h-px bg-ink/[0.04] dark:bg-white/[0.04] my-3" />
             <div className="flex justify-between font-semibold text-ink dark:text-white">
               <span>Est. FENEGOSIDA Rate</span>
-              <span className="font-mono tabular-nums">{formatNpr(breakdown.estimatedPrice)}</span>
+              <span className="font-mono tabular-nums">Rs <NumberFlow value={breakdown.estimatedPrice} locales="en-IN" /></span>
             </div>
           </div>
         </div>
@@ -48,7 +48,7 @@ function Row({ label, value, prefix }: { label: string; value: number; prefix?: 
   return (
     <div className="flex justify-between">
       <span className="font-light">{prefix ? <span className="text-ink-faint mr-1">{prefix}</span> : null}{label}</span>
-      <span className="font-mono tabular-nums">{formatNpr(value)}</span>
+      <span className="font-mono tabular-nums">Rs <NumberFlow value={value} locales="en-IN" /></span>
     </div>
   );
 }
