@@ -1,3 +1,5 @@
+import { getSourceUrl } from '../utils/sourceUrls';
+
 interface SourceTimestamp {
   label: string;
   source: string;
@@ -25,7 +27,14 @@ export function LastUpdated({ sources }: LastUpdatedProps) {
               role="status"
               aria-label={`${s.label}: ${s.isStale ? 'stale' : 'fresh'}`}
             />
-            <span className="text-ink-muted dark:text-ink-faint font-light">{s.label}</span>
+            {(() => {
+              const url = getSourceUrl(s.source);
+              return url ? (
+                <a href={url} target="_blank" rel="noopener noreferrer" className="text-ink-muted dark:text-ink-faint font-light underline decoration-ink-faint/30 underline-offset-2 hover:text-ink dark:hover:text-white transition-colors duration-200">{s.label}</a>
+              ) : (
+                <span className="text-ink-muted dark:text-ink-faint font-light">{s.label}</span>
+              );
+            })()}
           </div>
         ))}
       </div>

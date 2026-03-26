@@ -1,6 +1,7 @@
 import type { NepalGoldPrice, NepalSilverPrice, LiveMetalPrice } from 'nepal-bullion-price';
 import NumberFlow from '@number-flow/react';
 import { TaxBreakdown } from './TaxBreakdown';
+import { getSourceUrl } from '../utils/sourceUrls';
 
 interface PriceCardProps {
   title: string;
@@ -46,7 +47,7 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, shimmerC
             <p className="text-[13px] text-ink-muted dark:text-ink-faint mt-3 flex items-center gap-2.5 font-light">
               <span>per tola</span>
               <span className="w-[3px] h-[3px] rounded-full bg-ink-faint/30" />
-              <span>{nepalPrice.source}</span>
+              <SourceLink name={nepalPrice.source} />
               {nepalPrice.isStale ? (
                 <span className="inline-flex items-center gap-1.5 text-amber-600 dark:text-amber-400 font-normal">
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
@@ -93,5 +94,20 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, shimmerC
         )}
       </div>
     </div>
+  );
+}
+
+function SourceLink({ name }: { name: string }) {
+  const url = getSourceUrl(name);
+  if (!url) return <span>{name}</span>;
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="underline decoration-ink-faint/30 underline-offset-2 hover:text-ink dark:hover:text-white transition-colors duration-200"
+    >
+      {name}
+    </a>
   );
 }
