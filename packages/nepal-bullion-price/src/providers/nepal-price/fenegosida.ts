@@ -58,7 +58,6 @@ export async function fetchFenegosida(): Promise<NepalPriceData> {
   const goldChart = parseChartData(html, 'data');
   const silverChart = parseChartData(html, 'data2');
 
-  // Second-to-last entry is yesterday's price
   const previousGoldHallmark = goldChart.length >= 2 ? goldChart[goldChart.length - 2] : null;
   const previousSilver = silverChart.length >= 2 ? silverChart[silverChart.length - 2] : null;
 

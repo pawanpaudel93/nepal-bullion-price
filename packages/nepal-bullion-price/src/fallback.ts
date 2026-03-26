@@ -8,7 +8,6 @@ export async function fetchWithFallback<T>(
       const data = await provider.fetch();
       return { data, source: provider.name };
     } catch {
-      // Provider failed, try next
     }
   }
   return null;

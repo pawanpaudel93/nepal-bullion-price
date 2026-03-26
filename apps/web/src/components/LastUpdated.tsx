@@ -1,4 +1,4 @@
-import { getSourceUrl } from '../utils/sourceUrls';
+import { SourceLink } from './SourceLink';
 import { useLocale } from '../i18n';
 
 interface SourceTimestamp {
@@ -10,15 +10,6 @@ interface SourceTimestamp {
 
 interface LastUpdatedProps {
   sources: SourceTimestamp[];
-}
-
-function SourceLabel({ label, source }: { label: string; source: string }) {
-  const url = getSourceUrl(source);
-  return url ? (
-    <a href={url} target="_blank" rel="noopener noreferrer" className="text-ink-muted dark:text-ink-faint font-light underline decoration-ink-faint/30 underline-offset-2 hover:text-ink dark:hover:text-white transition-colors duration-200">{label}</a>
-  ) : (
-    <span className="text-ink-muted dark:text-ink-faint font-light">{label}</span>
-  );
 }
 
 export function LastUpdated({ sources }: LastUpdatedProps) {
@@ -38,7 +29,7 @@ export function LastUpdated({ sources }: LastUpdatedProps) {
               role="status"
               aria-label={`${s.label}: ${s.isStale ? 'stale' : 'fresh'}`}
             />
-            <SourceLabel label={s.label} source={s.source} />
+            <SourceLink name={s.source} label={s.label} className="text-ink-muted dark:text-ink-faint font-light" />
           </div>
         ))}
       </div>

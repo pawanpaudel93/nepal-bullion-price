@@ -31,17 +31,19 @@ try {
   persister = undefined;
 }
 
+const app = <App />;
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ErrorBoundary>
       <LocaleProvider>
         {persister ? (
           <PersistQueryClientProvider client={queryClient} persistOptions={{ persister }}>
-            <App />
+            {app}
           </PersistQueryClientProvider>
         ) : (
           <QueryClientProvider client={queryClient}>
-            <App />
+            {app}
           </QueryClientProvider>
         )}
       </LocaleProvider>

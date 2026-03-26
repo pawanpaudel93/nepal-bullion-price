@@ -18,7 +18,6 @@ export async function fetchNrb(): Promise<ForexData> {
     throw new Error('No NRB forex data available for the last 7 days');
   }
 
-  // Use the last entry (most recent date available)
   const entry = payload[payload.length - 1];
   const rates = entry.rates;
   if (!Array.isArray(rates)) throw new Error('Invalid rates data from NRB response');

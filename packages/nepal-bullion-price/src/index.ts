@@ -27,11 +27,9 @@ const NEPAL_CACHE_TTL_ACTIVE_MS = 5 * 60 * 1000;  // 5 min during update window
 const NEPAL_CACHE_TTL_IDLE_MS = 60 * 60 * 1000;    // 1 hour outside window
 
 function getNepalCacheTtl(): number {
-  const hour = parseInt(
-    new Date().toLocaleString('en-US', { timeZone: 'Asia/Kathmandu', hour: 'numeric', hour12: false }),
-    10,
-  );
-  return hour >= NEPAL_UPDATE_WINDOW.startHour && hour < NEPAL_UPDATE_WINDOW.endHour
+  const now = new Date();
+  const nptHour = Math.floor((now.getUTCHours() * 60 + now.getUTCMinutes() + 345) / 60) % 24;
+  return nptHour >= NEPAL_UPDATE_WINDOW.startHour && nptHour < NEPAL_UPDATE_WINDOW.endHour
     ? NEPAL_CACHE_TTL_ACTIVE_MS
     : NEPAL_CACHE_TTL_IDLE_MS;
 }
@@ -196,6 +194,24 @@ async function buildLivePrice(symbol: 'XAU' | 'XAG'): Promise<LiveMetalPrice> {
   };
 }
 
+async function buildLivePriceFromForex(
+  symbol: 'XAU' | 'XAG',
+  forex: { data: ForexData; source: string; isStale: boolean },
+): Promise<LiveMetalPrice> {
+  const live = await fetchLivePrice(symbol);
+  const config = getConfig();
+  const metalRates = symbol === 'XAU' ? config.rates.gold : config.rates.silver;
+  const breakdown = calculateTaxBreakdown(live.data.priceUsd, forex.data.usdToNpr, metalRates);
+  return {
+    raw: { usdPerOz: live.data.priceUsd, usdToNpr: forex.data.usdToNpr },
+    perTola: breakdown,
+    rates: { ...metalRates },
+    source: live.source,
+    updatedAt: live.data.updatedAt,
+    isStale: live.isStale || forex.isStale,
+  };
+}
+
 export async function getLiveGoldPrice(): Promise<LiveMetalPrice> {
   return buildLivePrice('XAU');
 }
@@ -205,11 +221,11 @@ export async function getLiveSilverPrice(): Promise<LiveMetalPrice> {
 }
 
 export async function getAllPrices(): Promise<AllPrices> {
-  const [nepalData, liveGold, liveSilver] = await Promise.allSettled([
-    fetchNepalPrices(),
-    buildLivePrice('XAU'),
-    buildLivePrice('XAG'),
-  ]);
+  const [nepalData, forex] = await Promise.allSettled([fetchNepalPrices(), fetchForex()]);
+  const forexResult = forex.status === 'fulfilled' ? forex.value : null;
+  const [liveGold, liveSilver] = forexResult
+    ? await Promise.allSettled([buildLivePriceFromForex('XAU', forexResult), buildLivePriceFromForex('XAG', forexResult)])
+    : [{ status: 'rejected' as const, reason: 'forex unavailable' }, { status: 'rejected' as const, reason: 'forex unavailable' }];
 
   const nepal = nepalData.status === 'fulfilled' ? nepalData.value : null;
 

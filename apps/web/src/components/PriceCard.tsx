@@ -1,7 +1,7 @@
 import type { NepalGoldPrice, NepalSilverPrice, LiveMetalPrice } from 'nepal-bullion-price';
 import NumberFlow from '@number-flow/react';
 import { TaxBreakdown } from './TaxBreakdown';
-import { getSourceUrl } from '../utils/sourceUrls';
+import { SourceLink } from './SourceLink';
 import { useLocale, type Translations } from '../i18n';
 
 interface PriceCardProps {
@@ -15,6 +15,15 @@ interface PriceCardProps {
 
 function getNepalPriceTola(price: NepalGoldPrice | NepalSilverPrice): number {
   return 'hallmark' in price ? price.hallmark : price.price;
+}
+
+function StaleBadge({ label }: { label: string }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 text-amber-600 dark:text-amber-400 font-normal">
+      <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+      {label}
+    </span>
+  );
 }
 
 export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, delay = '0ms' }: PriceCardProps) {
@@ -52,12 +61,7 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, delay = 
               <span>{t.perTola}</span>
               <span className="w-[3px] h-[3px] rounded-full bg-ink-faint/30" />
               <SourceLink name={nepalPrice.source} />
-              {nepalPrice.isStale ? (
-                <span className="inline-flex items-center gap-1.5 text-amber-600 dark:text-amber-400 font-normal">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                  {t.stale}
-                </span>
-              ) : null}
+              {nepalPrice.isStale ? <StaleBadge label={t.stale} /> : null}
             </p>
           </>
         ) : (
@@ -84,12 +88,7 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, delay = 
               <span className="font-mono font-normal">{symbol}/USD ${livePrice.raw.usdPerOz.toFixed(2)}</span>
               <span className="w-[3px] h-[3px] rounded-full bg-ink-faint/30" />
               <span className="font-mono font-normal">NPR {livePrice.raw.usdToNpr.toFixed(2)}</span>
-              {livePrice.isStale ? (
-                <span className="inline-flex items-center gap-1.5 text-amber-600 dark:text-amber-400 font-normal">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                  {t.stale}
-                </span>
-              ) : null}
+              {livePrice.isStale ? <StaleBadge label={t.stale} /> : null}
             </div>
             <TaxBreakdown breakdown={livePrice.perTola} rates={livePrice.rates} />
           </>
@@ -124,17 +123,4 @@ function PriceChange({ current, previous, t, numberLocale }: { current: number; 
   );
 }
 
-function SourceLink({ name }: { name: string }) {
-  const url = getSourceUrl(name);
-  if (!url) return <span>{name}</span>;
-  return (
-    <a
-      href={url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="underline decoration-ink-faint/30 underline-offset-2 hover:text-ink dark:hover:text-white transition-colors duration-200"
-    >
-      {name}
-    </a>
-  );
-}
+

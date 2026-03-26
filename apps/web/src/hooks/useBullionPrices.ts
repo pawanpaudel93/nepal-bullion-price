@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from 'react';
+import { useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { AllPrices } from 'nepal-bullion-price';
 
@@ -27,10 +27,7 @@ export function useBullionPrices(): UseBullionPricesReturn {
     queryFn: fetchPrices,
   });
 
-  const lastFetched = useMemo(
-    () => (dataUpdatedAt ? new Date(dataUpdatedAt) : null),
-    [dataUpdatedAt],
-  );
+  const lastFetched = dataUpdatedAt > 0 ? new Date(dataUpdatedAt) : null;
 
   const refresh = useCallback(
     () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),

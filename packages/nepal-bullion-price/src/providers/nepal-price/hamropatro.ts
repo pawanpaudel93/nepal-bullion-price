@@ -24,12 +24,13 @@ export async function fetchHamropatro(): Promise<NepalPriceData> {
     throw new Error('Failed to parse hamropatro.com gold page');
   }
 
-  if (parsePrice(items[1]) < 1000) {
-    throw new Error('Suspicious gold price from hamropatro.com: ' + parsePrice(items[1]));
+  const hallmark = parsePrice(items[1]);
+  if (hallmark < 1000) {
+    throw new Error('Suspicious gold price from hamropatro.com: ' + hallmark);
   }
 
   return {
-    goldHallmark: parsePrice(items[1]),
+    goldHallmark: hallmark,
     goldTajabi: parsePrice(items[3]),
     silver: parsePrice(items[5]),
     goldHallmarkPerGram10: parsePrice(items[7]),
