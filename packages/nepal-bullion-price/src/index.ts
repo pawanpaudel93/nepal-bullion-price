@@ -16,8 +16,14 @@ import type {
   AllPrices, NepalPriceData, LivePriceData, ForexData,
 } from './types.js';
 
-function getNepalDate(): string {
-  return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kathmandu' });
+// FENEGOSIDA updates at ~10:30 AM NPT. We use 11:00 AM as a safe buffer.
+const FENEGOSIDA_UPDATE_HOUR = 11;
+
+function getNepalNow(): { date: string; hour: number } {
+  const now = new Date();
+  const date = now.toLocaleDateString('en-CA', { timeZone: 'Asia/Kathmandu' });
+  const hour = parseInt(now.toLocaleString('en-US', { timeZone: 'Asia/Kathmandu', hour: 'numeric', hour12: false }), 10);
+  return { date, hour };
 }
 
 // Caches — use lazy getter so configure() changes are respected
@@ -26,6 +32,7 @@ function createCaches() {
   return {
     nepal: null as { data: NepalPriceData; source: string } | null,
     nepalDate: '' as string,
+    nepalFetchedAfterUpdate: false,
     live: new Cache<{ data: LivePriceData; source: string }>(ttl),
     forex: new Cache<{ data: ForexData; source: string }>(ttl),
   };
@@ -69,10 +76,11 @@ function getForexProviders() {
 }
 
 async function fetchNepalPrices(): Promise<{ data: NepalPriceData; source: string; isStale: boolean }> {
-  const today = getNepalDate();
+  const { date: today, hour } = getNepalNow();
+  const isAfterUpdate = hour >= FENEGOSIDA_UPDATE_HOUR;
 
-  // Return cached if already fetched today
-  if (caches.nepal && caches.nepalDate === today) {
+  // Use cache if: same date AND (either we fetched after the update time, or it's still before update time)
+  if (caches.nepal && caches.nepalDate === today && (caches.nepalFetchedAfterUpdate || !isAfterUpdate)) {
     return { ...caches.nepal, isStale: false };
   }
 
@@ -80,10 +88,11 @@ async function fetchNepalPrices(): Promise<{ data: NepalPriceData; source: strin
   if (result) {
     caches.nepal = result;
     caches.nepalDate = today;
+    caches.nepalFetchedAfterUpdate = isAfterUpdate;
     return { data: result.data, source: result.source, isStale: false };
   }
 
-  // Serve stale cache from a previous day if fetch fails
+  // Serve stale cache if fetch fails
   if (caches.nepal) return { ...caches.nepal, isStale: true };
 
   throw new Error('All Nepal price providers failed and no cached data available');
