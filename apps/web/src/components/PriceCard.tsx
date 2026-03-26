@@ -43,13 +43,13 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, delay = 
                 <>Rs <NumberFlow value={nepalTola} locales="en-IN" /></>
               ) : '\u2014'}
             </p>
+            {nepalPrice.previousPrice != null && nepalTola !== null ? (
+              <PriceChange current={nepalTola} previous={nepalPrice.previousPrice} />
+            ) : null}
             <p className="text-[13px] text-ink-muted dark:text-ink-faint mt-3 flex items-center gap-2.5 font-light">
               <span>per tola</span>
               <span className="w-[3px] h-[3px] rounded-full bg-ink-faint/30" />
               <SourceLink name={nepalPrice.source} />
-              {nepalPrice.previousPrice != null && nepalTola !== null ? (
-                <PriceChange current={nepalTola} previous={nepalPrice.previousPrice} />
-              ) : null}
               {nepalPrice.isStale ? (
                 <span className="inline-flex items-center gap-1.5 text-amber-600 dark:text-amber-400 font-normal">
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
@@ -107,12 +107,14 @@ function PriceChange({ current, previous }: { current: number; previous: number 
   const isUp = diff > 0;
 
   return (
-    <span className={`inline-flex items-center gap-1 font-mono font-normal text-[12px] ${isUp ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500 dark:text-red-400'}`}>
-      <svg viewBox="0 0 12 12" fill="currentColor" className={`w-3 h-3 ${isUp ? '' : 'rotate-180'}`}>
+    <p className={`flex items-center gap-1.5 mt-2 text-[12px] font-light ${isUp ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500 dark:text-red-400'}`}>
+      <svg viewBox="0 0 12 12" fill="currentColor" className={`w-3 h-3 shrink-0 ${isUp ? '' : 'rotate-180'}`}>
         <path d="M6 2l4 5H2l4-5z" />
       </svg>
-      {isUp ? '+' : ''}{diff.toLocaleString('en-IN')} ({pct}%)
-    </span>
+      <span className="font-mono font-normal">{isUp ? '+' : ''}{diff.toLocaleString('en-IN')}</span>
+      <span>({pct}%)</span>
+      <span className="text-ink-faint">from Rs {previous.toLocaleString('en-IN')}</span>
+    </p>
   );
 }
 
