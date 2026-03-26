@@ -16,22 +16,27 @@ import type {
   AllPrices, NepalPriceData, LivePriceData, ForexData,
 } from './types.js';
 
-// Nepal prices update once daily. We poll until the price changes from
-// yesterday's, then cache for the rest of the day.
-const NEPAL_POLL_INTERVAL_MS = 10 * 60 * 1000; // 10 minutes while waiting for update
+// FENEGOSIDA updates at ~10:30 AM NPT. Poll frequently during the
+// update window, cache longer outside it.
+const NEPAL_UPDATE_WINDOW = { startHour: 10, endHour: 12 }; // 10 AM - 12 PM NPT
+const NEPAL_CACHE_TTL_ACTIVE_MS = 5 * 60 * 1000;  // 5 min during update window
+const NEPAL_CACHE_TTL_IDLE_MS = 60 * 60 * 1000;    // 1 hour outside window
 
-function getNepalDate(): string {
-  return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kathmandu' });
+function getNepalCacheTtl(): number {
+  const hour = parseInt(
+    new Date().toLocaleString('en-US', { timeZone: 'Asia/Kathmandu', hour: 'numeric', hour12: false }),
+    10,
+  );
+  return hour >= NEPAL_UPDATE_WINDOW.startHour && hour < NEPAL_UPDATE_WINDOW.endHour
+    ? NEPAL_CACHE_TTL_ACTIVE_MS
+    : NEPAL_CACHE_TTL_IDLE_MS;
 }
 
 // Caches — use lazy getter so configure() changes are respected
 function createCaches() {
   const ttl = getConfig().cacheTtl;
   return {
-    nepal: null as { data: NepalPriceData; source: string } | null,
-    nepalDate: '' as string,
-    nepalPriceConfirmed: false, // true once we've seen a price change for today
-    nepalLastFetchedAt: 0,
+    nepal: new Cache<{ data: NepalPriceData; source: string }>(NEPAL_CACHE_TTL_IDLE_MS),
     live: new Cache<{ data: LivePriceData; source: string }>(ttl),
     forex: new Cache<{ data: ForexData; source: string }>(ttl),
   };
@@ -75,48 +80,17 @@ function getForexProviders() {
 }
 
 async function fetchNepalPrices(): Promise<{ data: NepalPriceData; source: string; isStale: boolean }> {
-  const today = getNepalDate();
-  const now = Date.now();
-
-  // New day — reset confirmation flag
-  if (caches.nepalDate !== today) {
-    caches.nepalPriceConfirmed = false;
-  }
-
-  // If we have today's confirmed price, use cache all day
-  if (caches.nepal && caches.nepalDate === today && caches.nepalPriceConfirmed) {
-    return { ...caches.nepal, isStale: false };
-  }
-
-  // If price isn't confirmed yet, re-fetch every 10 minutes until it changes
-  if (caches.nepal && now - caches.nepalLastFetchedAt < NEPAL_POLL_INTERVAL_MS) {
-    return { ...caches.nepal, isStale: false };
-  }
+  const cached = caches.nepal.get('nepal');
+  if (cached) return { ...cached, isStale: false };
 
   const result = await fetchWithFallback(getNepalProviders());
   if (result) {
-    const previousPrice = caches.nepal?.data.goldHallmark;
-    const priceChanged = previousPrice != null && previousPrice !== result.data.goldHallmark;
-
-    caches.nepalLastFetchedAt = now;
-
-    if (caches.nepalDate !== today && !priceChanged) {
-      // New day but price hasn't changed yet — FENEGOSIDA hasn't updated
-      // Keep polling but serve what we have
-      caches.nepal = result;
-      caches.nepalDate = today;
-      return { data: result.data, source: result.source, isStale: false };
-    }
-
-    // Price changed or first fetch — confirm and cache for the day
-    caches.nepal = result;
-    caches.nepalDate = today;
-    caches.nepalPriceConfirmed = true;
+    caches.nepal.set('nepal', result, getNepalCacheTtl());
     return { data: result.data, source: result.source, isStale: false };
   }
 
-  // Serve stale cache if fetch fails
-  if (caches.nepal) return { ...caches.nepal, isStale: true };
+  const stale = caches.nepal.getStale('nepal');
+  if (stale) return { ...stale, isStale: true };
 
   throw new Error('All Nepal price providers failed and no cached data available');
 }

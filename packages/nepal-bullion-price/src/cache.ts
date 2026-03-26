@@ -19,10 +19,10 @@ export class Cache<T> {
     return this.store.get(key)?.value;
   }
 
-  set(key: string, value: T): void {
+  set(key: string, value: T, ttlOverride?: number): void {
     this.store.set(key, {
       value,
-      expiresAt: Date.now() + this.ttlMs,
+      expiresAt: Date.now() + (ttlOverride ?? this.ttlMs),
     });
   }
 }
