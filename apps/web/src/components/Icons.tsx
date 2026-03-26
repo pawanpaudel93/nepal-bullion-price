@@ -4,7 +4,7 @@ interface IconProps {
 
 export function GoldIcon({ className = 'w-6 h-6' }: IconProps) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+    <svg viewBox="1 3 22 20" fill="none" className={className} aria-hidden="true">
       {/* Bucket body */}
       <path d="M3 11h18l-2 10H5L3 11z" fill="#EAB308" stroke="#CA8A04" strokeWidth="1.5" />
       {/* Bucket rim */}
@@ -26,7 +26,7 @@ export function GoldIcon({ className = 'w-6 h-6' }: IconProps) {
 
 export function SilverIcon({ className = 'w-6 h-6' }: IconProps) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+    <svg viewBox="1 3 22 20" fill="none" className={className} aria-hidden="true">
       {/* Bucket body */}
       <path d="M3 11h18l-2 10H5L3 11z" fill="#CBD5E1" stroke="#94A3B8" strokeWidth="1.5" />
       {/* Bucket rim */}

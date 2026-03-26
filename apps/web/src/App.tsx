@@ -40,7 +40,7 @@ export default function App() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-7">
             <PriceCard
               title={t.gold}
-              icon={<GoldIcon className="w-8 h-8" />}
+              icon={<GoldIcon className="w-10 h-10" />}
               symbol="XAU"
               nepalPrice={data?.gold.nepal ?? null}
               livePrice={data?.gold.live ?? null}
@@ -48,7 +48,7 @@ export default function App() {
             />
             <PriceCard
               title={t.silver}
-              icon={<SilverIcon className="w-8 h-8" />}
+              icon={<SilverIcon className="w-10 h-10" />}
               symbol="XAG"
               nepalPrice={data?.silver.nepal ?? null}
               livePrice={data?.silver.live ?? null}
