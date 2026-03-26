@@ -1,43 +1,35 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { AllPrices } from 'nepal-bullion-price';
 
-const POLL_INTERVAL = 5 * 60 * 1000; // 5 minutes
+async function fetchPrices(): Promise<AllPrices> {
+  const res = await fetch('/api/prices');
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
 
 interface UseBullionPricesReturn {
   data: AllPrices | null;
   isLoading: boolean;
+  isFetching: boolean;
   error: string | null;
   lastFetched: Date | null;
   refresh: () => void;
 }
 
 export function useBullionPrices(): UseBullionPricesReturn {
-  const [data, setData] = useState<AllPrices | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [lastFetched, setLastFetched] = useState<Date | null>(null);
+  const queryClient = useQueryClient();
 
-  const fetchPrices = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      const res = await fetch('/api/prices');
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const prices: AllPrices = await res.json();
-      setData(prices);
-      setLastFetched(new Date());
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to fetch prices');
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const { data, isLoading, isFetching, error, dataUpdatedAt } = useQuery({
+    queryKey: ['bullion-prices'],
+    queryFn: fetchPrices,
+  });
 
-  useEffect(() => {
-    fetchPrices();
-    const interval = setInterval(fetchPrices, POLL_INTERVAL);
-    return () => clearInterval(interval);
-  }, [fetchPrices]);
-
-  return { data, isLoading, error, lastFetched, refresh: fetchPrices };
+  return {
+    data: data ?? null,
+    isLoading,
+    isFetching,
+    error: error ? (error instanceof Error ? error.message : 'Failed to fetch prices') : null,
+    lastFetched: dataUpdatedAt ? new Date(dataUpdatedAt) : null,
+    refresh: () => queryClient.invalidateQueries({ queryKey: ['bullion-prices'] }),
+  };
 }
