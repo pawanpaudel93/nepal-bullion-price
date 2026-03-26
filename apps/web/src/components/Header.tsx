@@ -26,16 +26,16 @@ export function Header({ lastFetched, onRefresh, isFetching }: HeaderProps) {
   }, [isDark]);
 
   return (
-    <header className="flex items-end justify-between mb-14 animate-fade-up">
+    <header className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-14 animate-fade-up">
       <div>
         <p className="text-[10px] ne-text-boost font-medium uppercase tracking-[0.25em] text-gold-500 dark:text-gold-400 mb-3 font-body">
           {t.liveRates}
         </p>
-        <h1 className="font-display text-4xl sm:text-3xl md:text-4xl font-bold text-ink dark:text-white leading-[0.95] sm:leading-none tracking-tight">
+        <h1 className="font-display text-4xl sm:text-3xl md:text-4xl font-bold text-ink dark:text-white leading-none tracking-tight">
           {lang === 'ne' ? (
             <span className="text-gold-shimmer">{t.nepalBullion}</span>
           ) : (
-            <>Nepal<br className="sm:hidden" /> <span className="text-gold-shimmer">Bullion</span></>
+            <>Nepal <span className="text-gold-shimmer">Bullion</span></>
           )}
         </h1>
         {lastFetched ? (

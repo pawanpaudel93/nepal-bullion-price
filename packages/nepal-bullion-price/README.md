@@ -114,7 +114,7 @@ Rates are configured **per metal** via `rates.gold` and `rates.silver`:
 |--------|------|-------------|----------------|-------------|
 | `rates.{metal}.customsDuty` | `number` | `0.10` (10%) | `0.15` (15%) | Customs duty rate |
 | `rates.{metal}.bankMargin` | `number` | `0.005` (0.5%) | `0.005` (0.5%) | Bank margin |
-| `rates.{metal}.dealerMargin` | `number` | `0.015` (1.5%) | `0.035` (3.5%) | Dealer/market premium |
+| `rates.{metal}.dealerMargin` | `number` | `0.015` (1.5%) | `0.035` (3.5%) | Dealer premium |
 | `apiKeys.goldApiIo` | `string` | — | — | goldapi.io API key (enables fallback) |
 | `apiKeys.asheshApiKey` | `string` | — | — | Ashesh widget API key (has public default) |
 | `cacheTtl` | `number` | `300000` | `300000` | Cache TTL in ms (5 minutes) |
@@ -167,7 +167,7 @@ estimatedPrice = afterBank + dealerMargin        ← approx. FENEGOSIDA rate
 |--------|------|--------|
 | Customs duty | 10% | 15% |
 | Bank margin (NRB cap) | 0.5% | 0.5% |
-| Dealer/market premium | 1.5% | 3.5% |
+| Dealer premium | 1.5% | 3.5% |
 
 The `estimatedPrice` approximates what FENEGOSIDA publishes as the daily rate. A separate 2% luxury tax is charged at the point of sale but is not part of the published rate.
 
