@@ -173,6 +173,51 @@ The `estimatedPrice` approximates what FENEGOSIDA publishes as the daily rate. A
 
 All rates are configurable per metal via `configure({ rates: { gold: { ... }, silver: { ... } } })`.
 
+## MCP Server
+
+This package includes an MCP (Model Context Protocol) server so AI assistants like Claude, Cursor, and Codex can query Nepal bullion prices.
+
+### Tools
+
+| Tool | Description |
+|------|-------------|
+| `get_nepal_gold_price` | FENEGOSIDA daily gold rate + yesterday's price |
+| `get_nepal_silver_price` | FENEGOSIDA daily silver rate + yesterday's price |
+| `get_live_gold_price` | Live XAU/USD → NPR with duty breakdown |
+| `get_live_silver_price` | Live XAG/USD → NPR with duty breakdown |
+| `get_all_prices` | All prices at once |
+
+### Setup
+
+**Claude Code:**
+```bash
+claude mcp add nepal-bullion -- npx nepal-bullion-price
+```
+
+**Claude Desktop** (`claude_desktop_config.json`):
+```json
+{
+  "mcpServers": {
+    "nepal-bullion": {
+      "command": "npx",
+      "args": ["nepal-bullion-price"]
+    }
+  }
+}
+```
+
+**Cursor** (`.cursor/mcp.json`):
+```json
+{
+  "mcpServers": {
+    "nepal-bullion": {
+      "command": "npx",
+      "args": ["nepal-bullion-price"]
+    }
+  }
+}
+```
+
 ## License
 
 MIT
