@@ -6,7 +6,7 @@ import { LastUpdated } from './components/LastUpdated';
 import { GoldIcon, SilverIcon } from './components/Icons';
 
 export default function App() {
-  const { data, isLoading, error, lastFetched, refresh } = useBullionPrices();
+  const { data, isLoading, isFetching, error, lastFetched, refresh } = useBullionPrices();
 
   const sources = useMemo(() => {
     if (!data) return [];
@@ -21,7 +21,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-paper dark:bg-ink bg-mesh transition-colors duration-500">
       <div className="relative max-w-5xl mx-auto px-6 sm:px-10 py-12 sm:py-20">
-        <Header lastFetched={lastFetched} onRefresh={refresh} isLoading={isLoading} />
+        <Header lastFetched={lastFetched} onRefresh={refresh} isLoading={isLoading} isFetching={isFetching} />
 
         {error ? (
           <div className="mb-8 p-4 glass-card rounded-2xl text-red-700 dark:text-red-400 text-sm animate-fade-up" role="alert">

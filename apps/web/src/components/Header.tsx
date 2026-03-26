@@ -5,9 +5,10 @@ interface HeaderProps {
   lastFetched: Date | null;
   onRefresh: () => void;
   isLoading: boolean;
+  isFetching: boolean;
 }
 
-export function Header({ lastFetched, onRefresh, isLoading }: HeaderProps) {
+export function Header({ lastFetched, onRefresh, isLoading, isFetching }: HeaderProps) {
   const [isDark, setIsDark] = useState(() => {
     if (typeof window === 'undefined') return false;
     try {
@@ -40,11 +41,11 @@ export function Header({ lastFetched, onRefresh, isLoading }: HeaderProps) {
       <div className="flex items-center gap-2">
         <button
           onClick={onRefresh}
-          disabled={isLoading}
+          disabled={isFetching}
           className="inline-flex items-center gap-2 px-5 py-2.5 text-[13px] font-medium rounded-full bg-ink dark:bg-white text-white dark:text-ink hover:bg-ink-light dark:hover:bg-paper-warm focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-ink disabled:opacity-40 cursor-pointer transition-all duration-300"
         >
-          <RefreshIcon className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
-          {isLoading ? 'Loading' : 'Refresh'}
+          <RefreshIcon className={`w-3.5 h-3.5 ${isFetching ? 'animate-spin' : ''}`} />
+          {isFetching ? 'Updating' : 'Refresh'}
         </button>
         <button
           onClick={() => setIsDark(prev => !prev)}
