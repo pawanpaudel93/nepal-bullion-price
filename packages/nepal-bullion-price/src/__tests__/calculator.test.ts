@@ -5,16 +5,16 @@ describe('calculateTaxBreakdown', () => {
   const rates = {
     customsDuty: 0.10,
     bankMargin: 0.005,
-    dealerMargin: 0.005,
+    dealerMargin: 0.015,
   };
 
   it('matches the expected calculation', () => {
-    const result = calculateTaxBreakdown(4333.40, 150.07, rates);
-    expect(result.basePrice).toBe(243867);
-    expect(result.customsDuty).toBe(24387);
-    expect(result.bankMargin).toBe(1341);
-    expect(result.dealerMargin).toBe(1348);
-    expect(result.estimatedPrice).toBe(270943);
+    const result = calculateTaxBreakdown(4508.90, 150.49, rates);
+    expect(result.basePrice).toBe(254454);
+    expect(result.customsDuty).toBe(25445);
+    expect(result.bankMargin).toBe(1399);
+    expect(result.dealerMargin).toBe(4219);
+    expect(result.estimatedPrice).toBe(285517);
   });
 
   it('works with different rates', () => {

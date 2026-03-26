@@ -4,13 +4,13 @@ import { DEFAULT_CACHE_TTL_MS } from './constants.js';
 const DEFAULT_GOLD_RATES: TaxRates = {
   customsDuty: 0.10,
   bankMargin: 0.005,
-  dealerMargin: 0.005,
+  dealerMargin: 0.015,
 };
 
 const DEFAULT_SILVER_RATES: TaxRates = {
   customsDuty: 0.15,
   bankMargin: 0.005,
-  dealerMargin: 0.005,
+  dealerMargin: 0.035,
 };
 
 const DEFAULT_CONFIG: Config = {

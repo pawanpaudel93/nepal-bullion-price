@@ -30,7 +30,7 @@ export function TaxBreakdown({ breakdown, rates }: TaxBreakdownProps) {
               <Row label="International base" value={breakdown.basePrice} />
               <Row label={`Customs duty ${(rates.customsDuty * 100).toFixed(0)}%`} value={breakdown.customsDuty} prefix="+" />
               <Row label={`Bank margin ${(rates.bankMargin * 100).toFixed(1)}%`} value={breakdown.bankMargin} prefix="+" />
-              <Row label={`Dealer margin ${(rates.dealerMargin * 100).toFixed(1)}%`} value={breakdown.dealerMargin} prefix="+" />
+              <Row label={`Dealer/market premium ${(rates.dealerMargin * 100).toFixed(1)}%`} value={breakdown.dealerMargin} prefix="+" />
             </div>
             <div className="h-px bg-ink/[0.04] dark:bg-white/[0.04] my-3" />
             <div className="flex justify-between font-semibold text-ink dark:text-white">
