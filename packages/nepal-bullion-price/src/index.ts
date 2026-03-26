@@ -16,11 +16,16 @@ import type {
   AllPrices, NepalPriceData, LivePriceData, ForexData,
 } from './types.js';
 
+function getNepalDate(): string {
+  return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kathmandu' });
+}
+
 // Caches — use lazy getter so configure() changes are respected
 function createCaches() {
   const ttl = getConfig().cacheTtl;
   return {
-    nepal: new Cache<{ data: NepalPriceData; source: string }>(ttl),
+    nepal: null as { data: NepalPriceData; source: string } | null,
+    nepalDate: '' as string,
     live: new Cache<{ data: LivePriceData; source: string }>(ttl),
     forex: new Cache<{ data: ForexData; source: string }>(ttl),
   };
@@ -64,17 +69,22 @@ function getForexProviders() {
 }
 
 async function fetchNepalPrices(): Promise<{ data: NepalPriceData; source: string; isStale: boolean }> {
-  const cached = caches.nepal.get('nepal');
-  if (cached) return { ...cached, isStale: false };
+  const today = getNepalDate();
+
+  // Return cached if already fetched today
+  if (caches.nepal && caches.nepalDate === today) {
+    return { ...caches.nepal, isStale: false };
+  }
 
   const result = await fetchWithFallback(getNepalProviders());
   if (result) {
-    caches.nepal.set('nepal', result);
+    caches.nepal = result;
+    caches.nepalDate = today;
     return { data: result.data, source: result.source, isStale: false };
   }
 
-  const stale = caches.nepal.getStale('nepal');
-  if (stale) return { ...stale, isStale: true };
+  // Serve stale cache from a previous day if fetch fails
+  if (caches.nepal) return { ...caches.nepal, isStale: true };
 
   throw new Error('All Nepal price providers failed and no cached data available');
 }
