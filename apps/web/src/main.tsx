@@ -6,6 +6,7 @@ import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persist
 import './index.css';
 import App from './App';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { LocaleProvider } from './i18n';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -33,15 +34,17 @@ try {
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ErrorBoundary>
-      {persister ? (
-        <PersistQueryClientProvider client={queryClient} persistOptions={{ persister }}>
-          <App />
-        </PersistQueryClientProvider>
-      ) : (
-        <QueryClientProvider client={queryClient}>
-          <App />
-        </QueryClientProvider>
-      )}
+      <LocaleProvider>
+        {persister ? (
+          <PersistQueryClientProvider client={queryClient} persistOptions={{ persister }}>
+            <App />
+          </PersistQueryClientProvider>
+        ) : (
+          <QueryClientProvider client={queryClient}>
+            <App />
+          </QueryClientProvider>
+        )}
+      </LocaleProvider>
     </ErrorBoundary>
   </StrictMode>,
 );

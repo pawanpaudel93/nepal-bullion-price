@@ -2,6 +2,7 @@ import type { NepalGoldPrice, NepalSilverPrice, LiveMetalPrice } from 'nepal-bul
 import NumberFlow from '@number-flow/react';
 import { TaxBreakdown } from './TaxBreakdown';
 import { getSourceUrl } from '../utils/sourceUrls';
+import { useLocale } from '../i18n';
 
 interface PriceCardProps {
   title: string;
@@ -17,6 +18,7 @@ function getNepalPriceTola(price: NepalGoldPrice | NepalSilverPrice): number {
 }
 
 export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, delay = '0ms' }: PriceCardProps) {
+  const { t, numberLocale } = useLocale();
   const nepalTola = nepalPrice ? getNepalPriceTola(nepalPrice) : null;
   const liveTola = livePrice?.perTola.estimatedPrice ?? null;
 
@@ -34,32 +36,32 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, delay = 
       {/* Nepal FENEGOSIDA Price — The Hero */}
       <div className="mb-8">
         <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-ink-faint dark:text-ink-faint mb-3">
-          Nepal Price &middot; FENEGOSIDA
+          {t.nepalPrice} &middot; {t.fenegosida}
         </p>
         {nepalPrice ? (
           <>
             <p className={`font-mono text-[42px] font-bold leading-none tracking-tighter ${symbol === 'XAU' ? 'text-gold-color-shimmer' : 'text-silver-color-shimmer'}`}>
               {nepalTola !== null ? (
-                <>Rs <NumberFlow value={nepalTola} locales="en-IN" /></>
+                <>Rs <NumberFlow value={nepalTola} locales={numberLocale} /></>
               ) : '\u2014'}
             </p>
             {nepalPrice.previousPrice != null && nepalTola !== null ? (
               <PriceChange current={nepalTola} previous={nepalPrice.previousPrice} />
             ) : null}
             <p className="text-[13px] text-ink-muted dark:text-ink-faint mt-3 flex items-center gap-2.5 font-light">
-              <span>per tola</span>
+              <span>{t.perTola}</span>
               <span className="w-[3px] h-[3px] rounded-full bg-ink-faint/30" />
               <SourceLink name={nepalPrice.source} />
               {nepalPrice.isStale ? (
                 <span className="inline-flex items-center gap-1.5 text-amber-600 dark:text-amber-400 font-normal">
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                  stale
+                  {t.stale}
                 </span>
               ) : null}
             </p>
           </>
         ) : (
-          <p className="text-xl text-ink-faint font-light">Unavailable</p>
+          <p className="text-xl text-ink-faint font-light">{t.unavailable}</p>
         )}
       </div>
 
@@ -69,13 +71,13 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, delay = 
       {/* Live International Price */}
       <div>
         <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-ink-faint dark:text-ink-faint mb-3">
-          Live Estimated Price
+          {t.liveEstimatedPrice}
         </p>
         {livePrice ? (
           <>
             <p className="font-mono text-2xl font-semibold text-ink dark:text-white tracking-tight">
               {liveTola !== null ? (
-                <>Rs <NumberFlow value={liveTola} locales="en-IN" /></>
+                <>Rs <NumberFlow value={liveTola} locales={numberLocale} /></>
               ) : '\u2014'}
             </p>
             <div className="flex items-center gap-2.5 text-[12px] text-ink-muted dark:text-ink-faint mt-2.5 font-light">
@@ -85,14 +87,14 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, delay = 
               {livePrice.isStale ? (
                 <span className="inline-flex items-center gap-1.5 text-amber-600 dark:text-amber-400 font-normal">
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                  stale
+                  {t.stale}
                 </span>
               ) : null}
             </div>
             <TaxBreakdown breakdown={livePrice.perTola} rates={livePrice.rates} />
           </>
         ) : (
-          <p className="text-lg text-ink-faint font-light">Unavailable</p>
+          <p className="text-lg text-ink-faint font-light">{t.unavailable}</p>
         )}
       </div>
     </div>
@@ -100,6 +102,7 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, delay = 
 }
 
 function PriceChange({ current, previous }: { current: number; previous: number }) {
+  const { t, numberLocale } = useLocale();
   const diff = current - previous;
   if (diff === 0) return null;
 
@@ -109,15 +112,15 @@ function PriceChange({ current, previous }: { current: number; previous: number 
   return (
     <p
       className={`flex items-center gap-1.5 mt-2 text-[12px] font-light ${isUp ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500 dark:text-red-400'}`}
-      aria-label={`Price ${isUp ? 'increased' : 'decreased'} by Rs ${Math.abs(diff).toLocaleString('en-IN')}, ${pct} percent ${isUp ? 'up' : 'down'} from Rs ${previous.toLocaleString('en-IN')}`}
+      aria-label={`Price ${isUp ? 'increased' : 'decreased'} by Rs ${Math.abs(diff).toLocaleString(numberLocale)}, ${pct} percent ${isUp ? 'up' : 'down'} from Rs ${previous.toLocaleString(numberLocale)}`}
     >
       <svg viewBox="0 0 12 12" fill="currentColor" className={`w-3 h-3 shrink-0 ${isUp ? '' : 'rotate-180'}`} aria-hidden="true">
         <path d="M6 2l4 5H2l4-5z" />
       </svg>
-      <span className="font-mono font-normal">{isUp ? '+' : ''}{diff.toLocaleString('en-IN')}</span>
+      <span className="font-mono font-normal">{isUp ? '+' : ''}{diff.toLocaleString(numberLocale)}</span>
       <span>({pct}%)</span>
-      <span className="text-ink-muted dark:text-ink-faint">yesterday</span>
-      <span className="text-ink dark:text-white/70 font-mono font-normal">Rs {previous.toLocaleString('en-IN')}</span>
+      <span className="text-ink-muted dark:text-ink-faint">{t.yesterday}</span>
+      <span className="text-ink dark:text-white/70 font-mono font-normal">Rs {previous.toLocaleString(numberLocale)}</span>
     </p>
   );
 }

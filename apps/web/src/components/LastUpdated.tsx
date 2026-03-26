@@ -1,4 +1,5 @@
 import { getSourceUrl } from '../utils/sourceUrls';
+import { useLocale } from '../i18n';
 
 interface SourceTimestamp {
   label: string;
@@ -12,12 +13,13 @@ interface LastUpdatedProps {
 }
 
 export function LastUpdated({ sources }: LastUpdatedProps) {
+  const { t } = useLocale();
   if (sources.length === 0) return null;
 
   return (
     <div className="mt-12 animate-fade-up" style={{ animationDelay: '200ms' }}>
       <h3 className="text-[10px] font-medium uppercase tracking-[0.25em] text-ink-faint dark:text-ink-faint mb-4 px-1">
-        Sources
+        {t.sources}
       </h3>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-8 gap-y-3 px-1">
         {sources.map((s) => (
