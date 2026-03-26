@@ -1,5 +1,8 @@
+import { useMemo, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { AllPrices } from 'nepal-bullion-price';
+
+const QUERY_KEY = ['bullion-prices'] as const;
 
 async function fetchPrices(): Promise<AllPrices> {
   const res = await fetch('/api/prices');
@@ -20,16 +23,26 @@ export function useBullionPrices(): UseBullionPricesReturn {
   const queryClient = useQueryClient();
 
   const { data, isLoading, isFetching, error, dataUpdatedAt } = useQuery({
-    queryKey: ['bullion-prices'],
+    queryKey: QUERY_KEY,
     queryFn: fetchPrices,
   });
+
+  const lastFetched = useMemo(
+    () => (dataUpdatedAt ? new Date(dataUpdatedAt) : null),
+    [dataUpdatedAt],
+  );
+
+  const refresh = useCallback(
+    () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
+    [queryClient],
+  );
 
   return {
     data: data ?? null,
     isLoading,
     isFetching,
     error: error ? (error instanceof Error ? error.message : 'Failed to fetch prices') : null,
-    lastFetched: dataUpdatedAt ? new Date(dataUpdatedAt) : null,
-    refresh: () => queryClient.invalidateQueries({ queryKey: ['bullion-prices'] }),
+    lastFetched,
+    refresh,
   };
 }

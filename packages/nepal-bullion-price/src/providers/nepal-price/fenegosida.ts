@@ -7,12 +7,14 @@ import type { NepalPriceData } from '../../types.js';
  * Format: ['day',tolaPrice,gram10Price], e.g. ['12',285600,244855]
  * Returns an array of tola prices ordered oldest → newest.
  */
+const CHART_ENTRY_RE = /\['[^']+',(\d+(?:\.\d+)?),/g;
+
 function parseChartData(html: string, varName: string): number[] {
   const regex = new RegExp(`var\\s+${varName}\\s*=\\s*google\\.visualization\\.arrayToDataTable\\(\\[([\\s\\S]*?)\\]\\)`);
   const match = html.match(regex);
   if (!match) return [];
 
-  const entries = match[1].matchAll(/\['[^']+',(\d+(?:\.\d+)?),/g);
+  const entries = match[1].matchAll(CHART_ENTRY_RE);
   return [...entries].map(m => parseFloat(m[1]));
 }
 

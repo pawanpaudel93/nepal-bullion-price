@@ -19,11 +19,12 @@ const queryClient = new QueryClient({
 });
 
 // localStorage may be unavailable in private browsing or restricted environments
+const CACHE_VERSION = 2; // bump when AllPrices schema changes
 let persister: ReturnType<typeof createSyncStoragePersister> | undefined;
 try {
   persister = createSyncStoragePersister({
     storage: window.localStorage,
-    key: 'bullion-cache',
+    key: `bullion-cache-v${CACHE_VERSION}`,
   });
 } catch {
   persister = undefined;
