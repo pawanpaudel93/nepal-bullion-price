@@ -22,7 +22,7 @@ const DEFAULT_CONFIG: Config = {
 let currentConfig: Config = structuredClone(DEFAULT_CONFIG);
 
 export function getConfig(): Config {
-  return structuredClone(currentConfig);
+  return currentConfig;
 }
 
 /**

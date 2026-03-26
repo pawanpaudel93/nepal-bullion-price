@@ -5,11 +5,10 @@ import { useLocale } from '../i18n';
 interface HeaderProps {
   lastFetched: Date | null;
   onRefresh: () => void;
-  isLoading: boolean;
   isFetching: boolean;
 }
 
-export function Header({ lastFetched, onRefresh, isLoading, isFetching }: HeaderProps) {
+export function Header({ lastFetched, onRefresh, isFetching }: HeaderProps) {
   const { lang, t, toggleLang } = useLocale();
 
   const [isDark, setIsDark] = useState(() => {

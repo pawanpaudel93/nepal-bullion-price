@@ -21,6 +21,7 @@ export async function fetchNrb(): Promise<ForexData> {
   // Use the last entry (most recent date available)
   const entry = payload[payload.length - 1];
   const rates = entry.rates;
+  if (!Array.isArray(rates)) throw new Error('Invalid rates data from NRB response');
   const usd = rates?.find(
     (r: { currency: { iso3: string } }) => r.currency.iso3 === 'USD',
   );

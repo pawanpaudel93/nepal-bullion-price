@@ -71,6 +71,6 @@ export async function fetchFenegosida(): Promise<NepalPriceData> {
     silverPerGram10: gram.silver,
     previousGoldHallmark,
     previousSilver,
-    date: new Date().toISOString().split('T')[0],
+    date: new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kathmandu' }),
   };
 }
