@@ -1,6 +1,6 @@
 import type { NepalGoldPrice, NepalSilverPrice, LiveMetalPrice } from 'nepal-bullion-price';
+import NumberFlow from '@number-flow/react';
 import { TaxBreakdown } from './TaxBreakdown';
-import { formatNpr } from '../utils/format';
 
 interface PriceCardProps {
   title: string;
@@ -39,7 +39,9 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, shimmerC
         {nepalPrice ? (
           <>
             <p className={`font-mono text-[42px] font-bold leading-none tracking-tighter ${shimmerClass}`}>
-              {nepalTola !== null ? formatNpr(nepalTola) : '\u2014'}
+              {nepalTola !== null ? (
+                <>Rs <NumberFlow value={nepalTola} locales="en-IN" /></>
+              ) : '\u2014'}
             </p>
             <p className="text-[13px] text-ink-muted dark:text-ink-faint mt-3 flex items-center gap-2.5 font-light">
               <span>per tola</span>
@@ -69,7 +71,9 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, shimmerC
         {livePrice ? (
           <>
             <p className="font-mono text-2xl font-semibold text-ink dark:text-white tracking-tight">
-              {liveTola !== null ? formatNpr(liveTola) : '\u2014'}
+              {liveTola !== null ? (
+                <>Rs <NumberFlow value={liveTola} locales="en-IN" /></>
+              ) : '\u2014'}
             </p>
             <div className="flex items-center gap-2.5 text-[12px] text-ink-muted dark:text-ink-faint mt-2.5 font-light">
               <span className="font-mono font-normal">{symbol}/USD ${livePrice.raw.usdPerOz.toFixed(2)}</span>
