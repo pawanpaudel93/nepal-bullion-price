@@ -39,6 +39,11 @@
 
   :lang(ne) {
     font-family: 'Mukta', system-ui, sans-serif;
+    letter-spacing: 0 !important;
+  }
+
+  :lang(ne) * {
+    letter-spacing: 0 !important;
   }
 
   :lang(ne) .font-display {

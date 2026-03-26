@@ -114,7 +114,7 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
   const value = useMemo<LocaleContextValue>(() => ({
     lang,
     t: translations[lang],
-    numberLocale: lang === 'ne' ? 'ne-NP' : 'en-IN',
+    numberLocale: 'en-IN', // always use Indian/Nepali lakh grouping (2,85,600)
     toggleLang,
   }), [lang, toggleLang]);
 
