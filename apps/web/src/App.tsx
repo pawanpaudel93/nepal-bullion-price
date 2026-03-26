@@ -42,7 +42,6 @@ export default function App() {
               symbol="XAU"
               nepalPrice={data?.gold.nepal ?? null}
               livePrice={data?.gold.live ?? null}
-              shimmerClass="text-gold-shimmer"
               delay="50ms"
             />
             <PriceCard
@@ -51,7 +50,6 @@ export default function App() {
               symbol="XAG"
               nepalPrice={data?.silver.nepal ?? null}
               livePrice={data?.silver.live ?? null}
-              shimmerClass="text-silver-shimmer"
               delay="150ms"
             />
           </div>

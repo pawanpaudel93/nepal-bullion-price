@@ -9,7 +9,6 @@ interface PriceCardProps {
   symbol: 'XAU' | 'XAG';
   nepalPrice: NepalGoldPrice | NepalSilverPrice | null;
   livePrice: LiveMetalPrice | null;
-  shimmerClass: string;
   delay?: string;
 }
 
@@ -17,7 +16,7 @@ function getNepalPriceTola(price: NepalGoldPrice | NepalSilverPrice): number {
   return 'hallmark' in price ? price.hallmark : price.price;
 }
 
-export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, shimmerClass, delay = '0ms' }: PriceCardProps) {
+export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, delay = '0ms' }: PriceCardProps) {
   const nepalTola = nepalPrice ? getNepalPriceTola(nepalPrice) : null;
   const liveTola = livePrice?.perTola.estimatedPrice ?? null;
 
@@ -39,7 +38,7 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, shimmerC
         </p>
         {nepalPrice ? (
           <>
-            <p className={`font-mono text-[42px] font-bold leading-none tracking-tighter ${shimmerClass}`}>
+            <p className={`font-mono text-[42px] font-bold leading-none tracking-tighter ${symbol === 'XAU' ? 'text-gold-500 dark:text-gold-400' : 'text-silver-400 dark:text-silver-300'}`}>
               {nepalTola !== null ? (
                 <>Rs <NumberFlow value={nepalTola} locales="en-IN" /></>
               ) : '\u2014'}
