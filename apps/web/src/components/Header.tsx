@@ -26,7 +26,7 @@ export function Header({ lastFetched, onRefresh, isFetching }: HeaderProps) {
   }, [isDark]);
 
   return (
-    <header className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-14 animate-fade-up">
+    <header className="flex items-end justify-between mb-14 animate-fade-up">
       <div>
         <p className="text-[10px] ne-text-boost font-medium uppercase tracking-[0.25em] text-gold-500 dark:text-gold-400 mb-3 font-body">
           {t.liveRates}
@@ -44,29 +44,31 @@ export function Header({ lastFetched, onRefresh, isFetching }: HeaderProps) {
           </p>
         ) : null}
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2">
         <button
           onClick={onRefresh}
           disabled={isFetching}
-          className="inline-flex items-center gap-2 px-5 py-2.5 text-[13px] font-medium rounded-full bg-ink dark:bg-white text-white dark:text-ink hover:bg-ink-light dark:hover:bg-paper-warm focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-ink disabled:opacity-40 cursor-pointer transition-all duration-300"
+          className="order-2 sm:order-1 inline-flex items-center gap-2 px-5 py-2.5 text-[13px] font-medium rounded-full bg-ink dark:bg-white text-white dark:text-ink hover:bg-ink-light dark:hover:bg-paper-warm focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-ink disabled:opacity-40 cursor-pointer transition-all duration-300"
         >
           <RefreshIcon className={`w-3.5 h-3.5 ${isFetching ? 'animate-spin' : ''}`} />
           {isFetching ? t.updating : t.refresh}
         </button>
-        <button
-          onClick={toggleLang}
-          className="px-3 py-2.5 rounded-full border border-ink/8 dark:border-white/8 text-[13px] font-medium text-ink-muted dark:text-ink-faint hover:bg-ink/5 dark:hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 cursor-pointer transition-all duration-300"
-          aria-label={`Switch to ${lang === 'en' ? 'Nepali' : 'English'}`}
-        >
-          {lang === 'en' ? 'NP' : 'EN'}
-        </button>
-        <button
-          onClick={() => setIsDark(prev => !prev)}
-          className="p-2.5 rounded-full border border-ink/8 dark:border-white/8 text-ink-muted dark:text-ink-faint hover:bg-ink/5 dark:hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 cursor-pointer transition-all duration-300"
-          aria-label="Toggle dark mode"
-        >
-          {isDark ? <SunIcon /> : <MoonIcon />}
-        </button>
+        <div className="order-1 sm:order-2 flex items-center gap-2">
+          <button
+            onClick={toggleLang}
+            className="px-3 py-2.5 rounded-full border border-ink/8 dark:border-white/8 text-[13px] font-medium text-ink-muted dark:text-ink-faint hover:bg-ink/5 dark:hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 cursor-pointer transition-all duration-300"
+            aria-label={`Switch to ${lang === 'en' ? 'Nepali' : 'English'}`}
+          >
+            {lang === 'en' ? 'NP' : 'EN'}
+          </button>
+          <button
+            onClick={() => setIsDark(prev => !prev)}
+            className="p-2.5 rounded-full border border-ink/8 dark:border-white/8 text-ink-muted dark:text-ink-faint hover:bg-ink/5 dark:hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 cursor-pointer transition-all duration-300"
+            aria-label="Toggle dark mode"
+          >
+            {isDark ? <SunIcon /> : <MoonIcon />}
+          </button>
+        </div>
       </div>
     </header>
   );
