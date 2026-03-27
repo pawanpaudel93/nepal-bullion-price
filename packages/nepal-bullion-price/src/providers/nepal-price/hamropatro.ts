@@ -38,6 +38,8 @@ export async function fetchHamropatro(): Promise<NepalPriceData> {
     silverPerGram10: parsePrice(items[11]),
     previousGoldHallmark: null,
     previousSilver: null,
+    goldHistory: null,
+    silverHistory: null,
     date: new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kathmandu' }),
   };
 }

@@ -18,6 +18,29 @@ function parseChartData(html: string, varName: string): number[] {
   return [...entries].map(m => parseFloat(m[1]));
 }
 
+/**
+ * Convert an array of chart prices into dated history entries.
+ * Assumes prices are ordered oldest → newest, with the last entry being today.
+ * Returns null if fewer than 2 data points.
+ */
+export function buildHistory(
+  prices: number[],
+  todayStr: string,
+): { date: string; price: number }[] | null {
+  if (prices.length < 2) return null;
+
+  // Parse todayStr as UTC to avoid local-timezone offset when calling toISOString()
+  const today = new Date(todayStr + 'T00:00:00Z');
+  return prices.map((price, i) => {
+    const d = new Date(today);
+    d.setUTCDate(d.getUTCDate() - (prices.length - 1 - i));
+    return {
+      date: d.toISOString().split('T')[0],
+      price,
+    };
+  });
+}
+
 export async function fetchFenegosida(): Promise<NepalPriceData> {
   const res = await fetch('https://fenegosida.org/', {
     signal: AbortSignal.timeout(DEFAULT_TIMEOUT_MS),
@@ -53,13 +76,15 @@ export async function fetchFenegosida(): Promise<NepalPriceData> {
     throw new Error('Suspicious gold price from fenegosida.org: ' + tola.golds[0]);
   }
 
-  // Extract previous day's price from the weekly chart
-  // data = gold weekly (7 days), data2 = silver weekly (7 days)
+  // Extract weekly chart data (7 days)
+  // data = gold weekly, data2 = silver weekly
   const goldChart = parseChartData(html, 'data');
   const silverChart = parseChartData(html, 'data2');
 
   const previousGoldHallmark = goldChart.length >= 2 ? goldChart[goldChart.length - 2] : null;
   const previousSilver = silverChart.length >= 2 ? silverChart[silverChart.length - 2] : null;
+
+  const todayStr = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kathmandu' });
 
   return {
     goldHallmark: tola.golds[0],
@@ -70,6 +95,8 @@ export async function fetchFenegosida(): Promise<NepalPriceData> {
     silverPerGram10: gram.silver,
     previousGoldHallmark,
     previousSilver,
-    date: new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kathmandu' }),
+    goldHistory: buildHistory(goldChart, todayStr),
+    silverHistory: buildHistory(silverChart, todayStr),
+    date: todayStr,
   };
 }
