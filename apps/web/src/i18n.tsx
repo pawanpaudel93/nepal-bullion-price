@@ -39,6 +39,17 @@ const translations = {
     priceUp: 'Price increased by',
     priceDown: 'Price decreased by',
     from: 'from',
+    // Narratives
+    weeklyTrend: '7-Day Trend',
+    biggest_jump: 'Biggest jump this week',
+    biggest_drop: 'Biggest drop this week',
+    weekly_high: 'Weekly high',
+    weekly_low: 'Lowest this week',
+    streak_rising: 'Rising {n} days straight',
+    streak_falling: 'Falling {n} days',
+    // Share
+    share: 'Share',
+    shareText: '{metal}: Rs {price}/tola ({change}) — Nepal Bullion Price',
   },
   ne: {
     liveRates: 'प्रत्यक्ष दरहरू',
@@ -76,6 +87,17 @@ const translations = {
     priceUp: 'मूल्य बढ्यो',
     priceDown: 'मूल्य घट्यो',
     from: 'बाट',
+    // Narratives
+    weeklyTrend: '७-दिने प्रवृत्ति',
+    biggest_jump: 'यस हप्ताको सबैभन्दा ठूलो वृद्धि',
+    biggest_drop: 'यस हप्ताको सबैभन्दा ठूलो गिरावट',
+    weekly_high: 'हप्ताको उच्च',
+    weekly_low: 'हप्ताको न्यून',
+    streak_rising: '{n} दिनदेखि बढ्दो',
+    streak_falling: '{n} दिनदेखि घट्दो',
+    // Share
+    share: 'सेयर',
+    shareText: '{metal}: रू {price} प्रति तोला ({change}) — नेपाल बुलियन मूल्य',
   },
 } as const;
 
