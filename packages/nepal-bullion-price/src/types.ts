@@ -4,6 +4,7 @@ export interface NepalGoldPrice {
   unit: 'tola';
   perGram10: number;
   previousPrice: number | null;
+  history: { date: string; price: number }[] | null;
   source: string;
   date: string;
   updatedAt: string;
@@ -15,6 +16,7 @@ export interface NepalSilverPrice {
   unit: 'tola';
   perGram10: number;
   previousPrice: number | null;
+  history: { date: string; price: number }[] | null;
   source: string;
   date: string;
   updatedAt: string;
@@ -83,6 +85,8 @@ export interface NepalPriceData {
   silverPerGram10: number;
   previousGoldHallmark: number | null;
   previousSilver: number | null;
+  goldHistory: { date: string; price: number }[] | null;
+  silverHistory: { date: string; price: number }[] | null;
   date: string;
 }
 
