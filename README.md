@@ -6,7 +6,7 @@ Monorepo for **nepal-bullion-price** — an npm package and web dashboard for Ne
 
 | Package | Description |
 |---------|-------------|
-| [`packages/nepal-bullion-price`](packages/nepal-bullion-price) | npm package — FENEGOSIDA daily rates + live international prices with tax breakdown |
+| [`packages/nepal-bullion-price`](packages/nepal-bullion-price) | npm package — FENEGOSIDA daily rates + live international prices with duty breakdown (customs, bank margin, dealer margin, market premium) |
 | [`apps/web`](apps/web) | React dashboard — Hono API server + Vite SPA with light/dark mode |
 
 ## Quick Start
@@ -67,7 +67,7 @@ See [`packages/nepal-bullion-price/README.md`](packages/nepal-bullion-price/READ
 │   └── nepal-bullion-price/    # npm package (server-side only)
 │       ├── src/
 │       │   ├── providers/      # 9 data providers with fallbacks
-│       │   ├── calculator.ts   # tax breakdown math
+│       │   ├── calculator.ts   # duty breakdown (customs, bank, dealer, market premium)
 │       │   ├── cache.ts        # in-memory TTL cache
 │       │   ├── fallback.ts     # sequential fallback engine
 │       │   └── index.ts        # public API
@@ -81,6 +81,25 @@ See [`packages/nepal-bullion-price/README.md`](packages/nepal-bullion-price/READ
 ├── turbo.json
 └── pnpm-workspace.yaml
 ```
+
+## MCP Server
+
+The npm package includes an MCP server so AI assistants (Claude, Cursor, Codex) can query Nepal bullion prices.
+
+```bash
+# Claude Code
+claude mcp add nepal-bullion -- npx nepal-bullion-price
+```
+
+| Tool | Description |
+|------|-------------|
+| `get_nepal_gold_price` | FENEGOSIDA daily gold rate + yesterday's price |
+| `get_nepal_silver_price` | FENEGOSIDA daily silver rate + yesterday's price |
+| `get_live_gold_price` | Live XAU/USD → NPR with customs, bank margin, dealer margin, market premium breakdown |
+| `get_live_silver_price` | Live XAG/USD → NPR with customs, bank margin, dealer margin, market premium breakdown |
+| `get_all_prices` | All prices at once |
+
+See [`packages/nepal-bullion-price/README.md`](packages/nepal-bullion-price/README.md) for Claude Desktop and Cursor setup.
 
 ## Scripts
 
