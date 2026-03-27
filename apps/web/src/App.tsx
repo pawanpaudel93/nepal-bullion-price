@@ -33,7 +33,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-paper dark:bg-ink bg-mesh transition-colors duration-500">
-      <div className="relative max-w-5xl mx-auto px-6 sm:px-10 py-12 sm:py-20">
+      <div className="relative max-w-5xl mx-auto px-6 sm:px-10 py-8 sm:py-12">
         <Header lastFetched={lastFetched} onRefresh={refresh} isFetching={isFetching} />
 
         {error ? (
