@@ -8,3 +8,5 @@ dist/
 !.env.example
 .playwright-mcp/
 .gstack/
+docs/
+.superpowers/
