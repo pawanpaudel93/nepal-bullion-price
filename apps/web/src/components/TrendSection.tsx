@@ -61,15 +61,7 @@ export function TrendSection({ history, color }: TrendSectionProps) {
         ) : null}
       </div>
 
-      <Sparkline data={prices} color={color} />
-
-      <div className="grid mt-1.5" style={{ gridTemplateColumns: `repeat(${dayLabels.length}, 1fr)` }}>
-        {dayLabels.map((label, i) => (
-          <span key={i} className="text-[8px] text-ink-faint dark:text-ink-faint text-center">
-            {label}
-          </span>
-        ))}
-      </div>
+      <Sparkline data={prices} color={color} labels={dayLabels} />
     </div>
   );
 }
