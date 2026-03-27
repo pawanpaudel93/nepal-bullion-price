@@ -3,6 +3,7 @@ import NumberFlow from '@number-flow/react';
 import { TaxBreakdown } from './TaxBreakdown';
 import { SourceLink } from './SourceLink';
 import { useLocale, type Translations } from '../i18n';
+import { TrendSection } from './TrendSection';
 
 interface PriceCardProps {
   title: string;
@@ -63,6 +64,9 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, delay = 
               <SourceLink name={nepalPrice.source} />
               {nepalPrice.isStale ? <StaleBadge label={t.stale} /> : null}
             </p>
+            {nepalPrice.history && nepalPrice.history.length >= 2 ? (
+              <TrendSection history={nepalPrice.history} color={symbol === 'XAU' ? 'gold' : 'silver'} />
+            ) : null}
           </>
         ) : (
           <p className="text-xl text-ink-faint font-light">{t.unavailable}</p>
