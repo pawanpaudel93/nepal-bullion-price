@@ -10,26 +10,30 @@ export function Sparkline({ data, color, className = '' }: SparklineProps) {
   const width = 200;
   const height = 32;
   const padY = 4;
+  // Horizontal padding so data points align with centered day labels below.
+  // Each label sits in a 1/N-width column; padX = half a column width.
+  const padX = width / (data.length * 2);
 
   const min = Math.min(...data);
   const max = Math.max(...data);
   const range = max - min || 1;
 
   const points = data.map((val, i) => {
-    const x = (i / (data.length - 1)) * width;
+    const x = padX + (i / (data.length - 1)) * (width - padX * 2);
     const y = padY + ((max - val) / range) * (height - padY * 2);
     return `${x},${y}`;
   }).join(' ');
 
   // Build the fill path (area under the line)
   const fillPath = data.map((val, i) => {
-    const x = (i / (data.length - 1)) * width;
+    const x = padX + (i / (data.length - 1)) * (width - padX * 2);
     const y = padY + ((max - val) / range) * (height - padY * 2);
     return `${x},${y}`;
   });
-  const fillD = `M${fillPath[0]} L${fillPath.join(' L')} L${width},${height} L0,${height}Z`;
+  const lastPtX = padX + (width - padX * 2);
+  const fillD = `M${fillPath[0]} L${fillPath.join(' L')} L${lastPtX},${height} L${padX},${height}Z`;
 
-  const lastX = width;
+  const lastX = lastPtX;
   const lastY = padY + ((max - data[data.length - 1]) / range) * (height - padY * 2);
 
   const gradientId = `spark-fill-${color}`;
