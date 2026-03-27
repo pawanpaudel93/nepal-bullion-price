@@ -4,6 +4,7 @@ import { TaxBreakdown } from './TaxBreakdown';
 import { SourceLink } from './SourceLink';
 import { useLocale, type Translations } from '../i18n';
 import { TrendSection } from './TrendSection';
+import { ShareButton } from './ShareButton';
 
 interface PriceCardProps {
   title: string;
@@ -63,6 +64,15 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, delay = 
               <span className="w-[3px] h-[3px] rounded-full bg-ink-faint/30" />
               <SourceLink name={nepalPrice.source} />
               {nepalPrice.isStale ? <StaleBadge label={t.stale} /> : null}
+              <span className="w-[3px] h-[3px] rounded-full bg-ink-faint/30" />
+              <ShareButton
+                metal={symbol === 'XAU' ? 'gold' : 'silver'}
+                metalName={title}
+                price={nepalTola!}
+                previousPrice={nepalPrice.previousPrice}
+                history={nepalPrice.history ?? null}
+                date={nepalPrice.date}
+              />
             </p>
             {nepalPrice.history && nepalPrice.history.length >= 2 ? (
               <TrendSection history={nepalPrice.history} color={symbol === 'XAU' ? 'gold' : 'silver'} />
