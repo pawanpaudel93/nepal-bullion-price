@@ -39,9 +39,21 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, delay = 
       style={{ animationDelay: delay }}
     >
       {/* Header */}
-      <div className="flex items-center gap-3 mb-8">
-        {icon}
-        <h2 className="font-display text-2xl font-bold text-ink dark:text-white tracking-tight">{title}</h2>
+      <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center gap-3">
+          {icon}
+          <h2 className="font-display text-2xl font-bold text-ink dark:text-white tracking-tight">{title}</h2>
+        </div>
+        {nepalPrice && nepalTola !== null ? (
+          <ShareButton
+            metal={symbol === 'XAU' ? 'gold' : 'silver'}
+            metalName={title}
+            price={nepalTola}
+            previousPrice={nepalPrice.previousPrice}
+            history={nepalPrice.history ?? null}
+            date={nepalPrice.date}
+          />
+        ) : null}
       </div>
 
       {/* Nepal FENEGOSIDA Price — The Hero */}
@@ -64,15 +76,6 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, delay = 
               <span className="w-[3px] h-[3px] rounded-full bg-ink-faint/30" />
               <SourceLink name={nepalPrice.source} />
               {nepalPrice.isStale ? <StaleBadge label={t.stale} /> : null}
-              <span className="w-[3px] h-[3px] rounded-full bg-ink-faint/30" />
-              <ShareButton
-                metal={symbol === 'XAU' ? 'gold' : 'silver'}
-                metalName={title}
-                price={nepalTola!}
-                previousPrice={nepalPrice.previousPrice}
-                history={nepalPrice.history ?? null}
-                date={nepalPrice.date}
-              />
             </p>
             {nepalPrice.history && nepalPrice.history.length >= 2 ? (
               <TrendSection history={nepalPrice.history} color={symbol === 'XAU' ? 'gold' : 'silver'} />
