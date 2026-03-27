@@ -89,11 +89,11 @@ export function ShareButton({ metal, metalName, price, previousPrice, history, d
     <button
       onClick={handleShare}
       disabled={sharing}
-      className="inline-flex items-center gap-1 text-[11px] text-ink-muted dark:text-ink-faint hover:text-ink dark:hover:text-white transition-colors font-light"
+      className="inline-flex items-center gap-1.5 text-[13px] text-ink-muted dark:text-ink-faint hover:text-ink dark:hover:text-white transition-colors font-light"
       aria-label={t.share}
       title={t.share}
     >
-      <ShareIcon className="w-3.5 h-3.5" />
+      <ShareIcon className="w-4 h-4" />
       <span>{t.share}</span>
     </button>
   );
