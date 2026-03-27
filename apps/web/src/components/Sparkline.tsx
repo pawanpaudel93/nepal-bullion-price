@@ -9,10 +9,11 @@ export function Sparkline({ data, color, labels, className = '' }: SparklineProp
   if (data.length < 2) return null;
 
   const width = 200;
-  const chartHeight = 32;
-  const labelHeight = labels ? 12 : 0;
-  const height = chartHeight + labelHeight;
-  const padY = 4;
+  const chartHeight = 48;
+  const labelGap = labels ? 6 : 0;
+  const labelHeight = labels ? 10 : 0;
+  const height = chartHeight + labelGap + labelHeight;
+  const padY = 6;
 
   const min = Math.min(...data);
   const max = Math.max(...data);
@@ -20,20 +21,16 @@ export function Sparkline({ data, color, labels, className = '' }: SparklineProp
 
   const xPositions = data.map((_, i) => (i / (data.length - 1)) * width);
 
-  const points = data.map((val, i) => {
-    const y = padY + ((max - val) / range) * (chartHeight - padY * 2);
-    return `${xPositions[i]},${y}`;
-  }).join(' ');
+  const getY = (val: number) => padY + ((max - val) / range) * (chartHeight - padY * 2);
 
-  // Build the fill path (area under the line)
-  const fillD = data.map((val, i) => {
-    const y = padY + ((max - val) / range) * (chartHeight - padY * 2);
-    return `${xPositions[i]},${y}`;
-  });
+  const points = data.map((val, i) => `${xPositions[i]},${getY(val)}`).join(' ');
+
+  // Area fill path
+  const fillD = data.map((val, i) => `${xPositions[i]},${getY(val)}`);
   const fillPath = `M${fillD[0]} L${fillD.join(' L')} L${width},${chartHeight} L0,${chartHeight}Z`;
 
   const lastX = xPositions[xPositions.length - 1];
-  const lastY = padY + ((max - data[data.length - 1]) / range) * (chartHeight - padY * 2);
+  const lastY = getY(data[data.length - 1]);
 
   const gradientId = `spark-fill-${color}`;
   const strokeColor = color === 'gold'
@@ -42,6 +39,7 @@ export function Sparkline({ data, color, labels, className = '' }: SparklineProp
   const fillColorStart = color === 'gold'
     ? 'var(--color-gold-400)'
     : 'var(--color-silver-400)';
+  const labelFill = 'var(--color-ink-faint)';
 
   return (
     <svg
@@ -54,8 +52,8 @@ export function Sparkline({ data, color, labels, className = '' }: SparklineProp
     >
       <defs>
         <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={fillColorStart} stopOpacity={0.2} />
-          <stop offset="100%" stopColor={fillColorStart} stopOpacity={0} />
+          <stop offset="0%" stopColor={fillColorStart} stopOpacity={0.35} />
+          <stop offset="100%" stopColor={fillColorStart} stopOpacity={0.02} />
         </linearGradient>
       </defs>
       <path d={fillPath} fill={`url(#${gradientId})`} />
@@ -63,19 +61,28 @@ export function Sparkline({ data, color, labels, className = '' }: SparklineProp
         points={points}
         fill="none"
         stroke={strokeColor}
-        strokeWidth={2}
+        strokeWidth={2.5}
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <circle cx={lastX} cy={lastY} r={3} fill={strokeColor} />
+      {/* Small dots on each data point */}
+      {data.map((val, i) => (
+        i < data.length - 1 ? (
+          <circle key={i} cx={xPositions[i]} cy={getY(val)} r={1.5} fill={strokeColor} opacity={0.4} />
+        ) : null
+      ))}
+      {/* Larger dot on today's price */}
+      <circle cx={lastX} cy={lastY} r={4} fill={strokeColor} />
+      <circle cx={lastX} cy={lastY} r={2} fill="var(--color-paper, #FAFAF9)" />
       {labels ? labels.map((label, i) => (
         <text
           key={i}
           x={xPositions[i]}
-          y={chartHeight + labelHeight}
+          y={chartHeight + labelGap + labelHeight}
           textAnchor={i === 0 ? 'start' : i === labels.length - 1 ? 'end' : 'middle'}
-          fill="var(--color-ink-faint)"
-          fontSize={5}
+          fill={labelFill}
+          fontSize={6.5}
+          fontFamily="system-ui, sans-serif"
         >
           {label}
         </text>

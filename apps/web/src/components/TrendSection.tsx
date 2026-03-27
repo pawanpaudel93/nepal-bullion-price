@@ -49,8 +49,8 @@ export function TrendSection({ history, color }: TrendSectionProps) {
     : 'text-silver-500 dark:text-silver-300';
 
   return (
-    <div className={`mt-4 mb-2 p-3 rounded-xl border ${bgColor}`}>
-      <div className="flex justify-between items-center mb-2">
+    <div className={`mt-4 mb-2 px-4 pt-3 pb-2 rounded-xl border ${bgColor}`}>
+      <div className="flex justify-between items-center mb-1">
         <span className={`text-[10px] font-medium uppercase tracking-[0.15em] ${labelColor}`}>
           {t.weeklyTrend}
         </span>
