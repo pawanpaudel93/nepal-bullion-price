@@ -45,7 +45,7 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, delay = 
       {/* Nepal FENEGOSIDA Price — The Hero */}
       <div className="mb-8">
         <p className="text-[10px] ne-text-boost font-medium uppercase tracking-[0.2em] text-ink-faint dark:text-ink-faint mb-3">
-          {t.nepalPrice} &middot; {t.fenegosida}
+          {t.nepalPrice}
         </p>
         {nepalPrice ? (
           <>
@@ -117,6 +117,7 @@ function PriceChange({ current, previous, t, numberLocale }: { current: number; 
       </svg>
       <span className="font-mono font-normal">{isUp ? '+' : ''}{diff.toLocaleString(numberLocale)}</span>
       <span>({pct}%)</span>
+      <span className="text-ink-muted dark:text-ink-faint">{t.from}</span>
       <span className="text-ink-muted dark:text-ink-faint">{t.yesterday}</span>
       <span className="text-ink dark:text-white/70 font-mono font-normal">Rs {previous.toLocaleString(numberLocale)}</span>
     </p>

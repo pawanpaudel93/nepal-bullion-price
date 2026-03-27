@@ -26,6 +26,7 @@ export interface TaxBreakdown {
   customsDuty: number;
   bankMargin: number;
   dealerMargin: number;
+  marketPremium: number;
   estimatedPrice: number;
 }
 
@@ -45,6 +46,7 @@ export interface TaxRates {
   customsDuty: number;
   bankMargin: number;
   dealerMargin: number;
+  marketPremium: number;
 }
 
 export interface MetalRates {

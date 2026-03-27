@@ -17,13 +17,17 @@ export function calculateTaxBreakdown(
   const afterBank = afterCustoms + bankMargin;
 
   const dealerMargin = Math.round(afterBank * rates.dealerMargin);
-  const estimatedPrice = afterBank + dealerMargin;
+  const afterDealer = afterBank + dealerMargin;
+
+  const marketPremium = Math.round(afterDealer * rates.marketPremium);
+  const estimatedPrice = afterDealer + marketPremium;
 
   return {
     basePrice,
     customsDuty,
     bankMargin,
     dealerMargin,
+    marketPremium,
     estimatedPrice,
   };
 }

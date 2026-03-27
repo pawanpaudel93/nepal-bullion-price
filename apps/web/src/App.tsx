@@ -12,12 +12,23 @@ export default function App() {
 
   const sources = useMemo(() => {
     if (!data) return [];
-    return [
+    const all = [
       ...(data.gold.nepal ? [{ label: t.nepalGold, source: data.gold.nepal.source, updatedAt: data.gold.nepal.updatedAt, isStale: data.gold.nepal.isStale }] : []),
       ...(data.gold.live ? [{ label: t.liveGold, source: data.gold.live.source, updatedAt: data.gold.live.updatedAt, isStale: data.gold.live.isStale }] : []),
       ...(data.silver.nepal ? [{ label: t.nepalSilver, source: data.silver.nepal.source, updatedAt: data.silver.nepal.updatedAt, isStale: data.silver.nepal.isStale }] : []),
       ...(data.silver.live ? [{ label: t.liveSilver, source: data.silver.live.source, updatedAt: data.silver.live.updatedAt, isStale: data.silver.live.isStale }] : []),
     ];
+    // Deduplicate by source — use source name as label, prefer stale=true if any entry is stale
+    const seen = new Map<string, typeof all[0]>();
+    for (const s of all) {
+      const existing = seen.get(s.source);
+      if (!existing) {
+        seen.set(s.source, { ...s, label: s.source });
+      } else if (s.isStale && !existing.isStale) {
+        seen.set(s.source, { ...existing, isStale: true });
+      }
+    }
+    return [...seen.values()];
   }, [data, t]);
 
   return (

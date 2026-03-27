@@ -35,7 +35,7 @@ server.tool(
 
 server.tool(
   'get_live_gold_price',
-  'Get live international gold price (XAU/USD) converted to NPR per tola with full Nepal import duty breakdown (customs, bank margin, dealer premium)',
+  'Get live international gold price (XAU/USD) converted to NPR per tola with full Nepal import duty breakdown (customs, bank margin, dealer margin, market premium)',
   {},
   async () => {
     const price = await getLiveGoldPrice();
@@ -45,7 +45,7 @@ server.tool(
 
 server.tool(
   'get_live_silver_price',
-  'Get live international silver price (XAG/USD) converted to NPR per tola with full Nepal import duty breakdown (customs, bank margin, dealer premium)',
+  'Get live international silver price (XAG/USD) converted to NPR per tola with full Nepal import duty breakdown (customs, bank margin, dealer margin, market premium)',
   {},
   async () => {
     const price = await getLiveSilverPrice();

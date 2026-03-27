@@ -34,6 +34,7 @@ export function TaxBreakdown({ breakdown, rates }: TaxBreakdownProps) {
               <Row label={`${t.customsDuty} ${(rates.customsDuty * 100).toFixed(0)}%`} value={breakdown.customsDuty} prefix="+" numberLocale={numberLocale} />
               <Row label={`${t.bankMargin} ${(rates.bankMargin * 100).toFixed(1)}%`} value={breakdown.bankMargin} prefix="+" numberLocale={numberLocale} />
               <Row label={`${t.dealerMargin} ${(rates.dealerMargin * 100).toFixed(1)}%`} value={breakdown.dealerMargin} prefix="+" numberLocale={numberLocale} />
+              <Row label={`${t.marketPremium} ${(rates.marketPremium * 100).toFixed(1)}%`} value={breakdown.marketPremium} prefix="+" numberLocale={numberLocale} />
             </div>
             <div className="h-px bg-ink/[0.04] dark:bg-white/[0.04] my-3" />
             <div className="flex justify-between font-semibold text-ink dark:text-white">
