@@ -13,13 +13,14 @@ export function Sparkline({ data, color, labels, className = '' }: SparklineProp
   const labelGap = labels ? 6 : 0;
   const labelHeight = labels ? 10 : 0;
   const height = chartHeight + labelGap + labelHeight;
+  const padX = 5; // room for the end dot (r=4) to not clip
   const padY = 6;
 
   const min = Math.min(...data);
   const max = Math.max(...data);
   const range = max - min || 1;
 
-  const xPositions = data.map((_, i) => (i / (data.length - 1)) * width);
+  const xPositions = data.map((_, i) => padX + (i / (data.length - 1)) * (width - padX * 2));
 
   const getY = (val: number) => padY + ((max - val) / range) * (chartHeight - padY * 2);
 
@@ -27,7 +28,9 @@ export function Sparkline({ data, color, labels, className = '' }: SparklineProp
 
   // Area fill path
   const fillD = data.map((val, i) => `${xPositions[i]},${getY(val)}`);
-  const fillPath = `M${fillD[0]} L${fillD.join(' L')} L${width},${chartHeight} L0,${chartHeight}Z`;
+  const lastDataX = xPositions[xPositions.length - 1];
+  const firstDataX = xPositions[0];
+  const fillPath = `M${fillD[0]} L${fillD.join(' L')} L${lastDataX},${chartHeight} L${firstDataX},${chartHeight}Z`;
 
   const lastX = xPositions[xPositions.length - 1];
   const lastY = getY(data[data.length - 1]);
