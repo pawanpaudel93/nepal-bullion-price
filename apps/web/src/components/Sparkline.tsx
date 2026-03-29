@@ -10,13 +10,14 @@ export function Sparkline({ data, color, labels, formattedPrices, className = ''
   if (data.length < 2) return null;
 
   const width = 200;
-  const tooltipHeight = formattedPrices ? 10 : 0;
-  const chartTop = tooltipHeight;
+  const topPad = formattedPrices ? 8 : 0;
+  const chartTop = topPad;
   const chartHeight = 48;
-  const labelGap = labels ? 6 : 0;
+  const bottomPad = formattedPrices ? 8 : 0;
+  const labelGap = labels ? 5 : 0;
   const labelHeight = labels ? 10 : 0;
-  const height = tooltipHeight + chartHeight + labelGap + labelHeight;
-  const padX = 5;
+  const height = topPad + chartHeight + bottomPad + labelGap + labelHeight;
+  const padX = 6;
   const padY = 6;
 
   const min = Math.min(...data);
@@ -36,9 +37,6 @@ export function Sparkline({ data, color, labels, formattedPrices, className = ''
   const chartBottom = chartTop + chartHeight;
   const fillPath = `M${fillD[0]} L${fillD.join(' L')} L${lastDataX},${chartBottom} L${firstDataX},${chartBottom}Z`;
 
-  const lastX = xPositions[xPositions.length - 1];
-  const lastY = getY(data[data.length - 1]);
-
   const gradientId = `spark-fill-${color}`;
   const strokeColor = color === 'gold'
     ? 'var(--color-gold-500)'
@@ -57,12 +55,6 @@ export function Sparkline({ data, color, labels, formattedPrices, className = ''
       style={{ width: '100%' }}
       preserveAspectRatio="xMidYMid meet"
     >
-      <style>{`
-        .spark-pt .spark-tip { opacity: 0; transition: opacity 0.15s; }
-        .spark-pt:hover .spark-tip { opacity: 1; }
-        .spark-pt .spark-dot-hover { opacity: 0; transition: opacity 0.15s; }
-        .spark-pt:hover .spark-dot-hover { opacity: 1; }
-      `}</style>
       <defs>
         <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor={fillColorStart} stopOpacity={0.35} />
@@ -78,39 +70,36 @@ export function Sparkline({ data, color, labels, formattedPrices, className = ''
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      {/* Interactive data points with hover tooltips */}
+      {/* Data points with always-visible exact price labels */}
       {data.map((val, i) => {
         const cx = xPositions[i];
         const cy = getY(val);
         const isLast = i === data.length - 1;
         const anchor = i === 0 ? 'start' : i === data.length - 1 ? 'end' : 'middle';
+        // Place label just above the point
+        const priceLabelY = cy - 5;
         return (
-          <g key={i} className="spark-pt">
-            {/* Invisible larger hit area */}
-            <circle cx={cx} cy={cy} r={8} fill="transparent" />
-            {/* Visible dot */}
+          <g key={i}>
+            {/* Dot */}
             {isLast ? (
               <>
-                <circle cx={cx} cy={cy} r={4} fill={strokeColor} />
+                <circle cx={cx} cy={cy} r={4.5} fill={strokeColor} />
                 <circle cx={cx} cy={cy} r={2} fill="var(--color-paper, #FAFAF9)" />
               </>
             ) : (
-              <>
-                <circle cx={cx} cy={cy} r={1.5} fill={strokeColor} opacity={0.4} />
-                <circle className="spark-dot-hover" cx={cx} cy={cy} r={3} fill={strokeColor} opacity={0} />
-              </>
+              <circle cx={cx} cy={cy} r={2} fill={strokeColor} opacity={0.5} />
             )}
-            {/* Price label on hover */}
+            {/* Exact price */}
             {formattedPrices?.[i] ? (
               <text
-                className="spark-tip"
                 x={cx}
-                y={chartTop + 6}
+                y={priceLabelY}
                 textAnchor={anchor}
                 fill={strokeColor}
-                fontSize={6}
+                fontSize={4.5}
                 fontFamily="ui-monospace, monospace"
-                fontWeight={700}
+                fontWeight={600}
+                opacity={0.85}
               >
                 {formattedPrices[i]}
               </text>
@@ -118,11 +107,12 @@ export function Sparkline({ data, color, labels, formattedPrices, className = ''
           </g>
         );
       })}
+      {/* Day labels */}
       {labels ? labels.map((label, i) => (
         <text
           key={i}
           x={xPositions[i]}
-          y={chartBottom + labelGap + labelHeight}
+          y={chartBottom + bottomPad + labelGap + labelHeight}
           textAnchor={i === 0 ? 'start' : i === labels.length - 1 ? 'end' : 'middle'}
           fill={labelFill}
           fontSize={6.5}

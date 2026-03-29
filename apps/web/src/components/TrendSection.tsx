@@ -33,7 +33,7 @@ export function TrendSection({ history, color }: TrendSectionProps) {
   const narratives = generateNarratives(history);
   const prices = history.map(h => h.price);
   const dayLabels = getDayLabels(history);
-  const formattedPrices = prices.map(p => `Rs ${p.toLocaleString(numberLocale)}`);
+  const formattedPrices = prices.map(p => p.toLocaleString(numberLocale));
 
   const narrativeText = narratives
     .map(n => formatNarrative(n, t as unknown as Record<string, string>))
