@@ -23,52 +23,23 @@ function parseChartData(html: string, varName: string): { days: number[]; prices
 }
 
 /**
- * Convert chart data into dated history entries using actual day-of-month labels.
- * FENEGOSIDA skips Saturday (Nepal's weekly holiday), so we derive dates from
- * the gaps between consecutive day labels rather than assuming consecutive days.
- * Each entry has a 1:1 mapping between day label, price, and computed date.
+ * Build history entries from chart data.
+ * FENEGOSIDA chart day labels are Nepali calendar (BS) day-of-month numbers,
+ * which don't map directly to Gregorian dates. Instead of attempting BS→AD
+ * conversion, we store the BS day label as the date identifier. The gaps
+ * between day labels are the same in both calendars (1 BS day = 1 AD day),
+ * so the sparkline shape is accurate.
+ * Saturday and public holidays are skipped — only trading days appear.
  * Returns null if fewer than 2 data points.
  */
 export function buildHistory(
   days: number[],
   prices: number[],
-  todayStr: string,
 ): { date: string; price: number }[] | null {
   if (days.length < 2 || days.length !== prices.length) return null;
 
-  // Anchor the last chart entry to its actual date, not today.
-  // On non-trading days (Saturday) the last chart day will be before today.
-  const today = new Date(todayStr + 'T00:00:00Z');
-  const lastChartDay = days[days.length - 1];
-  const todayDay = today.getUTCDate();
-
-  const dates = new Array<Date>(days.length);
-  const lastDate = new Date(today);
-  // Offset from today: if today=29 and last chart day=27, go back 2 days
-  let dayOffset = todayDay - lastChartDay;
-  // If offset is negative, last chart day is from previous month (e.g., today=2, chart=30)
-  if (dayOffset < 0) dayOffset += new Date(Date.UTC(
-    today.getUTCFullYear(), today.getUTCMonth(), 0,
-  )).getUTCDate();
-  lastDate.setUTCDate(lastDate.getUTCDate() - dayOffset);
-  dates[days.length - 1] = lastDate;
-
-  for (let i = days.length - 2; i >= 0; i--) {
-    let gap = days[i + 1] - days[i];
-    // If gap is <= 0, we crossed a month boundary (e.g., day 28 → day 1).
-    // In that case the real gap is small (1-3 days), not ~27 days.
-    if (gap <= 0) gap += new Date(Date.UTC(
-      dates[i + 1].getUTCFullYear(),
-      dates[i + 1].getUTCMonth(),
-      0, // day 0 = last day of previous month
-    )).getUTCDate();
-    const d = new Date(dates[i + 1]);
-    d.setUTCDate(d.getUTCDate() - gap);
-    dates[i] = d;
-  }
-
-  return dates.map((d, i) => ({
-    date: d.toISOString().split('T')[0],
+  return days.map((day, i) => ({
+    date: String(day),
     price: prices[i],
   }));
 }
@@ -127,8 +98,8 @@ export async function fetchFenegosida(): Promise<NepalPriceData> {
     silverPerGram10: gram.silver,
     previousGoldHallmark,
     previousSilver,
-    goldHistory: buildHistory(goldChart.days, goldChart.prices, todayStr),
-    silverHistory: buildHistory(silverChart.days, silverChart.prices, todayStr),
+    goldHistory: buildHistory(goldChart.days, goldChart.prices),
+    silverHistory: buildHistory(silverChart.days, silverChart.prices),
     date: todayStr,
   };
 }

@@ -21,10 +21,8 @@ function formatNarrative(
 }
 
 function getDayLabels(history: { date: string }[]): string[] {
-  return history.map(h => {
-    const d = new Date(h.date + 'T00:00:00');
-    return d.toLocaleDateString('en-US', { weekday: 'short' });
-  });
+  // The date field contains BS (Nepali calendar) day-of-month numbers
+  return history.map(h => h.date);
 }
 
 export function TrendSection({ history, color }: TrendSectionProps) {
