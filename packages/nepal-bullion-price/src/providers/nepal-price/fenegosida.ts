@@ -79,6 +79,14 @@ export async function fetchFenegosida(): Promise<NepalPriceData> {
     throw new Error('Suspicious gold price from fenegosida.org: ' + tola.golds[0]);
   }
 
+  // Extract the BS (Nepali calendar) date of the price from the page
+  const rateDateDay = $('.rate-date-day').first().text().trim();
+  const rateDateMonth = $('.rate-date-month').first().text().trim();
+  const rateDateYear = $('.rate-date-year').first().text().trim();
+  const priceDate = rateDateDay && rateDateMonth
+    ? `${rateDateMonth} ${rateDateDay}${rateDateYear ? `, ${rateDateYear}` : ''}`
+    : null;
+
   // Extract weekly chart data (skips Saturday — Nepal's weekly holiday)
   // data = gold weekly, data2 = silver weekly
   const goldChart = parseChartData(html, 'data');
@@ -100,6 +108,7 @@ export async function fetchFenegosida(): Promise<NepalPriceData> {
     previousSilver,
     goldHistory: buildHistory(goldChart.days, goldChart.prices),
     silverHistory: buildHistory(silverChart.days, silverChart.prices),
+    priceDate,
     date: todayStr,
   };
 }

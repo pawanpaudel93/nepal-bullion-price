@@ -5,6 +5,7 @@ export interface NepalGoldPrice {
   perGram10: number;
   previousPrice: number | null;
   history: { date: string; price: number }[] | null;
+  priceDate: string | null;
   source: string;
   date: string;
   updatedAt: string;
@@ -17,6 +18,7 @@ export interface NepalSilverPrice {
   perGram10: number;
   previousPrice: number | null;
   history: { date: string; price: number }[] | null;
+  priceDate: string | null;
   source: string;
   date: string;
   updatedAt: string;
@@ -87,6 +89,7 @@ export interface NepalPriceData {
   previousSilver: number | null;
   goldHistory: { date: string; price: number }[] | null;
   silverHistory: { date: string; price: number }[] | null;
+  priceDate: string | null;
   date: string;
 }
 

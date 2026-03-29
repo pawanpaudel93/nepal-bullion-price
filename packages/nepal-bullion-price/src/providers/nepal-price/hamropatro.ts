@@ -40,6 +40,7 @@ export async function fetchHamropatro(): Promise<NepalPriceData> {
     previousSilver: null,
     goldHistory: null,
     silverHistory: null,
+    priceDate: null,
     date: new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kathmandu' }),
   };
 }
