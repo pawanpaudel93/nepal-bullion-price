@@ -1,28 +1,10 @@
 import { Sparkline } from './Sparkline';
-import { generateNarratives, type Narrative } from '../utils/narrative';
+import { generateNarratives, formatNarrative } from '../utils/narrative';
 import { useLocale } from '../i18n';
 
 interface TrendSectionProps {
   history: { date: string; price: number }[];
   color: 'gold' | 'silver';
-}
-
-function formatNarrative(
-  narrative: Narrative,
-  t: Record<string, string>,
-): string {
-  let text = t[narrative.key] ?? narrative.key;
-  if (narrative.values) {
-    for (const [k, v] of Object.entries(narrative.values)) {
-      text = text.replace(`{${k}}`, String(v));
-    }
-  }
-  return `${narrative.emoji} ${text}`;
-}
-
-function getDayLabels(history: { date: string }[]): string[] {
-  // The date field contains BS (Nepali calendar) day-of-month numbers
-  return history.map(h => h.date);
 }
 
 export function TrendSection({ history, color }: TrendSectionProps) {
@@ -32,11 +14,11 @@ export function TrendSection({ history, color }: TrendSectionProps) {
 
   const narratives = generateNarratives(history);
   const prices = history.map(h => h.price);
-  const dayLabels = getDayLabels(history);
+  const dayLabels = history.map(h => h.date);
   const formattedPrices = prices.map(p => `Rs ${p.toLocaleString(numberLocale)}`);
 
   const narrativeText = narratives
-    .map(n => formatNarrative(n, t as unknown as Record<string, string>))
+    .map(n => formatNarrative(n, t as Record<string, string>))
     .join(' · ');
 
   const bgColor = color === 'gold'
@@ -48,7 +30,7 @@ export function TrendSection({ history, color }: TrendSectionProps) {
     : 'text-silver-500 dark:text-silver-300';
 
   return (
-    <div className={`mt-4 mb-2 px-4 pt-3 pb-2 rounded-xl border ${bgColor}`}>
+    <div className={`mt-4 mb-2 px-4 pt-3 pb-2 rounded-xl border ${bgColor}`} role="region" aria-label={t.weeklyTrend}>
       <div className="flex justify-between items-center mb-1">
         <span className={`text-[10px] font-medium uppercase tracking-[0.15em] ${labelColor}`}>
           {t.weeklyTrend}

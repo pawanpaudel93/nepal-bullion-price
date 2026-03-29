@@ -4,6 +4,20 @@ export interface Narrative {
   values?: Record<string, string | number>;
 }
 
+/** Format a narrative for display using i18n translations. */
+export function formatNarrative(
+  narrative: Narrative,
+  translations: Record<string, string>,
+): string {
+  let text = translations[narrative.key] ?? narrative.key;
+  if (narrative.values) {
+    for (const [k, v] of Object.entries(narrative.values)) {
+      text = text.replace(`{${k}}`, String(v));
+    }
+  }
+  return `${narrative.emoji} ${text}`;
+}
+
 interface HistoryEntry {
   date: string;
   price: number;
@@ -37,11 +51,10 @@ export function generateNarratives(history: HistoryEntry[]): Narrative[] {
     }
   }
 
-  // Priority 2: Streak — 3+ consecutive prior days in same direction (capped at 3)
-  if (narratives.length < 2) {
-    let streak = 0;
-    const maxLookback = 3;
-    for (let i = history.length - 2; i > 0 && streak < maxLookback; i--) {
+  // Priority 2: Streak — 3+ consecutive days moving in the same direction (including today)
+  if (narratives.length < 2 && todayChange !== 0) {
+    let streak = 1; // today's move counts as the first day
+    for (let i = history.length - 2; i > 0; i--) {
       const diff = history[i].price - history[i - 1].price;
       if (todayChange > 0 && diff > 0) streak++;
       else if (todayChange < 0 && diff < 0) streak++;

@@ -52,18 +52,20 @@ const flatWeek = [
 ];
 
 describe('generateNarratives', () => {
-  it('detects a 3-day rising streak', () => {
+  it('detects a rising streak (including today)', () => {
     const result = generateNarratives(rising3Days);
     const streak = result.find(n => n.key === 'streak_rising');
     expect(streak).toBeDefined();
-    expect(streak!.values!.n).toBe(3);
+    // Days 23→24→25→26→27 all rising = 5 consecutive days including today
+    expect(streak!.values!.n).toBe(5);
   });
 
-  it('detects a 3-day falling streak', () => {
+  it('detects a falling streak (including today)', () => {
     const result = generateNarratives(falling3Days);
     const streak = result.find(n => n.key === 'streak_falling');
     expect(streak).toBeDefined();
-    expect(streak!.values!.n).toBe(3);
+    // Days 24→25→26→27 all falling = 4 days including today
+    expect(streak!.values!.n).toBe(4);
   });
 
   it('detects weekly high', () => {

@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { generateShareImage } from '../utils/shareCard';
-import { generateNarratives } from '../utils/narrative';
+import { generateNarratives, formatNarrative } from '../utils/narrative';
 import { useLocale } from '../i18n';
 
 interface ShareButtonProps {
@@ -24,6 +24,10 @@ function ShareIcon({ className }: { className?: string }) {
   );
 }
 
+function isMobile(): boolean {
+  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
+
 export function ShareButton({ metal, metalName, price, previousPrice, history, date }: ShareButtonProps) {
   const { t, numberLocale } = useLocale();
   const [sharing, setSharing] = useState(false);
@@ -35,15 +39,7 @@ export function ShareButton({ metal, metalName, price, previousPrice, history, d
     try {
       const narratives = history && history.length >= 2 ? generateNarratives(history) : [];
       const narrativeText = narratives
-        .map(n => {
-          let text = (t as unknown as Record<string, string>)[n.key] ?? n.key;
-          if (n.values) {
-            for (const [k, v] of Object.entries(n.values)) {
-              text = text.replace(`{${k}}`, String(v));
-            }
-          }
-          return `${n.emoji} ${text}`;
-        })
+        .map(n => formatNarrative(n, t as Record<string, string>))
         .join(' · ');
 
       const blob = await generateShareImage({
@@ -66,10 +62,11 @@ export function ShareButton({ metal, metalName, price, previousPrice, history, d
         : '';
       const shareText = `${metalName}: Rs ${price.toLocaleString(numberLocale)}/tola ${changeStr} — Nepal Bullion Price\nbullion.pawanpaudel.com.np`;
 
-      if (navigator.share && navigator.canShare?.({ files: [file] })) {
+      // Mobile: use native share sheet (WhatsApp, Facebook, etc.)
+      if (isMobile() && navigator.share && navigator.canShare?.({ files: [file] })) {
         await navigator.share({ files: [file], text: shareText });
       } else {
-        // Fallback: download the image
+        // Desktop: download the image
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -78,7 +75,6 @@ export function ShareButton({ metal, metalName, price, previousPrice, history, d
         URL.revokeObjectURL(url);
       }
     } catch (err) {
-      // User cancelled share — ignore AbortError
       if (err instanceof Error && err.name !== 'AbortError') {
         console.error('Share failed:', err);
       }
