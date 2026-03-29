@@ -83,19 +83,19 @@ export function ShareButton({ metal, metalName, price, previousPrice, history, d
     }
   }, [metal, metalName, price, previousPrice, history, date, t, numberLocale, sharing]);
 
-  // Only show on mobile where native share sheet (WhatsApp, Facebook, etc.) works
-  if (!isMobile()) return null;
+  const mobile = isMobile();
+  const label = mobile ? t.share : t.save;
 
   return (
     <button
       onClick={handleShare}
       disabled={sharing}
       className="inline-flex items-center gap-1.5 text-[13px] text-ink-muted dark:text-ink-faint hover:text-ink dark:hover:text-white transition-colors font-light cursor-pointer"
-      aria-label={t.share}
-      title={t.share}
+      aria-label={label}
+      title={label}
     >
       <ShareIcon className="w-4 h-4" />
-      <span>{t.share}</span>
+      {mobile ? <span>{t.share}</span> : null}
     </button>
   );
 }

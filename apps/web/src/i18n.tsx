@@ -49,6 +49,7 @@ const translations = {
     streak_falling: 'Falling {n} days',
     // Share
     share: 'Share',
+    save: 'Save',
     shareText: '{metal}: Rs {price}/tola ({change}) — Nepal Bullion Price',
   },
   ne: {
@@ -97,6 +98,7 @@ const translations = {
     streak_falling: '{n} दिनदेखि घट्दो',
     // Share
     share: 'सेयर',
+    save: 'सेभ',
     shareText: '{metal}: रू {price} प्रति तोला ({change}) — नेपाल बुलियन मूल्य',
   },
 } as const;
