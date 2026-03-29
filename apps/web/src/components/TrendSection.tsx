@@ -28,13 +28,14 @@ function getDayLabels(history: { date: string }[]): string[] {
 }
 
 export function TrendSection({ history, color }: TrendSectionProps) {
-  const { t } = useLocale();
+  const { t, numberLocale } = useLocale();
 
   if (history.length < 2) return null;
 
   const narratives = generateNarratives(history);
   const prices = history.map(h => h.price);
   const dayLabels = getDayLabels(history);
+  const formattedPrices = prices.map(p => `Rs ${p.toLocaleString(numberLocale)}`);
 
   const narrativeText = narratives
     .map(n => formatNarrative(n, t as unknown as Record<string, string>))
@@ -61,7 +62,7 @@ export function TrendSection({ history, color }: TrendSectionProps) {
         ) : null}
       </div>
 
-      <Sparkline data={prices} color={color} labels={dayLabels} />
+      <Sparkline data={prices} color={color} labels={dayLabels} formattedPrices={formattedPrices} />
     </div>
   );
 }
