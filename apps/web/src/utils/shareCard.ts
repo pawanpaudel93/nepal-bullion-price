@@ -103,7 +103,7 @@ export async function generateShareImage(data: ShareCardData): Promise<Blob> {
   ctx.fillStyle = WHITE;
   ctx.font = '600 32px system-ui, sans-serif';
   ctx.textAlign = 'left';
-  ctx.fillText('Nepal Bullion', pad + 60, pad + 34);
+  ctx.fillText('Nepal Bullion', pad + 22 * s + 16, pad + 34);
 
   // Date (BS date if available, else Gregorian)
   const displayDate = data.priceDate
