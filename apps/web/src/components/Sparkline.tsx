@@ -76,8 +76,11 @@ export function Sparkline({ data, color, labels, formattedPrices, className = ''
         const cy = getY(val);
         const isLast = i === data.length - 1;
         const anchor = i === 0 ? 'start' : i === data.length - 1 ? 'end' : 'middle';
-        // Place label just above the point
-        const priceLabelY = cy - 5;
+        // Alternate above/below to avoid overlap.
+        // Last point always above, second-to-last always below.
+        const isSecondToLast = i === data.length - 2;
+        const above = isLast ? true : isSecondToLast ? false : i % 2 === 0;
+        const priceLabelY = above ? cy - 5 : cy + 9;
         return (
           <g key={i}>
             {/* Dot */}
@@ -96,7 +99,7 @@ export function Sparkline({ data, color, labels, formattedPrices, className = ''
                 y={priceLabelY}
                 textAnchor={anchor}
                 fill={strokeColor}
-                fontSize={4.5}
+                fontSize={3.8}
                 fontFamily="ui-monospace, monospace"
                 fontWeight={600}
                 opacity={0.85}
