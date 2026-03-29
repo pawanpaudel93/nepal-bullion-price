@@ -25,7 +25,8 @@ function parseChartData(html: string, varName: string): { days: number[]; prices
 /**
  * Convert chart data into dated history entries using actual day-of-month labels.
  * FENEGOSIDA skips Saturday (Nepal's weekly holiday), so we derive dates from
- * the day labels rather than assuming consecutive days.
+ * the gaps between consecutive day labels rather than assuming consecutive days.
+ * Each entry has a 1:1 mapping between day label, price, and computed date.
  * Returns null if fewer than 2 data points.
  */
 export function buildHistory(
@@ -35,33 +36,32 @@ export function buildHistory(
 ): { date: string; price: number }[] | null {
   if (days.length < 2 || days.length !== prices.length) return null;
 
-  // The last chart entry corresponds to today (or the most recent trading day).
-  // Walk backwards day by day from today, matching chart day labels to find actual dates.
+  // Last chart entry = most recent trading day. Anchor it to today's date.
   const today = new Date(todayStr + 'T00:00:00Z');
 
-  // Build a map: day-of-month → price, then walk calendar backwards to find each day
-  const dayPriceMap = new Map<number, number>();
-  for (let i = 0; i < days.length; i++) {
-    dayPriceMap.set(days[i], prices[i]);
+  // Build dates array working backwards from the last entry.
+  // Use gaps between adjacent day labels to compute calendar offsets.
+  const dates = new Array<Date>(days.length);
+  dates[days.length - 1] = new Date(today);
+
+  for (let i = days.length - 2; i >= 0; i--) {
+    let gap = days[i + 1] - days[i];
+    // If gap is <= 0, we crossed a month boundary (e.g., day 28 → day 1).
+    // In that case the real gap is small (1-3 days), not ~27 days.
+    if (gap <= 0) gap += new Date(Date.UTC(
+      dates[i + 1].getUTCFullYear(),
+      dates[i + 1].getUTCMonth(),
+      0, // day 0 = last day of previous month
+    )).getUTCDate();
+    const d = new Date(dates[i + 1]);
+    d.setUTCDate(d.getUTCDate() - gap);
+    dates[i] = d;
   }
 
-  // Walk backwards from today, collecting entries whose day-of-month appears in chart data
-  const result: { date: string; price: number }[] = [];
-  const d = new Date(today);
-  const maxLookback = 14; // chart spans ~7 trading days, max 14 calendar days back
-
-  for (let step = 0; step < maxLookback && result.length < days.length; step++) {
-    const dom = d.getUTCDate();
-    if (dayPriceMap.has(dom)) {
-      result.unshift({
-        date: d.toISOString().split('T')[0],
-        price: dayPriceMap.get(dom)!,
-      });
-    }
-    d.setUTCDate(d.getUTCDate() - 1);
-  }
-
-  return result.length >= 2 ? result : null;
+  return dates.map((d, i) => ({
+    date: d.toISOString().split('T')[0],
+    price: prices[i],
+  }));
 }
 
 export async function fetchFenegosida(): Promise<NepalPriceData> {
