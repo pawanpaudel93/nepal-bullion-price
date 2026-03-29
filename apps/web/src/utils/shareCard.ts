@@ -39,33 +39,71 @@ export async function generateShareImage(data: ShareCardData): Promise<Blob> {
   ctx.fillStyle = grad;
   ctx.fill();
 
-  // Metal icon — gold bar / silver ingot shape
+  // Metal icon — same bucket icon as the website, drawn at 2.5x scale
+  const s = 2.5; // scale factor
+  const ix = pad - 2, iy = pad - 5;
+  const isGold = data.metal === 'gold';
+
+  // Bucket body
   ctx.beginPath();
-  const ix = pad, iy = pad + 4;
-  ctx.moveTo(ix + 10, iy);
-  ctx.lineTo(ix + 34, iy);
-  ctx.lineTo(ix + 40, iy + 16);
-  ctx.lineTo(ix + 40, iy + 28);
-  ctx.lineTo(ix + 4, iy + 28);
-  ctx.lineTo(ix + 4, iy + 16);
+  ctx.moveTo(ix + 3 * s, iy + 11 * s);
+  ctx.lineTo(ix + 21 * s, iy + 11 * s);
+  ctx.lineTo(ix + 19 * s, iy + 21 * s);
+  ctx.lineTo(ix + 5 * s, iy + 21 * s);
   ctx.closePath();
-  ctx.fillStyle = metalColor;
+  ctx.fillStyle = isGold ? '#EAB308' : '#CBD5E1';
   ctx.fill();
-  // Highlight on top face
+  ctx.strokeStyle = isGold ? '#CA8A04' : '#94A3B8';
+  ctx.lineWidth = 1.5 * s;
+  ctx.stroke();
+
+  // Bucket rim
   ctx.beginPath();
-  ctx.moveTo(ix + 10, iy);
-  ctx.lineTo(ix + 34, iy);
-  ctx.lineTo(ix + 40, iy + 16);
-  ctx.lineTo(ix + 4, iy + 16);
-  ctx.closePath();
-  ctx.fillStyle = data.metal === 'gold' ? '#F0D68A' : '#E8E5E3';
+  ctx.roundRect(ix + 2.5 * s, iy + 10.5 * s, 19 * s, 2 * s, 1 * s);
+  ctx.fillStyle = isGold ? '#CA8A04' : '#94A3B8';
+  ctx.fill();
+
+  // Balls — back row
+  ctx.beginPath();
+  ctx.arc(ix + 9 * s, iy + 7.5 * s, 2 * s, 0, Math.PI * 2);
+  ctx.fillStyle = isGold ? '#FACC15' : '#E2E8F0';
+  ctx.fill();
+  ctx.strokeStyle = isGold ? '#CA8A04' : '#94A3B8';
+  ctx.lineWidth = 0.75 * s;
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(ix + 15 * s, iy + 7.5 * s, 2 * s, 0, Math.PI * 2);
+  ctx.fillStyle = isGold ? '#EAB308' : '#CBD5E1';
+  ctx.fill();
+  ctx.strokeStyle = isGold ? '#A16207' : '#64748B';
+  ctx.stroke();
+
+  // Front ball
+  ctx.beginPath();
+  ctx.arc(ix + 12 * s, iy + 6 * s, 2.2 * s, 0, Math.PI * 2);
+  ctx.fillStyle = isGold ? '#FDE047' : '#F1F5F9';
+  ctx.fill();
+  ctx.strokeStyle = isGold ? '#CA8A04' : '#94A3B8';
+  ctx.stroke();
+
+  // Gold bar peeking out
+  ctx.beginPath();
+  ctx.roundRect(ix + 7 * s, iy + 9 * s, 10 * s, 2.5 * s, 0.5 * s);
+  ctx.fillStyle = isGold ? '#FACC15' : '#E2E8F0';
+  ctx.fill();
+
+  // Shine
+  ctx.beginPath();
+  ctx.arc(ix + 11.2 * s, iy + 5.2 * s, 0.6 * s, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
   ctx.fill();
 
   // "Nepal Bullion"
   ctx.fillStyle = WHITE;
   ctx.font = '600 32px system-ui, sans-serif';
   ctx.textAlign = 'left';
-  ctx.fillText('Nepal Bullion', pad + 54, pad + 34);
+  ctx.fillText('Nepal Bullion', pad + 60, pad + 34);
 
   // Date (BS date if available, else Gregorian)
   const displayDate = data.priceDate
