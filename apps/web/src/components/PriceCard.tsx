@@ -59,7 +59,7 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, delay = 
       {/* Nepal FENEGOSIDA Price — The Hero */}
       <div className="mb-8">
         <p className="text-[10px] ne-text-boost font-medium uppercase tracking-[0.2em] text-ink-faint dark:text-ink-faint mb-3">
-          {nepalPrice?.priceDate ? nepalPrice.priceDate.replace(/,\s*\d{4}$/, '') : t.nepalPrice}
+          {t.nepalPrice}{nepalPrice?.priceDate ? ` · ${nepalPrice.priceDate.replace(/,\s*\d{4}$/, '')}` : null}
         </p>
         {nepalPrice ? (
           <>
