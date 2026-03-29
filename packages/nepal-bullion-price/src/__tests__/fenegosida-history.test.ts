@@ -10,12 +10,23 @@ describe('buildHistory', () => {
     const result = buildHistory(days, prices, todayStr);
 
     expect(result).toHaveLength(7);
-    // Last entry should be today (13th)
     expect(result![6]).toEqual({ date: '2026-03-13', price: 281000 });
-    // First entry should be the 6th
     expect(result![0]).toEqual({ date: '2026-03-06', price: 294500 });
     // Saturday (7th) is skipped — no entry for it
     expect(result![1]).toEqual({ date: '2026-03-08', price: 282000 });
+  });
+
+  it('anchors last entry to actual chart day, not today (Saturday case)', () => {
+    // Today is Saturday March 14 — no trading. Last chart day is 13 (Friday).
+    const days = [6, 8, 9, 10, 11, 12, 13];
+    const prices = [294500, 282000, 275500, 273900, 288500, 285600, 281000];
+    const todayStr = '2026-03-14'; // Saturday
+    const result = buildHistory(days, prices, todayStr);
+
+    expect(result).toHaveLength(7);
+    // Last entry should be March 13 (Friday), NOT March 14 (Saturday)
+    expect(result![6]).toEqual({ date: '2026-03-13', price: 281000 });
+    expect(result![0]).toEqual({ date: '2026-03-06', price: 294500 });
   });
 
   it('returns null for empty arrays', () => {

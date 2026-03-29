@@ -36,13 +36,22 @@ export function buildHistory(
 ): { date: string; price: number }[] | null {
   if (days.length < 2 || days.length !== prices.length) return null;
 
-  // Last chart entry = most recent trading day. Anchor it to today's date.
+  // Anchor the last chart entry to its actual date, not today.
+  // On non-trading days (Saturday) the last chart day will be before today.
   const today = new Date(todayStr + 'T00:00:00Z');
+  const lastChartDay = days[days.length - 1];
+  const todayDay = today.getUTCDate();
 
-  // Build dates array working backwards from the last entry.
-  // Use gaps between adjacent day labels to compute calendar offsets.
   const dates = new Array<Date>(days.length);
-  dates[days.length - 1] = new Date(today);
+  const lastDate = new Date(today);
+  // Offset from today: if today=29 and last chart day=27, go back 2 days
+  let dayOffset = todayDay - lastChartDay;
+  // If offset is negative, last chart day is from previous month (e.g., today=2, chart=30)
+  if (dayOffset < 0) dayOffset += new Date(Date.UTC(
+    today.getUTCFullYear(), today.getUTCMonth(), 0,
+  )).getUTCDate();
+  lastDate.setUTCDate(lastDate.getUTCDate() - dayOffset);
+  dates[days.length - 1] = lastDate;
 
   for (let i = days.length - 2; i >= 0; i--) {
     let gap = days[i + 1] - days[i];
