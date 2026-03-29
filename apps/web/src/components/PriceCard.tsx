@@ -127,16 +127,15 @@ function PriceChange({ current, previous, t, numberLocale }: { current: number; 
   return (
     <p
       className={`flex items-center gap-1.5 mt-2 text-[12px] font-light ${isUp ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500 dark:text-red-400'}`}
-      aria-label={`${isUp ? t.priceUp : t.priceDown} Rs ${Math.abs(diff).toLocaleString(numberLocale)}, ${pct}% ${t.from} Rs ${previous.toLocaleString(numberLocale)}`}
+      aria-label={`${isUp ? t.priceUp : t.priceDown} Rs ${previous.toLocaleString(numberLocale)} to Rs ${current.toLocaleString(numberLocale)}, ${isUp ? '+' : ''}${pct}%`}
     >
       <svg viewBox="0 0 12 12" fill="currentColor" className={`w-3 h-3 shrink-0 ${isUp ? '' : 'rotate-180'}`} aria-hidden="true">
         <path d="M6 2l4 5H2l4-5z" />
       </svg>
-      <span className="font-mono font-normal">{isUp ? '+' : ''}{diff.toLocaleString(numberLocale)}</span>
-      <span>({pct}%)</span>
-      <span className="text-ink-muted dark:text-ink-faint">{t.from}</span>
-      <span className="text-ink-muted dark:text-ink-faint">{t.yesterday}</span>
-      <span className="text-ink dark:text-white/70 font-mono font-normal">Rs {previous.toLocaleString(numberLocale)}</span>
+      <span className="text-ink-muted dark:text-ink-faint font-mono font-normal">Rs {previous.toLocaleString(numberLocale)}</span>
+      <span className="text-ink-muted dark:text-ink-faint">→</span>
+      <span className="font-mono font-normal">Rs {current.toLocaleString(numberLocale)}</span>
+      <span>({isUp ? '+' : ''}{pct}%)</span>
     </p>
   );
 }
