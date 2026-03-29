@@ -10,11 +10,13 @@ export function Sparkline({ data, color, labels, formattedPrices, className = ''
   if (data.length < 2) return null;
 
   const width = 200;
-  const chartTop = 0;
+  const tipSpace = formattedPrices ? 10 : 0;
+  const chartTop = tipSpace;
   const chartHeight = 48;
+  const tipSpaceBottom = formattedPrices ? 10 : 0;
   const labelGap = labels ? 5 : 0;
   const labelHeight = labels ? 10 : 0;
-  const height = chartHeight + labelGap + labelHeight;
+  const height = tipSpace + chartHeight + tipSpaceBottom + labelGap + labelHeight;
   const padX = 6;
   const padY = 6;
 
@@ -65,7 +67,9 @@ export function Sparkline({ data, color, labels, formattedPrices, className = ''
           <stop offset="100%" stopColor={fillColorStart} stopOpacity={0.02} />
         </linearGradient>
       </defs>
+      {/* Gradient fill */}
       <path d={fillPath} fill={`url(#${gradientId})`} />
+      {/* Line */}
       <polyline
         points={points}
         fill="none"
@@ -74,30 +78,36 @@ export function Sparkline({ data, color, labels, formattedPrices, className = ''
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      {/* Data points — price shown on hover */}
+      {/* Dots (rendered after line so they sit on top) */}
+      {data.map((val, i) => {
+        const cx = xPositions[i];
+        const cy = getY(val);
+        const isLast = i === data.length - 1;
+        return isLast ? (
+          <g key={i}>
+            <circle cx={cx} cy={cy} r={4.5} fill={strokeColor} />
+            <circle cx={cx} cy={cy} r={2} fill="var(--color-paper, #FAFAF9)" />
+          </g>
+        ) : (
+          <circle key={i} cx={cx} cy={cy} r={2} fill={strokeColor} opacity={0.5} />
+        );
+      })}
+      {/* Interactive hover areas + tooltips (rendered last = on top of everything) */}
       {data.map((val, i) => {
         const cx = xPositions[i];
         const cy = getY(val);
         const isLast = i === data.length - 1;
         const anchor = i === 0 ? 'start' : isLast ? 'end' : 'middle';
-        const tipY = cy > chartHeight * 0.5 ? cy - 6 : cy + 10;
+        // Tooltip in reserved space: above chart area or below chart area
+        const tipAbove = cy > chartTop + chartHeight * 0.4;
+        const tipY = tipAbove ? chartTop - 2 + tipSpace : chartBottom + 8;
         return (
           <g key={i} className="spark-pt" style={{ cursor: 'pointer' }}>
             {/* Invisible hit area */}
-            <circle cx={cx} cy={cy} r={10} fill="transparent" />
-            {/* Dot */}
-            {isLast ? (
-              <>
-                <circle cx={cx} cy={cy} r={4.5} fill={strokeColor} />
-                <circle cx={cx} cy={cy} r={2} fill="var(--color-paper, #FAFAF9)" />
-              </>
-            ) : (
-              <>
-                <circle cx={cx} cy={cy} r={2} fill={strokeColor} opacity={0.5} />
-                <circle className="spark-dot-hover" cx={cx} cy={cy} r={3.5} fill={strokeColor} />
-              </>
-            )}
-            {/* Price on hover */}
+            <circle cx={cx} cy={cy} r={12} fill="transparent" />
+            {/* Enlarged dot on hover */}
+            {!isLast && <circle className="spark-dot-hover" cx={cx} cy={cy} r={3.5} fill={strokeColor} />}
+            {/* Price tooltip — in reserved space above or below the chart */}
             {formattedPrices?.[i] ? (
               <text
                 className="spark-tip"
@@ -120,7 +130,7 @@ export function Sparkline({ data, color, labels, formattedPrices, className = ''
         <text
           key={i}
           x={xPositions[i]}
-          y={chartBottom + labelGap + labelHeight}
+          y={chartBottom + tipSpaceBottom + labelGap + labelHeight}
           textAnchor={i === 0 ? 'start' : i === labels.length - 1 ? 'end' : 'middle'}
           fill={labelFill}
           fontSize={6.5}
