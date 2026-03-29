@@ -10,6 +10,7 @@ interface ShareButtonProps {
   previousPrice: number | null;
   history: { date: string; price: number }[] | null;
   date: string;
+  priceDate?: string | null;
 }
 
 function ShareIcon({ className }: { className?: string }) {
@@ -28,7 +29,7 @@ function isMobile(): boolean {
   return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 }
 
-export function ShareButton({ metal, metalName, price, previousPrice, history, date }: ShareButtonProps) {
+export function ShareButton({ metal, metalName, price, previousPrice, history, date, priceDate }: ShareButtonProps) {
   const { t, numberLocale } = useLocale();
   const [sharing, setSharing] = useState(false);
 
@@ -51,6 +52,7 @@ export function ShareButton({ metal, metalName, price, previousPrice, history, d
         narrativeText,
         numberLocale,
         date,
+        priceDate,
       });
 
       const file = new File([blob], `${metal}-price-${date}.png`, { type: 'image/png' });

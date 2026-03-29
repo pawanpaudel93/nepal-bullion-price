@@ -52,6 +52,7 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, delay = 
             previousPrice={nepalPrice.previousPrice}
             history={nepalPrice.history ?? null}
             date={nepalPrice.date}
+            priceDate={nepalPrice.priceDate}
           />
         ) : null}
       </div>
