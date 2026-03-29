@@ -47,9 +47,6 @@ export function Sparkline({ data, color, labels, formattedPrices, className = ''
     ? 'var(--color-gold-400)'
     : 'var(--color-silver-400)';
   const labelFill = 'var(--color-ink-faint)';
-  const tooltipBg = color === 'gold'
-    ? 'var(--color-gold-700)'
-    : 'var(--color-silver-500)';
 
   return (
     <svg
@@ -103,30 +100,20 @@ export function Sparkline({ data, color, labels, formattedPrices, className = ''
                 <circle className="spark-dot-hover" cx={cx} cy={cy} r={3} fill={strokeColor} opacity={0} />
               </>
             )}
-            {/* Tooltip on hover */}
+            {/* Price label on hover */}
             {formattedPrices?.[i] ? (
-              <g className="spark-tip">
-                <rect
-                  x={cx - (anchor === 'middle' ? 20 : anchor === 'start' ? 0 : 40)}
-                  y={cy - (tooltipHeight ? cy - chartTop + 12 : 14)}
-                  width={40}
-                  height={9}
-                  rx={2}
-                  fill={tooltipBg}
-                  opacity={0.9}
-                />
-                <text
-                  x={cx}
-                  y={cy - (tooltipHeight ? cy - chartTop + 5 : 7)}
-                  textAnchor={anchor}
-                  fill="white"
-                  fontSize={5.5}
-                  fontFamily="ui-monospace, monospace"
-                  fontWeight={600}
-                >
-                  {formattedPrices[i]}
-                </text>
-              </g>
+              <text
+                className="spark-tip"
+                x={cx}
+                y={chartTop + 6}
+                textAnchor={anchor}
+                fill={strokeColor}
+                fontSize={6}
+                fontFamily="ui-monospace, monospace"
+                fontWeight={700}
+              >
+                {formattedPrices[i]}
+              </text>
             ) : null}
           </g>
         );
