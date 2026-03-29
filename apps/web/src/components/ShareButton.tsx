@@ -83,6 +83,9 @@ export function ShareButton({ metal, metalName, price, previousPrice, history, d
     }
   }, [metal, metalName, price, previousPrice, history, date, t, numberLocale, sharing]);
 
+  // Only show on mobile where native share sheet (WhatsApp, Facebook, etc.) works
+  if (!isMobile()) return null;
+
   return (
     <button
       onClick={handleShare}
