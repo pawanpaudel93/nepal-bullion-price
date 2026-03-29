@@ -55,7 +55,7 @@ export function ShareButton({ metal, metalName, price, previousPrice, history, d
         priceDate,
       });
 
-      const file = new File([blob], `${metal}-price-${date}.png`, { type: 'image/png' });
+      const file = new File([blob], `${metal}-price-${date}.jpg`, { type: 'image/jpeg' });
 
       // Build share text
       const diff = previousPrice != null ? price - previousPrice : 0;

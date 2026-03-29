@@ -39,17 +39,33 @@ export async function generateShareImage(data: ShareCardData): Promise<Blob> {
   ctx.fillStyle = grad;
   ctx.fill();
 
-  // Logo square
+  // Metal icon — gold bar / silver ingot shape
   ctx.beginPath();
-  ctx.roundRect(pad, pad, 48, 48, 10);
+  const ix = pad, iy = pad + 4;
+  ctx.moveTo(ix + 10, iy);
+  ctx.lineTo(ix + 34, iy);
+  ctx.lineTo(ix + 40, iy + 16);
+  ctx.lineTo(ix + 40, iy + 28);
+  ctx.lineTo(ix + 4, iy + 28);
+  ctx.lineTo(ix + 4, iy + 16);
+  ctx.closePath();
   ctx.fillStyle = metalColor;
+  ctx.fill();
+  // Highlight on top face
+  ctx.beginPath();
+  ctx.moveTo(ix + 10, iy);
+  ctx.lineTo(ix + 34, iy);
+  ctx.lineTo(ix + 40, iy + 16);
+  ctx.lineTo(ix + 4, iy + 16);
+  ctx.closePath();
+  ctx.fillStyle = data.metal === 'gold' ? '#F0D68A' : '#E8E5E3';
   ctx.fill();
 
   // "Nepal Bullion"
   ctx.fillStyle = WHITE;
   ctx.font = '600 32px system-ui, sans-serif';
   ctx.textAlign = 'left';
-  ctx.fillText('Nepal Bullion', pad + 64, pad + 34);
+  ctx.fillText('Nepal Bullion', pad + 54, pad + 34);
 
   // Date (BS date if available, else Gregorian)
   const displayDate = data.priceDate
@@ -166,6 +182,6 @@ export async function generateShareImage(data: ShareCardData): Promise<Blob> {
     canvas.toBlob(blob => {
       if (blob) resolve(blob);
       else reject(new Error('Failed to generate share image'));
-    }, 'image/png');
+    }, 'image/jpeg', 0.9);
   });
 }
