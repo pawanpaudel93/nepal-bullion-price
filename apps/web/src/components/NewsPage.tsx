@@ -34,42 +34,38 @@ export function NewsPage() {
   return (
     <div className="animate-fade-up">
       {/* Filter bar */}
-      <div className="flex items-center gap-3 mb-6 overflow-x-auto pb-1">
+      <div className="flex items-center gap-2.5 mb-6 overflow-x-auto pb-1 scrollbar-none">
         {/* Language filters */}
-        <div className="flex gap-1.5">
-          {(['all', 'en', 'np'] as const).map(f => (
-            <button
-              key={f}
-              onClick={() => { setLangFilter(f); setVisibleCount(PAGE_SIZE); }}
-              className={`px-3.5 py-2 rounded-full text-[11px] font-medium tracking-wide cursor-pointer transition-colors focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:outline-none ${
-                langFilter === f
-                  ? 'bg-gold-500 text-white'
-                  : 'bg-ink/5 dark:bg-white/8 text-ink-muted dark:text-ink-faint hover:bg-ink/10 dark:hover:bg-white/12'
-              }`}
-            >
-              {f === 'all' ? t.allLanguages : f === 'en' ? t.english : t.nepali}
-            </button>
-          ))}
-        </div>
+        {(['all', 'en', 'np'] as const).map(f => (
+          <button
+            key={`lang-${f}`}
+            onClick={() => { setLangFilter(f); setVisibleCount(PAGE_SIZE); }}
+            className={`shrink-0 px-3 py-1.5 rounded-full text-[11px] font-medium tracking-wide cursor-pointer transition-colors focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:outline-none ${
+              langFilter === f
+                ? 'bg-gold-500 text-white'
+                : 'bg-ink/5 dark:bg-white/8 text-ink-muted dark:text-ink-faint hover:bg-ink/10 dark:hover:bg-white/12'
+            }`}
+          >
+            {f === 'all' ? t.allLanguages : f === 'en' ? t.english : t.nepali}
+          </button>
+        ))}
 
-        <div className="w-px h-5 bg-ink/10 dark:bg-white/10" />
+        <div className="shrink-0 w-px h-4 bg-ink/10 dark:bg-white/10" />
 
         {/* Category filters */}
-        <div className="flex gap-1.5">
-          {(['all', 'gold', 'silver'] as const).map(f => (
-            <button
-              key={f}
-              onClick={() => { setCategoryFilter(f); setVisibleCount(PAGE_SIZE); }}
-              className={`px-3.5 py-2 rounded-full text-[11px] font-medium tracking-wide cursor-pointer transition-colors focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:outline-none ${
-                categoryFilter === f
-                  ? 'bg-gold-500 text-white'
-                  : 'bg-ink/5 dark:bg-white/8 text-ink-muted dark:text-ink-faint hover:bg-ink/10 dark:hover:bg-white/12'
-              }`}
-            >
-              {f === 'all' ? t.allCategories : f === 'gold' ? t.gold : t.silver}
-            </button>
-          ))}
-        </div>
+        {(['all', 'gold', 'silver'] as const).map(f => (
+          <button
+            key={`cat-${f}`}
+            onClick={() => { setCategoryFilter(f); setVisibleCount(PAGE_SIZE); }}
+            className={`shrink-0 px-3 py-1.5 rounded-full text-[11px] font-medium tracking-wide cursor-pointer transition-colors focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:outline-none ${
+              categoryFilter === f
+                ? 'bg-gold-500 text-white'
+                : 'bg-ink/5 dark:bg-white/8 text-ink-muted dark:text-ink-faint hover:bg-ink/10 dark:hover:bg-white/12'
+            }`}
+          >
+            {f === 'all' ? t.allCategories : f === 'gold' ? t.gold : t.silver}
+          </button>
+        ))}
       </div>
 
       {/* Loading */}
