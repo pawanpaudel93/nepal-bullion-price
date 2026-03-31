@@ -184,4 +184,8 @@
     .sparkline-hover .spark-pt:active .spark-tip { opacity: 1 !important; }
     .sparkline-hover .spark-pt:active .spark-dot-hover { opacity: 1 !important; }
   }
+
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
 }
