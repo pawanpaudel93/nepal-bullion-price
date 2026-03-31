@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { useBullionPrices } from './hooks/useBullionPrices';
 import { useLocale } from './i18n';
-import { Header } from './components/Header';
+import { Header, type Tab } from './components/Header';
 import { PriceCard } from './components/PriceCard';
 import { GoldIcon, SilverIcon } from './components/Icons';
-import { TabBar, type Tab } from './components/TabBar';
 import { NewsPage } from './components/NewsPage';
 
 export default function App() {
@@ -14,8 +13,8 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-paper dark:bg-ink bg-mesh transition-colors duration-500">
-      <div className="relative max-w-5xl mx-auto px-6 sm:px-10 py-8 sm:py-12 pb-24">
-        <Header lastFetched={lastFetched} onRefresh={refresh} isFetching={isFetching} />
+      <div className="relative max-w-5xl mx-auto px-6 sm:px-10 py-8 sm:py-12">
+        <Header lastFetched={lastFetched} onRefresh={refresh} isFetching={isFetching} activeTab={activeTab} onTabChange={setActiveTab} />
 
         {activeTab === 'prices' ? (
           <>
@@ -55,8 +54,6 @@ export default function App() {
           <NewsPage />
         )}
       </div>
-
-      <TabBar activeTab={activeTab} onTabChange={setActiveTab} />
     </div>
   );
 }
