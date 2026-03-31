@@ -10,7 +10,7 @@ type LangFilter = 'all' | 'en' | 'np';
 const PAGE_SIZE = 20;
 
 export function NewsPage() {
-  const { lang, t } = useLocale();
+  const { t } = useLocale();
   const [langFilter, setLangFilter] = useState<LangFilter>('all');
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('all');
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
