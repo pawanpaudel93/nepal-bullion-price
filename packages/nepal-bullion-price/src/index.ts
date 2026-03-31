@@ -11,6 +11,7 @@ import { fetchGoldApiIo } from './providers/live-price/goldapi-io.js';
 import { fetchNrb } from './providers/forex/nrb.js';
 import { fetchFawazahmed0 } from './providers/forex/fawazahmed0.js';
 import { fetchExchangeRateApi } from './providers/forex/exchangerate-api.js';
+import { fetchAllNews } from './providers/news/index.js';
 import type {
   NepalGoldPrice, NepalSilverPrice, LiveMetalPrice,
   AllPrices, NepalPriceData, LivePriceData, ForexData,
@@ -245,10 +246,19 @@ export async function getAllPrices(): Promise<AllPrices> {
   };
 }
 
+export async function getNews(lang?: 'en' | 'np'): Promise<import('./types.js').NewsData> {
+  const data = await fetchAllNews();
+  if (!lang) return data;
+  return {
+    ...data,
+    items: data.items.filter(item => item.language === lang),
+  };
+}
+
 // Re-exports
 export { configure, resetConfig } from './config.js';
 export type {
   NepalGoldPrice, NepalSilverPrice, LiveMetalPrice,
   TaxBreakdown, TaxRates, MetalRates, AllPrices, Config,
-  ProviderResult,
+  ProviderResult, NewsItem, NewsData,
 } from './types.js';
