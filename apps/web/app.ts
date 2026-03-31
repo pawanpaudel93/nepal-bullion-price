@@ -6,6 +6,7 @@ import {
   getNepalSilverPrice,
   getLiveGoldPrice,
   getLiveSilverPrice,
+  getNews,
 } from 'nepal-bullion-price';
 
 const app = new Hono().basePath('/api');
@@ -49,6 +50,15 @@ app.get('/silver', async (c) => {
     nepal: nepal.status === 'fulfilled' ? nepal.value : null,
     live: live.status === 'fulfilled' ? live.value : null,
   });
+});
+
+const NEWS_CACHE_HEADER = 'public, s-maxage=300, stale-while-revalidate=900';
+
+app.get('/news', async (c) => {
+  const lang = c.req.query('lang') as 'en' | 'np' | undefined;
+  const news = await getNews(lang);
+  c.header('Cache-Control', NEWS_CACHE_HEADER);
+  return c.json(news);
 });
 
 export default app;
