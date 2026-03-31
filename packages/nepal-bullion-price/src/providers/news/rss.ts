@@ -25,17 +25,26 @@ export function parseRssFeed(
       const url = $(el).find('link').first().text().trim();
       if (!title || !url) return;
 
-      const description = $(el).find('description').first().text().trim() || undefined;
+      const rawDesc = $(el).find('description').first().text().trim();
+      // Strip HTML tags from description (Google News RSS includes HTML in CDATA)
+      const description = rawDesc
+        ? cheerio.load(rawDesc, { xml: false }).text().trim() || undefined
+        : undefined;
       const pubDate = $(el).find('pubDate').first().text().trim();
       const enclosure = $(el).find('enclosure[type^="image"]').attr('url');
       const mediaContent = $(el).find('media\\:content, content').attr('url');
 
+      // Google News RSS appends " - SourceName" to titles — extract the real source
+      const sourceMatch = title.match(/^(.+)\s+-\s+(.+)$/);
+      const cleanTitle = sourceMatch ? sourceMatch[1].trim() : title;
+      const realSource = sourceMatch ? sourceMatch[2].trim() : source;
+
       items.push({
         id: hashUrl(url),
-        title,
+        title: cleanTitle,
         summary: description,
         url,
-        source,
+        source: realSource,
         language,
         publishedAt: pubDate ? new Date(pubDate).toISOString() : new Date().toISOString(),
         imageUrl: enclosure || mediaContent || undefined,
