@@ -1,51 +1,62 @@
+import { useState } from 'react';
 import { useBullionPrices } from './hooks/useBullionPrices';
 import { useLocale } from './i18n';
 import { Header } from './components/Header';
 import { PriceCard } from './components/PriceCard';
 import { GoldIcon, SilverIcon } from './components/Icons';
+import { TabBar, type Tab } from './components/TabBar';
+import { NewsPage } from './components/NewsPage';
 
 export default function App() {
   const { data, isLoading, isFetching, error, lastFetched, refresh } = useBullionPrices();
   const { t } = useLocale();
+  const [activeTab, setActiveTab] = useState<Tab>('prices');
 
   return (
     <div className="min-h-screen bg-paper dark:bg-ink bg-mesh transition-colors duration-500">
-      <div className="relative max-w-5xl mx-auto px-6 sm:px-10 py-8 sm:py-12">
+      <div className="relative max-w-5xl mx-auto px-6 sm:px-10 py-8 sm:py-12 pb-24">
         <Header lastFetched={lastFetched} onRefresh={refresh} isFetching={isFetching} />
 
-        {error ? (
-          <div className="mb-8 p-4 glass-card rounded-2xl text-red-700 dark:text-red-400 text-sm animate-fade-up" role="alert">
-            {error}
-          </div>
-        ) : null}
+        {activeTab === 'prices' ? (
+          <>
+            {error ? (
+              <div className="mb-8 p-4 glass-card rounded-2xl text-red-700 dark:text-red-400 text-sm animate-fade-up" role="alert">
+                {error}
+              </div>
+            ) : null}
 
-        {isLoading && !data ? (
-          <div className="flex flex-col items-center justify-center py-32 gap-5 animate-fade-up">
-            <div className="animate-spin rounded-full h-7 w-7 border-[1.5px] border-gold-200 dark:border-gold-700 border-t-gold-500" />
-            <p className="text-[13px] text-ink-faint font-light tracking-wide">{t.fetchingPrices}</p>
-          </div>
+            {isLoading && !data ? (
+              <div className="flex flex-col items-center justify-center py-32 gap-5 animate-fade-up">
+                <div className="animate-spin rounded-full h-7 w-7 border-[1.5px] border-gold-200 dark:border-gold-700 border-t-gold-500" />
+                <p className="text-[13px] text-ink-faint font-light tracking-wide">{t.fetchingPrices}</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-7">
+                <PriceCard
+                  title={t.gold}
+                  icon={<GoldIcon className="w-10 h-10" />}
+                  symbol="XAU"
+                  nepalPrice={data?.gold.nepal ?? null}
+                  livePrice={data?.gold.live ?? null}
+                  delay="50ms"
+                />
+                <PriceCard
+                  title={t.silver}
+                  icon={<SilverIcon className="w-10 h-10" />}
+                  symbol="XAG"
+                  nepalPrice={data?.silver.nepal ?? null}
+                  livePrice={data?.silver.live ?? null}
+                  delay="150ms"
+                />
+              </div>
+            )}
+          </>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-7">
-            <PriceCard
-              title={t.gold}
-              icon={<GoldIcon className="w-10 h-10" />}
-              symbol="XAU"
-              nepalPrice={data?.gold.nepal ?? null}
-              livePrice={data?.gold.live ?? null}
-              delay="50ms"
-            />
-            <PriceCard
-              title={t.silver}
-              icon={<SilverIcon className="w-10 h-10" />}
-              symbol="XAG"
-              nepalPrice={data?.silver.nepal ?? null}
-              livePrice={data?.silver.live ?? null}
-              delay="150ms"
-            />
-          </div>
+          <NewsPage />
         )}
-
       </div>
+
+      <TabBar activeTab={activeTab} onTabChange={setActiveTab} />
     </div>
   );
 }
