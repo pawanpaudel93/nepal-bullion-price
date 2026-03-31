@@ -51,6 +51,18 @@ const translations = {
     share: 'Share',
     save: 'Save',
     shareText: '{metal}: Rs {price}/tola ({change}) — Nepal Bullion Price',
+    // News
+    prices: 'Prices',
+    news: 'News',
+    allLanguages: 'All',
+    english: 'EN',
+    nepali: 'NP',
+    allCategories: 'All',
+    noNews: 'No news found',
+    loadMore: 'Load more',
+    hoursAgo: '{n}h ago',
+    minutesAgo: '{n}m ago',
+    justNow: 'Just now',
   },
   ne: {
     liveRates: 'प्रत्यक्ष दरहरू',
@@ -100,6 +112,18 @@ const translations = {
     share: 'सेयर',
     save: 'सेभ',
     shareText: '{metal}: रू {price} प्रति तोला ({change}) — नेपाल बुलियन मूल्य',
+    // News
+    prices: 'मूल्य',
+    news: 'समाचार',
+    allLanguages: 'सबै',
+    english: 'EN',
+    nepali: 'NP',
+    allCategories: 'सबै',
+    noNews: 'समाचार फेला परेन',
+    loadMore: 'थप लोड',
+    hoursAgo: '{n} घण्टा अघि',
+    minutesAgo: '{n} मिनेट अघि',
+    justNow: 'भर्खरै',
   },
 } as const;
 
