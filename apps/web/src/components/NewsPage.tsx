@@ -41,7 +41,7 @@ export function NewsPage() {
             <button
               key={f}
               onClick={() => { setLangFilter(f); setVisibleCount(PAGE_SIZE); }}
-              className={`px-3 py-1.5 rounded-full text-[11px] font-medium tracking-wide transition-colors ${
+              className={`px-3.5 py-2 rounded-full text-[11px] font-medium tracking-wide cursor-pointer transition-colors focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:outline-none ${
                 langFilter === f
                   ? 'bg-gold-500 text-white'
                   : 'bg-ink/5 dark:bg-white/8 text-ink-muted dark:text-ink-faint hover:bg-ink/10 dark:hover:bg-white/12'
@@ -60,7 +60,7 @@ export function NewsPage() {
             <button
               key={f}
               onClick={() => { setCategoryFilter(f); setVisibleCount(PAGE_SIZE); }}
-              className={`px-3 py-1.5 rounded-full text-[11px] font-medium tracking-wide transition-colors ${
+              className={`px-3.5 py-2 rounded-full text-[11px] font-medium tracking-wide cursor-pointer transition-colors focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:outline-none ${
                 categoryFilter === f
                   ? 'bg-gold-500 text-white'
                   : 'bg-ink/5 dark:bg-white/8 text-ink-muted dark:text-ink-faint hover:bg-ink/10 dark:hover:bg-white/12'
@@ -102,7 +102,7 @@ export function NewsPage() {
               {hasMore && (
                 <button
                   onClick={() => setVisibleCount(c => c + PAGE_SIZE)}
-                  className="mx-auto mt-2 px-6 py-2.5 rounded-full text-[12px] font-medium tracking-wide bg-ink/5 dark:bg-white/8 text-ink-muted dark:text-ink-faint hover:bg-ink/10 dark:hover:bg-white/12 transition-colors"
+                  className="mx-auto mt-2 px-6 py-2.5 rounded-full text-[12px] font-medium tracking-wide cursor-pointer bg-ink/5 dark:bg-white/8 text-ink-muted dark:text-ink-faint hover:bg-ink/10 dark:hover:bg-white/12 transition-colors focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:outline-none"
                 >
                   {t.loadMore}
                 </button>

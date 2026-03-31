@@ -29,7 +29,7 @@ export function NewsCard({ item }: { item: NewsItem }) {
       href={item.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="block glass-card rounded-2xl p-5 transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]"
+      className="block glass-card rounded-2xl p-5 cursor-pointer transition-shadow duration-200 hover:shadow-lg focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:outline-none"
     >
       <div className="flex gap-4">
         <div className="flex-1 min-w-0">
