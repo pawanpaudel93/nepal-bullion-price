@@ -63,6 +63,7 @@ export interface Config {
   apiKeys: {
     goldApiIo?: string;
     asheshApiKey?: string;
+    gnewsApiKey?: string;
   };
   cacheTtl: number;
 }
@@ -112,4 +113,21 @@ export interface Provider<T> {
 export interface ProviderResult<T> {
   data: T;
   source: string;
+}
+
+export interface NewsItem {
+  id: string;
+  title: string;
+  summary?: string;
+  url: string;
+  source: string;
+  language: 'en' | 'np';
+  publishedAt: string;
+  imageUrl?: string;
+  category?: 'gold' | 'silver' | 'market' | 'general';
+}
+
+export interface NewsData {
+  items: NewsItem[];
+  fetchedAt: string;
 }
