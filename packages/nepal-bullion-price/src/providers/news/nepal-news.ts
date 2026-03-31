@@ -9,11 +9,8 @@ interface RssSource {
 }
 
 const NEPAL_SOURCES: RssSource[] = [
-  { name: 'OnlineKhabar', url: 'https://www.onlinekhabar.com/content/business-ede/feed', language: 'np' },
-  { name: 'Ratopati', url: 'https://ratopati.com/feed', language: 'np' },
-  { name: 'Republica', url: 'https://myrepublica.nagariknetwork.com/rss', language: 'en' },
-  { name: 'Kantipur', url: 'https://ekantipur.com/rss/business', language: 'np' },
-  { name: 'Himalayan Times', url: 'https://thehimalayantimes.com/category/business/feed', language: 'en' },
+  { name: 'OnlineKhabar', url: 'https://www.onlinekhabar.com/feed', language: 'np' },
+  { name: 'Google News Nepal', url: 'https://news.google.com/rss/search?q=gold+price+nepal&hl=en-US&gl=US&ceid=US:en', language: 'en' },
 ];
 
 const KEYWORDS_EN = /gold|silver|bullion|precious\s+metal|jewel/i;

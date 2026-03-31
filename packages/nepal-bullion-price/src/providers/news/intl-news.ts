@@ -10,8 +10,8 @@ interface RssSource {
 }
 
 const INTL_SOURCES: RssSource[] = [
-  { name: 'Kitco', url: 'https://www.kitco.com/feed/rss/news/gold', language: 'en' },
-  { name: 'Mining.com', url: 'https://www.mining.com/tag/gold/feed/', language: 'en' },
+  { name: 'Google News Gold', url: 'https://news.google.com/rss/search?q=gold+price&hl=en-US&gl=US&ceid=US:en', language: 'en' },
+  { name: 'Google News Silver', url: 'https://news.google.com/rss/search?q=silver+price+market&hl=en-US&gl=US&ceid=US:en', language: 'en' },
 ];
 
 async function fetchRss(source: RssSource): Promise<NewsItem[]> {
