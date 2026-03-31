@@ -14,7 +14,23 @@ export default function App() {
   return (
     <div className="min-h-screen bg-paper dark:bg-ink bg-mesh transition-colors duration-500">
       <div className="relative max-w-5xl mx-auto px-6 sm:px-10 py-8 sm:py-12">
-        <Header lastFetched={lastFetched} onRefresh={refresh} isFetching={isFetching} activeTab={activeTab} onTabChange={setActiveTab} />
+        <Header lastFetched={lastFetched} onRefresh={refresh} isFetching={isFetching} />
+
+        <div className="flex rounded-full border border-ink/8 dark:border-white/8 overflow-hidden w-fit mb-6 animate-fade-up">
+          {(['prices', 'news'] as const).map(tab => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`px-4 py-1.5 text-[12px] font-medium tracking-wide cursor-pointer transition-all duration-300 focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:outline-none ${
+                activeTab === tab
+                  ? 'bg-ink dark:bg-white text-white dark:text-ink'
+                  : 'text-ink-muted dark:text-ink-faint hover:bg-ink/5 dark:hover:bg-white/5'
+              }`}
+            >
+              {tab === 'prices' ? t.prices : t.news}
+            </button>
+          ))}
+        </div>
 
         {activeTab === 'prices' ? (
           <>

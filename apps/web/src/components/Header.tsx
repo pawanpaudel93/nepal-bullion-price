@@ -8,11 +8,9 @@ interface HeaderProps {
   lastFetched: Date | null;
   onRefresh: () => void;
   isFetching: boolean;
-  activeTab: Tab;
-  onTabChange: (tab: Tab) => void;
 }
 
-export function Header({ lastFetched, onRefresh, isFetching, activeTab, onTabChange }: HeaderProps) {
+export function Header({ lastFetched, onRefresh, isFetching }: HeaderProps) {
   const { lang, t, toggleLang } = useLocale();
 
   const [isDark, setIsDark] = useState(() => {
@@ -46,21 +44,6 @@ export function Header({ lastFetched, onRefresh, isFetching, activeTab, onTabCha
         ) : null}
       </div>
       <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2">
-        <div className="order-0 flex rounded-full border border-ink/8 dark:border-white/8 overflow-hidden">
-          {(['prices', 'news'] as const).map(tab => (
-            <button
-              key={tab}
-              onClick={() => onTabChange(tab)}
-              className={`px-3.5 py-2 text-[12px] font-medium tracking-wide cursor-pointer transition-all duration-300 ${
-                activeTab === tab
-                  ? 'bg-ink dark:bg-white text-white dark:text-ink'
-                  : 'text-ink-muted dark:text-ink-faint hover:bg-ink/5 dark:hover:bg-white/5'
-              }`}
-            >
-              {tab === 'prices' ? t.prices : t.news}
-            </button>
-          ))}
-        </div>
         <button
           onClick={onRefresh}
           disabled={isFetching}
