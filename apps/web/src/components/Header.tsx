@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { SunIcon, MoonIcon, RefreshIcon } from './Icons';
 import { useLocale } from '../i18n';
+import { StreakPill } from './StreakPill';
 
 export type Tab = 'prices' | 'news';
 
@@ -8,9 +9,13 @@ interface HeaderProps {
   lastFetched: Date | null;
   onRefresh: () => void;
   isFetching: boolean;
+  streak?: number;
+  bestStreak?: number;
+  badges?: string[];
+  streakEmoji?: string;
 }
 
-export function Header({ lastFetched, onRefresh, isFetching }: HeaderProps) {
+export function Header({ lastFetched, onRefresh, isFetching, streak, bestStreak, badges, streakEmoji }: HeaderProps) {
   const { lang, t, toggleLang } = useLocale();
 
   const [isDark, setIsDark] = useState(() => {
@@ -44,6 +49,9 @@ export function Header({ lastFetched, onRefresh, isFetching }: HeaderProps) {
         ) : null}
       </div>
       <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2">
+        {streak != null && streak > 0 && bestStreak != null && badges && streakEmoji ? (
+          <StreakPill streak={streak} bestStreak={bestStreak} badges={badges} emoji={streakEmoji} />
+        ) : null}
         <button
           onClick={onRefresh}
           disabled={isFetching}
