@@ -5,16 +5,42 @@ import { Header, type Tab } from './components/Header';
 import { PriceCard } from './components/PriceCard';
 import { GoldIcon, SilverIcon } from './components/Icons';
 import { NewsPage } from './components/NewsPage';
+import { useMilestones } from './hooks/useMilestones';
+import { useStreak } from './hooks/useStreak';
+import { MilestoneBanner } from './components/MilestoneBanner';
 
 export default function App() {
   const { data, isLoading, isFetching, error, lastFetched, refresh } = useBullionPrices();
   const { t } = useLocale();
   const [activeTab, setActiveTab] = useState<Tab>('prices');
 
+  const { streak, bestStreak, badges, streakEmoji, awardBadge } = useStreak();
+
+  const goldNepalPrice = data?.gold.nepal ? ('hallmark' in data.gold.nepal ? data.gold.nepal.hallmark : 0) : null;
+  const silverNepalPrice = data?.silver.nepal?.price ?? null;
+  const goldPrevPrice = data?.gold.nepal?.previousPrice ?? null;
+  const silverPrevPrice = data?.silver.nepal?.previousPrice ?? null;
+
+  const { activeMilestone, dismiss } = useMilestones(
+    goldNepalPrice,
+    silverNepalPrice,
+    goldPrevPrice,
+    silverPrevPrice,
+    awardBadge,
+  );
+
   return (
     <div className="min-h-screen bg-paper dark:bg-ink bg-mesh transition-colors duration-500">
       <div className="relative max-w-5xl mx-auto px-6 sm:px-10 py-8 sm:py-12">
-        <Header lastFetched={lastFetched} onRefresh={refresh} isFetching={isFetching} />
+        <Header
+          lastFetched={lastFetched}
+          onRefresh={refresh}
+          isFetching={isFetching}
+          streak={streak}
+          bestStreak={bestStreak}
+          badges={badges}
+          streakEmoji={streakEmoji}
+        />
 
         <div className="flex rounded-full border border-ink/8 dark:border-white/8 overflow-hidden w-fit mb-6 animate-fade-up">
           {(['prices', 'news'] as const).map(tab => (
@@ -34,6 +60,10 @@ export default function App() {
 
         {activeTab === 'prices' ? (
           <>
+            {activeMilestone ? (
+              <MilestoneBanner event={activeMilestone} onDismiss={dismiss} />
+            ) : null}
+
             {error ? (
               <div className="mb-8 p-4 glass-card rounded-2xl text-red-700 dark:text-red-400 text-sm animate-fade-up" role="alert">
                 {error}
