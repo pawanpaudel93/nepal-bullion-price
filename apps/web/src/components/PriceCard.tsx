@@ -5,6 +5,7 @@ import { SourceLink } from './SourceLink';
 import { useLocale, type Translations } from '../i18n';
 import { TrendSection } from './TrendSection';
 import { ShareButton } from './ShareButton';
+import { getMarketMood } from '../utils/marketMood';
 
 interface PriceCardProps {
   title: string;
@@ -43,6 +44,18 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, delay = 
         <div className="flex items-center gap-3">
           {icon}
           <h2 className="font-display text-2xl font-bold text-ink dark:text-white tracking-tight">{title}</h2>
+          {nepalPrice && nepalPrice.previousPrice != null && nepalTola !== null ? (() => {
+            const mood = getMarketMood(nepalTola, nepalPrice.previousPrice);
+            return mood ? (
+              <span
+                className="text-xl animate-fade-up"
+                title={t[mood.labelKey as keyof typeof t] as string}
+                aria-label={t[mood.labelKey as keyof typeof t] as string}
+              >
+                {mood.emoji}
+              </span>
+            ) : null;
+          })() : null}
         </div>
         {nepalPrice && nepalTola !== null ? (
           <ShareButton
