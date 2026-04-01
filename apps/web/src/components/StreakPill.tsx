@@ -51,7 +51,7 @@ export function StreakPill({ streak, bestStreak, badges, emoji }: StreakPillProp
         <div
           role="dialog"
           aria-label={streakText}
-          className="absolute right-0 top-full mt-2 w-64 glass-card rounded-2xl p-5 z-50 animate-fade-up max-sm:-right-2"
+          className="absolute right-0 top-full mt-2 w-64 rounded-2xl p-5 z-50 animate-fade-up max-sm:-right-2 bg-paper dark:bg-ink-light border border-ink/10 dark:border-white/10 shadow-lg"
         >
           <div className="text-center mb-4">
             <div className="text-4xl mb-1">{emoji}</div>
