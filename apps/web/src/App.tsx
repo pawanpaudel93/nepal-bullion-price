@@ -8,6 +8,10 @@ import { NewsPage } from './components/NewsPage';
 import { useMilestones } from './hooks/useMilestones';
 import { useStreak } from './hooks/useStreak';
 import { MilestoneBanner } from './components/MilestoneBanner';
+import { usePrediction } from './hooks/usePrediction';
+import { PredictionCard } from './components/PredictionCard';
+import { MorningDigest } from './components/MorningDigest';
+import { CalculatorPage } from './components/CalculatorPage';
 
 export default function App() {
   const { data, isLoading, isFetching, error, lastFetched, refresh } = useBullionPrices();
@@ -29,6 +33,11 @@ export default function App() {
     awardBadge,
   );
 
+  const {
+    currentPrediction, lastResult, hasPredictedToday, hasResult,
+    predictionStreak, accuracy, predict, dismissResult,
+  } = usePrediction(goldNepalPrice, goldPrevPrice);
+
   return (
     <div className="min-h-screen bg-paper dark:bg-ink bg-mesh transition-colors duration-500">
       <div className="relative max-w-5xl mx-auto px-6 sm:px-10 py-8 sm:py-12">
@@ -46,6 +55,15 @@ export default function App() {
 
         {activeTab === 'prices' ? (
           <>
+            <MorningDigest
+              goldPrice={goldNepalPrice}
+              goldPrev={goldPrevPrice}
+              silverPrice={silverNepalPrice}
+              silverPrev={silverPrevPrice}
+              predictionResult={lastResult ? { correct: lastResult.correct } : null}
+              streak={streak}
+            />
+
             {activeMilestone ? (
               <MilestoneBanner event={activeMilestone} onDismiss={dismiss} />
             ) : null}
@@ -81,9 +99,25 @@ export default function App() {
                 />
               </div>
             )}
+
+            <PredictionCard
+              currentPrediction={currentPrediction}
+              lastResult={lastResult}
+              hasPredictedToday={hasPredictedToday}
+              hasResult={hasResult}
+              predictionStreak={predictionStreak}
+              accuracy={accuracy}
+              onPredict={predict}
+              onDismissResult={dismissResult}
+            />
           </>
-        ) : (
+        ) : activeTab === 'news' ? (
           <NewsPage />
+        ) : (
+          <CalculatorPage
+            goldPricePerTola={goldNepalPrice}
+            silverPricePerTola={silverNepalPrice}
+          />
         )}
       </div>
     </div>

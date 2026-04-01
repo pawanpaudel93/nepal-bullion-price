@@ -3,7 +3,7 @@ import { SunIcon, MoonIcon, RefreshIcon } from './Icons';
 import { useLocale } from '../i18n';
 import { StreakPill } from './StreakPill';
 
-export type Tab = 'prices' | 'news';
+export type Tab = 'prices' | 'news' | 'calculator';
 
 interface HeaderProps {
   lastFetched: Date | null;
@@ -80,7 +80,7 @@ export function Header({
       {/* Row 2: Tabs + Refresh */}
       <div className="flex items-center justify-between">
         <div className="flex rounded-full border border-ink/8 dark:border-white/8 overflow-hidden">
-          {(['prices', 'news'] as const).map(tab => (
+          {(['prices', 'news', 'calculator'] as const).map(tab => (
             <button
               key={tab}
               onClick={() => onTabChange(tab)}
@@ -90,7 +90,7 @@ export function Header({
                   : 'text-ink-muted dark:text-ink-faint hover:bg-ink/5 dark:hover:bg-white/5'
               }`}
             >
-              {tab === 'prices' ? t.prices : t.news}
+              {tab === 'prices' ? t.prices : tab === 'news' ? t.news : t.calculator}
             </button>
           ))}
         </div>
