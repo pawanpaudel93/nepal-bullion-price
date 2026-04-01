@@ -6,6 +6,7 @@ import { useLocale, type Translations } from '../i18n';
 import { TrendSection } from './TrendSection';
 import { ShareButton } from './ShareButton';
 import { getMarketMood } from '../utils/marketMood';
+import { FunComparison } from './FunComparison';
 
 interface PriceCardProps {
   title: string;
@@ -91,6 +92,9 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, delay = 
               <SourceLink name={nepalPrice.source} />
               {nepalPrice.isStale ? <StaleBadge label={t.stale} /> : null}
             </p>
+            {nepalTola !== null ? (
+              <FunComparison price={nepalTola} metal={symbol === 'XAU' ? 'gold' : 'silver'} />
+            ) : null}
             {nepalPrice.history && nepalPrice.history.length >= 2 ? (
               <TrendSection history={nepalPrice.history} color={symbol === 'XAU' ? 'gold' : 'silver'} />
             ) : null}
