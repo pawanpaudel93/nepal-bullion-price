@@ -14,7 +14,9 @@ const NEPAL_SOURCES: RssSource[] = [
 ];
 
 const KEYWORDS_EN = /gold|silver|bullion|precious\s+metal|jewel/i;
-const KEYWORDS_NP = /सुन|चाँदी|बुलियन|सुनचाँदी|फेनेगोसिडा/;
+// Match सुन only as standalone gold word — negative lookahead blocks false positives:
+// सुन्नी (Sunni), सुनिश्चित (ensured), सुन्दर (beautiful), सुनाउ (tell), सुनील (Sunil)
+const KEYWORDS_NP = /सुन(?![्ािीुूेैोौंःनय])|चाँदी|बुलियन|सुनचाँदी|फेनेगोसिडा|तोला|हलमार्क/;
 
 // Exclude articles that mention gold/silver only in irrelevant contexts
 const EXCLUDE_EN = /\b(theft|robbery|stolen|heist|murder|archaeolog|fossil|medal|olympic|trophy|golden\s+gate|golden\s+state|golden\s+globe|silver\s+screen|silver\s+lining|gold\s+coast|fashion\s+week|runway|netflix|movie\s+review|album|song)\b/i;
@@ -31,7 +33,7 @@ export function matchesKeywords(item: NewsItem): boolean {
 
 export function categorizeItem(item: NewsItem): NewsItem {
   const text = `${item.title} ${item.summary ?? ''}`.toLowerCase();
-  const hasGold = /gold|सुन/i.test(text);
+  const hasGold = /gold|सुन(?![्ािीुूेैोौंःनय])/i.test(text);
   const hasSilver = /silver|चाँदी/i.test(text);
   if (hasGold && !hasSilver) return { ...item, category: 'gold' };
   if (hasSilver && !hasGold) return { ...item, category: 'silver' };
