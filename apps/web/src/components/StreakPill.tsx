@@ -39,7 +39,7 @@ export function StreakPill({ streak, bestStreak, badges, emoji }: StreakPillProp
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen(prev => !prev)}
-        className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-gold-400/10 dark:bg-gold-400/15 text-sm font-medium text-ink dark:text-white cursor-pointer hover:bg-gold-400/15 dark:hover:bg-gold-400/20 transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:outline-none"
+        className="flex items-center gap-1 px-3 py-2.5 rounded-full bg-gold-400/10 dark:bg-gold-400/15 text-sm font-medium text-ink dark:text-white cursor-pointer hover:bg-gold-400/15 dark:hover:bg-gold-400/20 transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:outline-none"
         aria-label={streakText}
         aria-expanded={open}
       >
