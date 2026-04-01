@@ -16,9 +16,17 @@ const NEPAL_SOURCES: RssSource[] = [
 const KEYWORDS_EN = /gold|silver|bullion|precious\s+metal|jewel/i;
 const KEYWORDS_NP = /सुन|चाँदी|बुलियन|सुनचाँदी|फेनेगोसिडा/;
 
-function matchesKeywords(item: NewsItem): boolean {
+// Exclude articles that mention gold/silver only in irrelevant contexts
+const EXCLUDE_EN = /\b(theft|robbery|stolen|heist|murder|archaeolog|fossil|medal|olympic|trophy|golden\s+gate|golden\s+state|golden\s+globe|silver\s+screen|silver\s+lining|gold\s+coast|fashion\s+week|runway|netflix|movie\s+review|album|song)\b/i;
+const EXCLUDE_NP = /चोरी|डकैती|हत्या|अपराध|पदक|ट्रफी|फिल्म/;
+
+export function matchesKeywords(item: NewsItem): boolean {
   const text = `${item.title} ${item.summary ?? ''}`;
-  return item.language === 'np' ? KEYWORDS_NP.test(text) : KEYWORDS_EN.test(text);
+  const hasKeyword = item.language === 'np' ? KEYWORDS_NP.test(text) : KEYWORDS_EN.test(text);
+  if (!hasKeyword) return false;
+  // Reject if it matches exclusion patterns (irrelevant contexts)
+  const excluded = item.language === 'np' ? EXCLUDE_NP.test(text) : EXCLUDE_EN.test(text);
+  return !excluded;
 }
 
 export function categorizeItem(item: NewsItem): NewsItem {

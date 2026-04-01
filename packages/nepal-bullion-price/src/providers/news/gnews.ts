@@ -2,7 +2,7 @@ import { DEFAULT_TIMEOUT_MS } from '../../constants.js';
 import { getConfig } from '../../config.js';
 import type { NewsItem } from '../../types.js';
 import { hashUrl } from './rss.js';
-import { categorizeItem } from './nepal-news.js';
+import { categorizeItem, matchesKeywords } from './nepal-news.js';
 
 interface GNewsArticle {
   title: string;
@@ -50,5 +50,5 @@ export async function fetchGNews(): Promise<NewsItem[]> {
     searchGNews('सुनको भाउ', 'np', apiKey),
   ]);
 
-  return results.flatMap(r => r.status === 'fulfilled' ? r.value : []);
+  return results.flatMap(r => r.status === 'fulfilled' ? r.value : []).filter(matchesKeywords);
 }

@@ -1,7 +1,7 @@
 import { DEFAULT_TIMEOUT_MS } from '../../constants.js';
 import type { NewsItem } from '../../types.js';
 import { parseRssFeed } from './rss.js';
-import { categorizeItem } from './nepal-news.js';
+import { categorizeItem, matchesKeywords } from './nepal-news.js';
 
 interface RssSource {
   name: string;
@@ -30,5 +30,5 @@ async function fetchRss(source: RssSource): Promise<NewsItem[]> {
 export async function fetchIntlNews(): Promise<NewsItem[]> {
   const results = await Promise.allSettled(INTL_SOURCES.map(fetchRss));
   const allItems = results.flatMap(r => r.status === 'fulfilled' ? r.value : []);
-  return allItems.map(categorizeItem);
+  return allItems.filter(matchesKeywords).map(categorizeItem);
 }
