@@ -7,7 +7,7 @@ Monorepo for **nepal-bullion-price** — an npm package and web dashboard for Ne
 | Package | Description |
 |---------|-------------|
 | [`packages/nepal-bullion-price`](packages/nepal-bullion-price) | npm package — FENEGOSIDA daily rates + live international prices with duty breakdown (customs, bank margin, dealer margin, market premium) |
-| [`apps/web`](apps/web) | React dashboard — Hono API server + Vite SPA with light/dark mode |
+| [`apps/web`](apps/web) | React dashboard — Hono API server + Vite SPA with light/dark mode, news aggregation |
 
 ## Quick Start
 
@@ -25,7 +25,7 @@ pnpm dev
 
 This starts:
 - **API server** on `http://localhost:3000` (Hono)
-- **Dev server** on `http://localhost:5173` (Vite, proxies `/api` → `:3000`)
+- **Dev server** on `http://localhost:5174` (Vite, proxies `/api` → `:3000`)
 
 ### Use the npm package
 
@@ -59,6 +59,7 @@ See [`packages/nepal-bullion-price/README.md`](packages/nepal-bullion-price/READ
 | Nepal daily price | fenegosida.org | ashesh.com.np, hamropatro.com |
 | Live XAU/XAG | gold-api.com | Swissquote, goldapi.io |
 | USD/NPR forex | Nepal Rastra Bank | fawazahmed0, exchangerate-api |
+| News | Google News RSS, OnlineKhabar | GNews API |
 
 ## Project Structure
 
@@ -66,7 +67,7 @@ See [`packages/nepal-bullion-price/README.md`](packages/nepal-bullion-price/READ
 ├── packages/
 │   └── nepal-bullion-price/    # npm package (server-side only)
 │       ├── src/
-│       │   ├── providers/      # 9 data providers with fallbacks
+│       │   ├── providers/      # 9 data providers with fallbacks + news aggregation
 │       │   ├── calculator.ts   # duty breakdown (customs, bank, dealer, market premium)
 │       │   ├── cache.ts        # in-memory TTL cache
 │       │   ├── fallback.ts     # sequential fallback engine
@@ -98,6 +99,7 @@ claude mcp add nepal-bullion -- npx nepal-bullion-price
 | `get_live_gold_price` | Live XAU/USD → NPR with customs, bank margin, dealer margin, market premium breakdown |
 | `get_live_silver_price` | Live XAG/USD → NPR with customs, bank margin, dealer margin, market premium breakdown |
 | `get_all_prices` | All prices at once |
+| `get_news` | Aggregated gold/silver news from RSS + GNews |
 
 See [`packages/nepal-bullion-price/README.md`](packages/nepal-bullion-price/README.md) for Claude Desktop and Cursor setup.
 

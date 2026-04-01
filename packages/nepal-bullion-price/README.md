@@ -11,6 +11,7 @@ Nepal gold and silver prices — FENEGOSIDA daily rates + live international pri
 - **Live international prices** (XAU/XAG → NPR per tola)
 - **Full tax breakdown** — customs duty, bank margin, dealer margin, market premium (separate rates for gold & silver)
 - **USD/NPR forex** from Nepal Rastra Bank (2 fallbacks)
+- **News aggregation** — gold/silver news from Google News RSS, OnlineKhabar, and GNews API
 - **In-memory caching** with configurable TTL and stale fallback
 - **TypeScript** — full type definitions included
 
@@ -38,6 +39,7 @@ import {
   getLiveGoldPrice,
   getLiveSilverPrice,
   getAllPrices,
+  getNews,
   configure,
 } from 'nepal-bullion-price';
 
@@ -83,6 +85,11 @@ const liveSilver = await getLiveSilverPrice();
 const all = await getAllPrices();
 // { gold: { nepal, live }, silver: { nepal, live } }
 
+// Aggregated gold/silver news
+const news = await getNews();       // all languages
+const npNews = await getNews('np');  // Nepali only
+// { items: [{ id, title, summary, url, source, language, publishedAt, category }], fetchedAt }
+
 // Override tax rates per metal or add API keys
 configure({
   rates: {
@@ -103,6 +110,7 @@ configure({
 | `getLiveGoldPrice()` | `Promise<LiveMetalPrice>` | Live XAU/USD → NPR with duty breakdown |
 | `getLiveSilverPrice()` | `Promise<LiveMetalPrice>` | Live XAG/USD → NPR with duty breakdown |
 | `getAllPrices()` | `Promise<AllPrices>` | All four in parallel (null on failure) |
+| `getNews(lang?)` | `Promise<NewsData>` | Aggregated gold/silver news (optional `'en'` or `'np'` filter) |
 | `configure(opts)` | `void` | Override rates, API keys, or cache TTL |
 | `resetConfig()` | `void` | Restore all settings to defaults |
 | `resetCaches()` | `void` | Clear caches (call after changing TTL) |
@@ -119,6 +127,7 @@ Rates are configured **per metal** via `rates.gold` and `rates.silver`:
 | `rates.{metal}.marketPremium` | `number` | `0.008` (0.8%) | `0.030` (3.0%) | Market premium (freight, insurance, Indian blend) |
 | `apiKeys.goldApiIo` | `string` | — | — | goldapi.io API key (enables fallback) |
 | `apiKeys.asheshApiKey` | `string` | — | — | Ashesh widget API key (has public default) |
+| `apiKeys.gnewsApiKey` | `string` | — | — | GNews API key (enables news fallback) |
 | `cacheTtl` | `number` | `300000` | `300000` | Cache TTL in ms (5 minutes) |
 
 ## Data Sources
@@ -148,6 +157,16 @@ Each category tries providers in order. If all fail, cached (stale) data is retu
 | Primary | Nepal Rastra Bank | None |
 | Fallback | fawazahmed0/currency-api | None |
 | Fallback | open.er-api.com | None |
+
+### News
+
+| Priority | Source | Auth |
+|----------|--------|------|
+| Primary | Google News RSS (gold, silver, Nepal) | None |
+| Primary | OnlineKhabar RSS | None |
+| Fallback | GNews API | API key via `configure()` |
+
+News items are keyword-filtered for gold/silver relevance, deduplicated, categorized (gold/silver/market), and cached for 1 hour.
 
 ## Duty Breakdown
 
