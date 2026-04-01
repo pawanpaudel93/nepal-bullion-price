@@ -33,7 +33,7 @@ export function Header({ lastFetched, onRefresh, isFetching, streak, bestStreak,
   }, [isDark]);
 
   return (
-    <header className="flex items-end justify-between mb-8 animate-fade-up">
+    <header className="relative z-10 flex items-end justify-between mb-8 animate-fade-up">
       <div>
         <h1 className="font-display text-4xl sm:text-3xl md:text-4xl font-bold text-ink dark:text-white leading-none tracking-tight">
           {lang === 'ne' ? (

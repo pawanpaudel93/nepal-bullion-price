@@ -39,10 +39,12 @@ export function FunComparison({ price, metal }: FunComparisonProps) {
       aria-live="polite"
     >
       <span
-        className={`flex items-center gap-2 transition-opacity duration-300 ${fading ? 'opacity-0' : 'opacity-100'}`}
+        className={`inline transition-opacity duration-300 ${fading ? 'opacity-0' : 'opacity-100'}`}
       >
         <span>{current.emoji}</span>
+        {' '}
         <span className="text-[11px] opacity-60">{t.thatsRoughly}</span>
+        {' '}
         <strong className="font-medium text-ink dark:text-white">
           {current.count.toLocaleString(numberLocale)} {t[current.labelKey as keyof typeof t]}
         </strong>
