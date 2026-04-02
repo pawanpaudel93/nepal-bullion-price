@@ -99,8 +99,9 @@ const translations = {
     badgeMilestoneWitness: 'Milestone Witness',
     badgeATHHunter: 'ATH Hunter',
     badgeLocked: 'Locked',
+    // Play tab
+    play: 'Play',
     // Prediction Game
-    predict: 'Predict',
     predictTomorrow: 'Predict Tomorrow',
     willGoldGoUpOrDown: 'Will gold go up or down tomorrow?',
     up: 'Up',
@@ -116,6 +117,16 @@ const translations = {
     predictionStreak: 'Prediction streak',
     accuracy: 'Accuracy',
     yesterdayPrediction: "Yesterday's prediction",
+    // Gold Rush
+    goldRush: 'Gold Rush',
+    tapGoldCoins: 'Tap gold coins! Avoid silver.',
+    gameOver: 'Game Over',
+    score: 'Score',
+    highScore: 'High Score',
+    newHighScore: 'New High Score!',
+    playAgain: 'Play Again',
+    level: 'Level',
+    go: 'Go!',
     // Calculator
     calculator: 'Calculator',
     weight: 'Weight',
@@ -222,8 +233,9 @@ const translations = {
     badgeMilestoneWitness: 'माइलस्टोन साक्षी',
     badgeATHHunter: 'ATH शिकारी',
     badgeLocked: 'लक गरिएको',
+    // Play tab
+    play: 'खेल',
     // Prediction Game
-    predict: 'अनुमान',
     predictTomorrow: 'भोलिको अनुमान',
     willGoldGoUpOrDown: 'भोलि सुन बढ्छ कि घट्छ?',
     up: 'बढ्छ',
@@ -239,6 +251,16 @@ const translations = {
     predictionStreak: 'अनुमान स्ट्रिक',
     accuracy: 'शुद्धता',
     yesterdayPrediction: 'हिजोको अनुमान',
+    // Gold Rush
+    goldRush: 'गोल्ड रश',
+    tapGoldCoins: 'सुनका सिक्का थिच्नुहोस्! चाँदी नथिच्नुहोस्।',
+    gameOver: 'खेल सकियो',
+    score: 'स्कोर',
+    highScore: 'उच्च स्कोर',
+    newHighScore: 'नयाँ उच्च स्कोर!',
+    playAgain: 'फेरि खेल्नुहोस्',
+    level: 'तह',
+    go: 'जाऊ!',
     // Calculator
     calculator: 'क्यालकुलेटर',
     weight: 'तौल',

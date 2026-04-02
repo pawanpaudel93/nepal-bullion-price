@@ -175,6 +175,60 @@
     animation: fade-up 0.5s ease-out both;
   }
 
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+  .animate-shake {
+    animation: shake 0.3s ease-out;
+  }
+
+  @keyframes float-up {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-40px); }
+  }
+
+  @keyframes coin-fall {
+    from { transform: translateY(0); }
+    to { transform: translateY(calc(100vh + 60px)); }
+  }
+
+  /* Gold Rush coin styles */
+  .coin-gold {
+    background: radial-gradient(circle at 35% 30%, #F0D68A 0%, #D4A843 40%, #A37E24 100%);
+    border: 2px solid #7C5F1B;
+    box-shadow:
+      0 0 14px rgba(212, 168, 67, 0.5),
+      inset 0 2px 4px rgba(255, 255, 255, 0.3),
+      inset 0 -2px 4px rgba(0, 0, 0, 0.15);
+  }
+
+  .coin-silver {
+    background: radial-gradient(circle at 35% 30%, #E8E4E0 0%, #A8A29E 40%, #78716C 100%);
+    border: 2px solid #57534E;
+    box-shadow:
+      inset 0 2px 4px rgba(255, 255, 255, 0.25),
+      inset 0 -2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .coin-diamond {
+    background: radial-gradient(circle at 35% 30%, #c4b5fd 0%, #8B5CF6 40%, #6D28D9 100%);
+    border: 2px solid #5B21B6;
+    box-shadow:
+      0 0 18px rgba(139, 92, 246, 0.6),
+      inset 0 2px 4px rgba(255, 255, 255, 0.35),
+      inset 0 -2px 4px rgba(0, 0, 0, 0.2);
+    animation-name: coin-fall, coin-sparkle !important;
+  }
+
+  @keyframes coin-sparkle {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.3); }
+  }
+
   /* Sparkline hover interactions — desktop */
   .sparkline-hover .spark-pt:hover .spark-tip { opacity: 1 !important; }
   .sparkline-hover .spark-pt:hover .spark-dot-hover { opacity: 1 !important; }

@@ -3,7 +3,7 @@ import { useBullionPrices } from './hooks/useBullionPrices';
 import { useLocale } from './i18n';
 import { Header, type Tab } from './components/Header';
 
-const VALID_TABS: Tab[] = ['prices', 'news', 'predict', 'calculator'];
+const VALID_TABS: Tab[] = ['prices', 'news', 'play', 'calculator'];
 
 function getTabFromHash(): Tab {
   const hash = window.location.hash.slice(1);
@@ -17,6 +17,7 @@ import { useStreak } from './hooks/useStreak';
 import { MilestoneBanner } from './components/MilestoneBanner';
 import { usePrediction } from './hooks/usePrediction';
 import { PredictionCard } from './components/PredictionCard';
+import { GoldRushCard } from './components/GoldRushCard';
 import { CalculatorPage } from './components/CalculatorPage';
 
 export default function App() {
@@ -114,19 +115,24 @@ export default function App() {
           </>
         ) : activeTab === 'news' ? (
           <NewsPage />
-        ) : activeTab === 'predict' ? (
-          <PredictionCard
-            goldPrice={goldNepalPrice}
-            goldPrev={goldPrevPrice}
-            currentPrediction={currentPrediction}
-            lastResult={lastResult}
-            hasPredictedToday={hasPredictedToday}
-            hasResult={hasResult}
-            predictionStreak={predictionStreak}
-            accuracy={accuracy}
-            onPredict={predict}
-            onDismissResult={dismissResult}
-          />
+        ) : activeTab === 'play' ? (
+          <>
+            <PredictionCard
+              goldPrice={goldNepalPrice}
+              goldPrev={goldPrevPrice}
+              currentPrediction={currentPrediction}
+              lastResult={lastResult}
+              hasPredictedToday={hasPredictedToday}
+              hasResult={hasResult}
+              predictionStreak={predictionStreak}
+              accuracy={accuracy}
+              onPredict={predict}
+              onDismissResult={dismissResult}
+            />
+            <div className="max-w-lg mx-auto w-full mt-4">
+              <GoldRushCard />
+            </div>
+          </>
         ) : (
           <CalculatorPage
             goldPricePerTola={goldNepalPrice}

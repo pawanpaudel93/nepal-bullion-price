@@ -3,7 +3,7 @@ import { SunIcon, MoonIcon, RefreshIcon } from './Icons';
 import { useLocale } from '../i18n';
 import { StreakPill } from './StreakPill';
 
-export type Tab = 'prices' | 'news' | 'predict' | 'calculator';
+export type Tab = 'prices' | 'news' | 'play' | 'calculator';
 
 interface HeaderProps {
   lastFetched: Date | null;
@@ -80,7 +80,7 @@ export function Header({
       {/* Row 2: Tabs + Refresh */}
       <div className="flex items-center justify-between gap-2">
         <nav className="flex rounded-full border border-ink/8 dark:border-white/8 overflow-x-auto scrollbar-none min-w-0" aria-label="Main navigation">
-          {(['prices', 'news', 'predict', 'calculator'] as const).map(tab => (
+          {(['prices', 'news', 'play', 'calculator'] as const).map(tab => (
             <button
               key={tab}
               aria-current={activeTab === tab ? 'page' : undefined}
@@ -91,7 +91,7 @@ export function Header({
                   : 'text-ink-muted dark:text-ink-faint hover:bg-ink/5 dark:hover:bg-white/5'
               }`}
             >
-              {tab === 'prices' ? t.prices : tab === 'news' ? t.news : tab === 'predict' ? t.predict : t.calculator}
+              {tab === 'prices' ? t.prices : tab === 'news' ? t.news : tab === 'play' ? t.play : t.calculator}
             </button>
           ))}
         </nav>
