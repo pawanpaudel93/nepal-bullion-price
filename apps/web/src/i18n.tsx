@@ -258,12 +258,30 @@ function toNepaliDigits(str: string): string {
   return str.replace(/[0-9]/g, d => '०१२३४५६७८९'[+d]);
 }
 
+/** Nepali BS month names: English → Devanagari */
+const BS_MONTHS_NE: Record<string, string> = {
+  Baisakh: 'बैशाख', Jestha: 'जेठ', Ashadh: 'असार', Shrawan: 'श्रावण',
+  Bhadra: 'भदौ', Ashwin: 'असोज', Kartik: 'कार्तिक', Mangsir: 'मंसिर',
+  Poush: 'पौष', Magh: 'माघ', Falgun: 'फागुन', Chaitra: 'चैत्र',
+};
+
+/** Convert a BS date string like "Chaitra 19, 2082" to Nepali */
+function toNepaliDate(dateStr: string): string {
+  let result = dateStr;
+  for (const [en, ne] of Object.entries(BS_MONTHS_NE)) {
+    result = result.replace(new RegExp(en, 'i'), ne);
+  }
+  return toNepaliDigits(result);
+}
+
 interface LocaleContextValue {
   lang: Lang;
   t: Translations;
   numberLocale: string;
   /** Localize a raw number/string — converts digits to Nepali in NP mode */
   localizeNum: (value: string | number) => string;
+  /** Localize a BS date string — converts month names and digits to Nepali in NP mode */
+  localizeDate: (value: string) => string;
   toggleLang: () => void;
 }
 
@@ -300,6 +318,7 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
       const s = String(v);
       return lang === 'ne' ? toNepaliDigits(s) : s;
     },
+    localizeDate: (v: string) => lang === 'ne' ? toNepaliDate(v) : v,
     toggleLang,
   }), [lang, toggleLang]);
 

@@ -31,7 +31,7 @@ function StaleBadge({ label }: { label: string }) {
 }
 
 export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, delay = '0ms' }: PriceCardProps) {
-  const { lang, t, numberLocale, localizeNum } = useLocale();
+  const { lang, t, numberLocale, localizeNum, localizeDate } = useLocale();
   const nepalTola = nepalPrice ? getNepalPriceTola(nepalPrice) : null;
   const liveTola = livePrice?.perTola.estimatedPrice ?? null;
   const isNe = lang === 'ne';
@@ -75,7 +75,7 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, delay = 
       {/* Nepal FENEGOSIDA Price — The Hero */}
       <div className="mb-8">
         <p className="text-[10px] ne-text-boost font-medium uppercase tracking-[0.2em] text-ink-faint dark:text-ink-faint mb-3">
-          {t.nepalPrice}{nepalPrice?.priceDate ? ` · ${localizeNum(nepalPrice.priceDate.replace(/,\s*\d{4}$/, ''))}` : null}
+          {t.nepalPrice}{nepalPrice?.priceDate ? ` · ${localizeDate(nepalPrice.priceDate.replace(/,\s*\d{4}$/, ''))}` : null}
         </p>
         {nepalPrice ? (
           <>
