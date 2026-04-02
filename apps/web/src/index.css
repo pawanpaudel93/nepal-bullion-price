@@ -239,6 +239,10 @@
     .sparkline-hover .spark-pt:active .spark-dot-hover { opacity: 1 !important; }
   }
 
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top, 0);
+  }
+
   .safe-area-bottom {
     padding-bottom: env(safe-area-inset-bottom, 0);
   }

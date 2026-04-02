@@ -56,34 +56,39 @@ export function GoldRushGame({ highScore, onGameEnd, onClose }: GoldRushGameProp
 
   const spawnTimerRef = useRef<ReturnType<typeof setTimeout>>();
   const gcTimerRef = useRef<ReturnType<typeof setInterval>>();
+  const shakeTimerRef = useRef<ReturnType<typeof setTimeout>>();
   const coinIdRef = useRef(0);
   const floatIdRef = useRef(0);
+  const tappedRef = useRef(new Set<number>());
   const containerRef = useRef<HTMLDivElement>(null);
   const scoreRef = useRef(0);
   const livesRef = useRef(3);
   const phaseRef = useRef<Phase>('start');
+  const onGameEndRef = useRef(onGameEnd);
 
   useEffect(() => { scoreRef.current = score; }, [score]);
   useEffect(() => { livesRef.current = lives; }, [lives]);
   useEffect(() => { phaseRef.current = phase; }, [phase]);
+  useEffect(() => { onGameEndRef.current = onGameEnd; }, [onGameEnd]);
 
   const cleanup = useCallback(() => {
     clearTimeout(spawnTimerRef.current);
     clearInterval(gcTimerRef.current);
+    clearTimeout(shakeTimerRef.current);
   }, []);
 
   // End game
   useEffect(() => {
     if (lives <= 0 && phase === 'playing') {
       cleanup();
-      const newHigh = onGameEnd(scoreRef.current);
+      const newHigh = onGameEndRef.current(scoreRef.current);
       setIsNewHigh(newHigh);
       setPhase('over');
       if (newHigh) {
         confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
       }
     }
-  }, [lives, phase, cleanup, onGameEnd]);
+  }, [lives, phase, cleanup]);
 
   // Countdown
   useEffect(() => {
@@ -128,7 +133,7 @@ export function GoldRushGame({ highScore, onGameEnd, onClose }: GoldRushGameProp
     gcTimerRef.current = setInterval(() => {
       const now = Date.now();
       setCoins(prev => prev.filter(c => now - c.spawnedAt < c.duration * 1000 + 500));
-    }, 2000);
+    }, 1000);
     return () => clearInterval(gcTimerRef.current);
   }, [phase]);
 
@@ -142,8 +147,11 @@ export function GoldRushGame({ highScore, onGameEnd, onClose }: GoldRushGameProp
   const handleCoinTap = useCallback((e: React.PointerEvent, coin: Coin) => {
     e.preventDefault();
     e.stopPropagation();
-    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    // Prevent double-tap scoring
+    if (tappedRef.current.has(coin.id)) return;
+    tappedRef.current.add(coin.id);
 
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
     setCoins(prev => prev.filter(c => c.id !== coin.id));
 
     if (coin.type === 'gold') {
@@ -154,8 +162,9 @@ export function GoldRushGame({ highScore, onGameEnd, onClose }: GoldRushGameProp
       setFloats(prev => [...prev, { id: floatIdRef.current++, x: rect.left, y: rect.top, text: '+5', color: 'text-blue-400' }]);
     } else {
       setLives(l => l - 1);
+      clearTimeout(shakeTimerRef.current);
       setShaking(true);
-      setTimeout(() => setShaking(false), 300);
+      shakeTimerRef.current = setTimeout(() => setShaking(false), 300);
     }
   }, []);
 
@@ -168,7 +177,7 @@ export function GoldRushGame({ highScore, onGameEnd, onClose }: GoldRushGameProp
     setCountdown(3);
     scoreRef.current = 0;
     livesRef.current = 3;
-    coinIdRef.current = 0;
+    tappedRef.current.clear();
     setPhase('countdown');
   }, []);
 

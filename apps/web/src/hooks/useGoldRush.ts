@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 
 const STORAGE_KEY = 'bullion-gold-rush';
 
@@ -22,9 +22,12 @@ function saveState(state: GoldRushState): void {
 
 export function useGoldRush() {
   const [state, setState] = useState<GoldRushState>(loadState);
+  const isNewHighRef = useRef(false);
 
   const submitScore = useCallback((score: number) => {
     setState(prev => {
+      const isNew = score > prev.highScore;
+      isNewHighRef.current = isNew;
       const next: GoldRushState = {
         highScore: Math.max(prev.highScore, score),
         gamesPlayed: prev.gamesPlayed + 1,
@@ -33,8 +36,8 @@ export function useGoldRush() {
       saveState(next);
       return next;
     });
-    return score > state.highScore;
-  }, [state.highScore]);
+    return isNewHighRef.current;
+  }, []);
 
   return {
     highScore: state.highScore,

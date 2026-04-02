@@ -11,16 +11,16 @@ interface PriceCrashGameProps {
 }
 
 function generateCrashPoint(): number {
-  // Exponential distribution — most crashes happen early, rare high multipliers
-  // Mean crash ~2.5x, can go up to 20x+
+  // Exponential distribution, clamped to [1.3, 25] for playability
   const r = Math.random();
-  return 1 + (-Math.log(1 - r) * 1.5);
+  const raw = 1 + (-Math.log(1 - r) * 1.5);
+  return Math.max(1.3, Math.min(25, raw));
 }
 
 export function PriceCrashGame({ bestMultiplier, onResult, onClose }: PriceCrashGameProps) {
   const { t, localizeNum } = useLocale();
   const [phase, setPhase] = useState<Phase>('waiting');
-  const [multiplier, setMultiplier] = useState(1.0);
+  const [displayMultiplier, setDisplayMultiplier] = useState(1.0);
   const [crashPoint, setCrashPoint] = useState(0);
   const [cashedAt, setCashedAt] = useState(0);
   const [isNewBest, setIsNewBest] = useState(false);
@@ -29,69 +29,82 @@ export function PriceCrashGame({ bestMultiplier, onResult, onClose }: PriceCrash
   const rafRef = useRef<number>(0);
   const startTimeRef = useRef(0);
   const crashPointRef = useRef(0);
+  const multiplierRef = useRef(1.0);
   const phaseRef = useRef<Phase>('waiting');
+  const onResultRef = useRef(onResult);
 
   useEffect(() => { phaseRef.current = phase; }, [phase]);
+  useEffect(() => { onResultRef.current = onResult; }, [onResult]);
 
   const cleanup = useCallback(() => {
     cancelAnimationFrame(rafRef.current);
   }, []);
 
-  // Rising animation
+  // Rising animation — uses refs to avoid stale closure on multiplier
   useEffect(() => {
     if (phase !== 'rising') return;
 
     startTimeRef.current = Date.now();
+    let lastDisplay = 0;
+
     const tick = () => {
       if (phaseRef.current !== 'rising') return;
       const elapsed = (Date.now() - startTimeRef.current) / 1000;
-      // Multiplier grows: 1 + (elapsed * acceleration)^1.3
-      const current = 1 + Math.pow(elapsed * 0.4, 1.3);
+      // Slower growth: more time in safe zone before it gets risky
+      const current = 1 + Math.pow(elapsed * 0.3, 1.4);
+      multiplierRef.current = current;
 
       if (current >= crashPointRef.current) {
-        setMultiplier(crashPointRef.current);
+        multiplierRef.current = crashPointRef.current;
+        setDisplayMultiplier(crashPointRef.current);
         setPhase('crashed');
-        onResult(0);
+        onResultRef.current(0);
         return;
       }
 
-      setMultiplier(current);
+      // Throttle display updates to ~30fps to reduce re-renders
+      const now = Date.now();
+      if (now - lastDisplay > 33) {
+        setDisplayMultiplier(current);
+        lastDisplay = now;
+      }
       rafRef.current = requestAnimationFrame(tick);
     };
     rafRef.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafRef.current);
-  }, [phase, onResult]);
+  }, [phase]);
 
   const startRound = useCallback(() => {
     const cp = generateCrashPoint();
     setCrashPoint(cp);
     crashPointRef.current = cp;
-    setMultiplier(1.0);
+    setDisplayMultiplier(1.0);
+    multiplierRef.current = 1.0;
     setCashedAt(0);
     setIsNewBest(false);
     setRound(r => r + 1);
     setPhase('rising');
   }, []);
 
+  // cashOut reads multiplier from ref — no stale closure
   const cashOut = useCallback(() => {
     if (phaseRef.current !== 'rising') return;
     cancelAnimationFrame(rafRef.current);
-    const m = Math.round(multiplier * 100) / 100;
+    const m = Math.round(multiplierRef.current * 100) / 100;
     setCashedAt(m);
-    const newBest = onResult(m);
+    setDisplayMultiplier(m);
+    const newBest = onResultRef.current(m);
     setIsNewBest(newBest);
     setPhase('cashed');
     if (newBest) {
       confetti({ particleCount: 80, spread: 60, origin: { y: 0.5 } });
     }
-  }, [multiplier, onResult]);
+  }, []);
 
   useEffect(() => cleanup, [cleanup]);
 
-  // Bar height as percentage (log scale for visual)
-  const barPct = phase === 'waiting' ? 0 : Math.min(95, Math.log(multiplier) * 30 + 5);
+  const barPct = phase === 'waiting' ? 0 : Math.min(95, Math.log(displayMultiplier) * 30 + 5);
 
-  // Color transitions: green → yellow → red as multiplier grows
   const getBarColor = (m: number) => {
     if (phase === 'crashed') return '#EF4444';
     if (m < 2) return '#10B981';
@@ -105,7 +118,7 @@ export function PriceCrashGame({ bestMultiplier, onResult, onClose }: PriceCrash
     <div className="fixed inset-0 z-50 flex flex-col" role="dialog" aria-label={t.priceCrash}
       style={{ background: 'linear-gradient(180deg, #0F0E0D 0%, #1C1917 40%, #292524 100%)' }}>
       {/* HUD */}
-      <div className="flex items-center justify-between px-4 py-3 text-white">
+      <div className="flex items-center justify-between px-4 py-3 safe-area-top text-white">
         <button
           onClick={() => { cleanup(); onClose(); }}
           className="p-2 -m-1 text-white/50 hover:text-white transition-colors cursor-pointer"
@@ -124,18 +137,18 @@ export function PriceCrashGame({ bestMultiplier, onResult, onClose }: PriceCrash
 
         {/* Multiplier display */}
         <div className="absolute top-1/4 left-0 right-0 text-center z-10">
-          <p className={`font-mono font-bold leading-none transition-all duration-100 ${
+          <p className={`font-mono font-bold leading-none ${
             phase === 'crashed'
               ? 'text-red-500 text-5xl'
               : phase === 'cashed'
               ? 'text-emerald-400 text-5xl'
-              : multiplier >= 4
+              : displayMultiplier >= 4
               ? 'text-red-400 text-6xl'
-              : multiplier >= 2
+              : displayMultiplier >= 2
               ? 'text-amber-400 text-6xl'
               : 'text-emerald-400 text-5xl'
           }`}>
-            {formatMultiplier(multiplier)}
+            {formatMultiplier(displayMultiplier)}
           </p>
           {phase === 'crashed' && (
             <p className="text-red-400/80 text-sm mt-2 font-medium uppercase tracking-wider animate-fade-up">{t.crashed}</p>
@@ -150,17 +163,18 @@ export function PriceCrashGame({ bestMultiplier, onResult, onClose }: PriceCrash
         {/* Rising bar */}
         <div className="w-16 rounded-t-xl overflow-hidden relative" style={{ height: '60%' }}>
           <div
-            className="absolute bottom-0 left-0 right-0 rounded-t-xl transition-all duration-75"
+            className="absolute bottom-0 left-0 right-0 rounded-t-xl"
             style={{
               height: `${barPct}%`,
-              background: `linear-gradient(180deg, ${getBarColor(multiplier)} 0%, ${getBarColor(multiplier)}88 100%)`,
-              boxShadow: `0 0 20px ${getBarColor(multiplier)}40`,
+              background: `linear-gradient(180deg, ${getBarColor(displayMultiplier)} 0%, ${getBarColor(displayMultiplier)}88 100%)`,
+              boxShadow: `0 0 20px ${getBarColor(displayMultiplier)}40`,
+              transition: 'height 100ms linear',
             }}
           />
-          {/* Gold bar icon at top of rising bar */}
+          {/* Gold bar icon */}
           <div
             className="absolute left-1/2 -translate-x-1/2 w-10 h-6 rounded-sm bg-gradient-to-b from-gold-200 to-gold-500 border border-gold-600"
-            style={{ bottom: `${barPct}%`, transition: 'bottom 75ms linear' }}
+            style={{ bottom: `${barPct}%`, transition: 'bottom 100ms linear' }}
           />
         </div>
 

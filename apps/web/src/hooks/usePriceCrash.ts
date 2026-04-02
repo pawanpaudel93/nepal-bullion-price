@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 
 const STORAGE_KEY = 'bullion-price-crash';
 
@@ -21,10 +21,12 @@ function saveState(state: PriceCrashState): void {
 
 export function usePriceCrash() {
   const [state, setState] = useState<PriceCrashState>(loadState);
+  const isNewBestRef = useRef(false);
 
   const submitResult = useCallback((multiplier: number) => {
-    const isNewBest = multiplier > state.bestMultiplier;
     setState(prev => {
+      const isNew = multiplier > prev.bestMultiplier;
+      isNewBestRef.current = isNew;
       const next: PriceCrashState = {
         bestMultiplier: Math.max(prev.bestMultiplier, multiplier),
         gamesPlayed: prev.gamesPlayed + 1,
@@ -32,8 +34,8 @@ export function usePriceCrash() {
       saveState(next);
       return next;
     });
-    return isNewBest;
-  }, [state.bestMultiplier]);
+    return isNewBestRef.current;
+  }, []);
 
   return {
     bestMultiplier: state.bestMultiplier,
