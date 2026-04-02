@@ -38,7 +38,7 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, delay = 
 
   return (
     <div
-      className="glass-card rounded-3xl p-8 transition-all duration-300 animate-fade-up"
+      className="glass-card rounded-3xl p-8 transition-shadow duration-300 animate-fade-up"
       style={{ animationDelay: delay }}
     >
       {/* Header */}

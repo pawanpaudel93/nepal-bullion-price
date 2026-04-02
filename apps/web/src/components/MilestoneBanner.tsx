@@ -44,7 +44,7 @@ export function MilestoneBanner({ event, onDismiss }: MilestoneBannerProps) {
       </div>
       <button
         onClick={onDismiss}
-        className="shrink-0 p-1 text-ink-faint hover:text-ink dark:hover:text-white transition-colors cursor-pointer"
+        className="shrink-0 p-2 -m-1 text-ink-faint hover:text-ink dark:hover:text-white transition-colors duration-200 cursor-pointer"
         aria-label="Dismiss"
       >
         <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">

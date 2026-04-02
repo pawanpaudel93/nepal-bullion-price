@@ -66,7 +66,7 @@ export function CalculatorPage({ goldPricePerTola, silverPricePerTola }: Calcula
             <button
               key={m}
               onClick={() => setMetal(m)}
-              className={`px-4 py-1.5 text-[12px] font-medium tracking-wide cursor-pointer transition-all duration-300 focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:outline-none ${
+              className={`px-4 py-2 text-[12px] font-medium tracking-wide cursor-pointer transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:outline-none ${
                 metal === m
                   ? 'bg-ink dark:bg-white text-white dark:text-ink'
                   : 'text-ink-muted dark:text-ink-faint hover:bg-ink/5 dark:hover:bg-white/5'
@@ -80,14 +80,14 @@ export function CalculatorPage({ goldPricePerTola, silverPricePerTola }: Calcula
         {/* Input fields */}
         <div className="flex flex-col sm:flex-row sm:items-end gap-3 sm:gap-4 mb-4">
           <div className="flex-1">
-            <label className="text-[11px] font-medium uppercase tracking-[0.15em] text-ink-faint mb-1.5 block">
+            <label htmlFor="calc-weight" className="text-[11px] font-medium uppercase tracking-[0.15em] text-ink-faint mb-1.5 block">
               {t.weight}
             </label>
             <div className="flex rounded-xl border border-ink/10 dark:border-white/10 overflow-hidden">
               <input
+                id="calc-weight"
                 type="text"
                 inputMode="decimal"
-                aria-label={t.weight}
                 value={mode === 'weight' ? weightInput : (result ? localizeNum(result.weight) : '')}
                 onChange={e => handleWeightChange(e.target.value)}
                 placeholder={t.enterWeight}
@@ -112,15 +112,15 @@ export function CalculatorPage({ goldPricePerTola, silverPricePerTola }: Calcula
           </div>
 
           <div className="flex-1">
-            <label className="text-[11px] font-medium uppercase tracking-[0.15em] text-ink-faint mb-1.5 block">
+            <label htmlFor="calc-value" className="text-[11px] font-medium uppercase tracking-[0.15em] text-ink-faint mb-1.5 block">
               {t.value}
             </label>
             <div className="flex rounded-xl border border-ink/10 dark:border-white/10 overflow-hidden">
               <span className="px-3 py-3 bg-ink/3 dark:bg-white/5 border-r border-ink/10 dark:border-white/10 text-[13px] text-ink-muted dark:text-ink-faint">Rs</span>
               <input
+                id="calc-value"
                 type="text"
                 inputMode="decimal"
-                aria-label={t.value}
                 value={mode === 'value' ? valueInput : (result ? localizeNum(result.value.toLocaleString(numberLocale)) : '')}
                 onChange={e => handleValueChange(e.target.value.replace(/,/g, ''))}
                 placeholder={t.enterValue}

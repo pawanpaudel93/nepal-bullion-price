@@ -35,7 +35,7 @@ export class ErrorBoundary extends Component<Props, State> {
                 Reload
               </button>
               <button
-                onClick={() => { try { localStorage.clear(); } catch { /* unavailable */ } window.location.reload(); }}
+                onClick={() => { try { Object.keys(localStorage).filter(k => k.startsWith('bullion-') || k === 'theme' || k === 'lang' || k === 'REACT_QUERY_OFFLINE_CACHE').forEach(k => localStorage.removeItem(k)); } catch { /* unavailable */ } window.location.reload(); }}
                 className="px-5 py-2.5 text-sm font-medium rounded-full border border-ink/20 dark:border-white/20 text-ink dark:text-white hover:bg-ink/5 dark:hover:bg-white/5 cursor-pointer transition-colors"
               >
                 Clear cache &amp; reload

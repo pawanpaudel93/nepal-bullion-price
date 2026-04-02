@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Sparkline } from './Sparkline';
 import { generateNarratives, formatNarrative } from '../utils/narrative';
 import { useLocale } from '../i18n';
@@ -7,7 +8,7 @@ interface TrendSectionProps {
   color: 'gold' | 'silver';
 }
 
-export function TrendSection({ history, color }: TrendSectionProps) {
+export const TrendSection = memo(function TrendSection({ history, color }: TrendSectionProps) {
   const { t, numberLocale, localizeNum } = useLocale();
 
   if (history.length < 2) return null;
@@ -45,4 +46,4 @@ export function TrendSection({ history, color }: TrendSectionProps) {
       <Sparkline data={prices} color={color} labels={dayLabels} formattedPrices={formattedPrices} />
     </div>
   );
-}
+});

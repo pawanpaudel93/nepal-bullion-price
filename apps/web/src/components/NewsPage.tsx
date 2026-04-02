@@ -40,9 +40,9 @@ export function NewsPage() {
           <button
             key={`lang-${f}`}
             onClick={() => { setLangFilter(f); setVisibleCount(PAGE_SIZE); }}
-            className={`shrink-0 px-3 py-1.5 rounded-full text-[11px] font-medium tracking-wide cursor-pointer transition-colors focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:outline-none ${
+            className={`shrink-0 px-3.5 py-2 rounded-full text-[11px] font-medium tracking-wide cursor-pointer transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:outline-none ${
               langFilter === f
-                ? 'bg-gold-500 text-white'
+                ? 'bg-gold-100 dark:bg-gold-400/20 text-gold-700 dark:text-gold-200'
                 : 'bg-ink/5 dark:bg-white/8 text-ink-muted dark:text-ink-faint hover:bg-ink/10 dark:hover:bg-white/12'
             }`}
           >
@@ -57,9 +57,9 @@ export function NewsPage() {
           <button
             key={`cat-${f}`}
             onClick={() => { setCategoryFilter(f); setVisibleCount(PAGE_SIZE); }}
-            className={`shrink-0 px-3 py-1.5 rounded-full text-[11px] font-medium tracking-wide cursor-pointer transition-colors focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:outline-none ${
+            className={`shrink-0 px-3.5 py-2 rounded-full text-[11px] font-medium tracking-wide cursor-pointer transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:outline-none ${
               categoryFilter === f
-                ? 'bg-gold-500 text-white'
+                ? 'bg-gold-100 dark:bg-gold-400/20 text-gold-700 dark:text-gold-200'
                 : 'bg-ink/5 dark:bg-white/8 text-ink-muted dark:text-ink-faint hover:bg-ink/10 dark:hover:bg-white/12'
             }`}
           >
@@ -70,7 +70,7 @@ export function NewsPage() {
 
       {/* Loading */}
       {isLoading && (
-        <div className="flex flex-col items-center justify-center py-32 gap-5">
+        <div className="flex flex-col items-center justify-center py-32 gap-5" role="status">
           <div className="animate-spin rounded-full h-7 w-7 border-[1.5px] border-gold-200 dark:border-gold-700 border-t-gold-500" />
           <p className="text-[13px] text-ink-faint font-light tracking-wide">{t.fetchingPrices}</p>
         </div>

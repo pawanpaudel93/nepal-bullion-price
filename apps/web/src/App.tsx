@@ -87,7 +87,7 @@ export default function App() {
             ) : null}
 
             {isLoading && !data ? (
-              <div className="flex flex-col items-center justify-center py-32 gap-5 animate-fade-up">
+              <div className="flex flex-col items-center justify-center py-32 gap-5 animate-fade-up" role="status">
                 <div className="animate-spin rounded-full h-7 w-7 border-[1.5px] border-gold-200 dark:border-gold-700 border-t-gold-500" />
                 <p className="text-[13px] text-ink-faint font-light tracking-wide">{t.fetchingPrices}</p>
               </div>

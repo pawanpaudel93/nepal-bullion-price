@@ -43,7 +43,7 @@ export function Header({
       {/* Row 1: Title + utility controls */}
       <div className="flex items-start justify-between mb-4">
         <div>
-          <h1 className="font-display text-4xl sm:text-3xl md:text-4xl font-bold text-ink dark:text-white leading-none tracking-tight">
+          <h1 className="font-display text-3xl sm:text-4xl font-bold text-ink dark:text-white leading-none tracking-tight">
             {lang === 'ne' ? (
               <span className="text-gold-shimmer">{t.nepalBullion}</span>
             ) : (
@@ -51,7 +51,7 @@ export function Header({
             )}
           </h1>
           {lastFetched ? (
-            <p className="text-[13px] text-ink-faint dark:text-ink-faint mt-2 font-light">
+            <p className="text-[13px] text-ink-muted dark:text-ink-faint mt-2 font-light">
               {t.updated} {localizeNum(lastFetched.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }))}
             </p>
           ) : null}
@@ -62,14 +62,14 @@ export function Header({
           ) : null}
           <button
             onClick={toggleLang}
-            className="px-3 py-2.5 rounded-full border border-ink/8 dark:border-white/8 text-[13px] font-medium text-ink-muted dark:text-ink-faint hover:bg-ink/5 dark:hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 cursor-pointer transition-all duration-300"
+            className="px-3 py-2.5 rounded-full border border-ink/8 dark:border-white/8 text-[13px] font-medium text-ink-muted dark:text-ink-faint hover:bg-ink/5 dark:hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 cursor-pointer transition-colors duration-200"
             aria-label={`Switch to ${lang === 'en' ? 'Nepali' : 'English'}`}
           >
             {lang === 'en' ? 'NP' : 'EN'}
           </button>
           <button
             onClick={() => setIsDark(prev => !prev)}
-            className="p-2.5 rounded-full border border-ink/8 dark:border-white/8 text-ink-muted dark:text-ink-faint hover:bg-ink/5 dark:hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 cursor-pointer transition-all duration-300"
+            className="p-2.5 rounded-full border border-ink/8 dark:border-white/8 text-ink-muted dark:text-ink-faint hover:bg-ink/5 dark:hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 cursor-pointer transition-colors duration-200"
             aria-label="Toggle dark mode"
           >
             {isDark ? <SunIcon /> : <MoonIcon />}
@@ -79,14 +79,13 @@ export function Header({
 
       {/* Row 2: Tabs + Refresh */}
       <div className="flex items-center justify-between gap-2">
-        <div role="tablist" className="flex rounded-full border border-ink/8 dark:border-white/8 overflow-x-auto scrollbar-none min-w-0">
+        <nav className="flex rounded-full border border-ink/8 dark:border-white/8 overflow-x-auto scrollbar-none min-w-0" aria-label="Main navigation">
           {(['prices', 'news', 'predict', 'calculator'] as const).map(tab => (
             <button
               key={tab}
-              role="tab"
-              aria-selected={activeTab === tab}
+              aria-current={activeTab === tab ? 'page' : undefined}
               onClick={() => onTabChange(tab)}
-              className={`px-2 sm:px-4 py-1.5 text-[10px] sm:text-[12px] font-medium tracking-wide cursor-pointer transition-all duration-300 focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:outline-none whitespace-nowrap ${
+              className={`px-2.5 sm:px-4 py-2 sm:py-1.5 text-[11px] sm:text-[12px] font-medium tracking-wide cursor-pointer transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:outline-none whitespace-nowrap ${
                 activeTab === tab
                   ? 'bg-ink dark:bg-white text-white dark:text-ink'
                   : 'text-ink-muted dark:text-ink-faint hover:bg-ink/5 dark:hover:bg-white/5'
@@ -95,11 +94,11 @@ export function Header({
               {tab === 'prices' ? t.prices : tab === 'news' ? t.news : tab === 'predict' ? t.predict : t.calculator}
             </button>
           ))}
-        </div>
+        </nav>
         <button
           onClick={onRefresh}
           disabled={isFetching}
-          className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 text-[12px] sm:text-[13px] font-medium rounded-full bg-ink dark:bg-white text-white dark:text-ink hover:bg-ink-light dark:hover:bg-paper-warm focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-ink disabled:opacity-40 cursor-pointer transition-all duration-300 shrink-0"
+          className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 text-[12px] sm:text-[13px] font-medium rounded-full bg-ink dark:bg-white text-white dark:text-ink hover:bg-ink-light dark:hover:bg-paper-warm focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-ink disabled:opacity-40 cursor-pointer transition-colors duration-200 shrink-0"
         >
           <RefreshIcon className={`w-3.5 h-3.5 ${isFetching ? 'animate-spin' : ''}`} />
           <span className="hidden sm:inline">{isFetching ? t.updating : t.refresh}</span>

@@ -53,7 +53,7 @@ export function PredictionCard({
             <button
               type="button"
               onClick={onDismissResult}
-              className="shrink-0 p-1 text-ink-faint hover:text-ink dark:hover:text-white transition-colors cursor-pointer"
+              className="shrink-0 p-2 -m-1 text-ink-faint hover:text-ink dark:hover:text-white transition-colors duration-200 cursor-pointer"
               aria-label="Dismiss"
             >
               <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
@@ -130,7 +130,7 @@ export function PredictionCard({
       </div>
 
       {/* Stats bar */}
-      <div className="flex items-center justify-center gap-4 mt-4 px-4 py-3 rounded-2xl bg-ink/[0.02] dark:bg-white/[0.03] text-[12px] text-ink-muted dark:text-ink-faint">
+      <div className="flex items-center justify-center gap-4 flex-wrap mt-4 px-4 py-3 rounded-2xl bg-ink/[0.02] dark:bg-white/[0.03] text-[12px] text-ink-muted dark:text-ink-faint">
         <span>🎯 {t.predictionStreak}: <strong className="text-ink dark:text-white">{localizeNum(predictionStreak)}</strong></span>
         <span className="w-[3px] h-[3px] rounded-full bg-ink-faint/30" />
         <span>{t.accuracy}: <strong className="text-ink dark:text-white">{localizeNum(accuracy)}%</strong></span>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { getComparisons } from '../utils/comparisons';
 import { useLocale } from '../i18n';
 
@@ -12,10 +12,12 @@ export function FunComparison({ price, metal }: FunComparisonProps) {
   const comparisons = getComparisons(price, metal);
   const [index, setIndex] = useState(0);
   const [fading, setFading] = useState(false);
+  const fadeTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
   const advance = useCallback(() => {
+    clearTimeout(fadeTimerRef.current);
     setFading(true);
-    setTimeout(() => {
+    fadeTimerRef.current = setTimeout(() => {
       setIndex(prev => (prev + 1) % comparisons.length);
       setFading(false);
     }, 300);
@@ -24,7 +26,7 @@ export function FunComparison({ price, metal }: FunComparisonProps) {
   useEffect(() => {
     if (comparisons.length <= 1) return;
     const timer = setInterval(advance, 8000);
-    return () => clearInterval(timer);
+    return () => { clearInterval(timer); clearTimeout(fadeTimerRef.current); };
   }, [advance, comparisons.length]);
 
   if (comparisons.length === 0) return null;
