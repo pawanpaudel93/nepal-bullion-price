@@ -50,6 +50,12 @@ const gold = await getNepalGoldPrice();
 //   tajabi: 0,
 //   unit: 'tola',
 //   perGram10: 234825,
+//   previousPrice: 275000,       // yesterday's hallmark (null if unavailable)
+//   history: [                   // 7-day chart data (null for fallback providers)
+//     { date: '18', price: 275000 },
+//     { date: '19', price: 273900 }
+//   ],
+//   priceDate: 'Chaitra 11',    // Nepali calendar date (BS), not Gregorian
 //   source: 'fenegosida.org',
 //   date: '2026-03-24',
 //   updatedAt: '2026-03-24T04:15:00.000Z',
@@ -128,7 +134,9 @@ Rates are configured **per metal** via `rates.gold` and `rates.silver`:
 | `apiKeys.goldApiIo` | `string` | — | — | goldapi.io API key (enables fallback) |
 | `apiKeys.asheshApiKey` | `string` | — | — | Ashesh widget API key (has public default) |
 | `apiKeys.gnewsApiKey` | `string` | — | — | GNews API key (enables news fallback) |
-| `cacheTtl` | `number` | `300000` | `300000` | Cache TTL in ms (5 minutes) |
+| `cacheTtl` | `number` | `300000` | `300000` | Cache TTL in ms for live & forex prices |
+
+> **Note:** `cacheTtl` applies to live spot prices and forex rates only. Nepal daily prices use an adaptive TTL — 5 minutes during the FENEGOSIDA update window (10 AM–12 PM NPT) and 1 hour otherwise. This is not affected by `configure()`.
 
 ## Data Sources
 
@@ -196,6 +204,8 @@ estimatedPrice = afterDealer + marketPremium     ← approx. FENEGOSIDA rate
 The `estimatedPrice` approximates what FENEGOSIDA publishes as the daily rate. The market premium covers freight & insurance costs, CIF-based customs amplification, and the 75/25 Indian market price blend effect. A separate 2% luxury tax is charged at the point of sale on jewellery but is not part of the published rate.
 
 All rates are configurable per metal via `configure({ rates: { gold: { ... }, silver: { ... } } })`.
+
+> **Note:** `priceDate` in Nepal price responses uses the Nepali Bikram Sambat (BS) calendar (e.g. "Chaitra 19"), not Gregorian. The Gregorian date is in the `date` field. `previousPrice` and `history` are only available from the FENEGOSIDA primary source — fallback providers (ashesh, hamropatro) return `null` for these fields.
 
 ## MCP Server
 

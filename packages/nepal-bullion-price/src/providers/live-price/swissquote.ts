@@ -26,6 +26,6 @@ export async function fetchSwissquote(symbol: 'XAU' | 'XAG'): Promise<LivePriceD
   return {
     priceUsd: midPrice,
     symbol,
-    updatedAt: new Date(data[0].ts).toISOString(),
+    updatedAt: data[0].ts ? new Date(data[0].ts).toISOString() : new Date().toISOString(),
   };
 }
