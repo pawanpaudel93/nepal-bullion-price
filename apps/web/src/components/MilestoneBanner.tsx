@@ -8,7 +8,7 @@ interface MilestoneBannerProps {
 }
 
 export function MilestoneBanner({ event, onDismiss }: MilestoneBannerProps) {
-  const { t, numberLocale } = useLocale();
+  const { t, numberLocale, localizeNum } = useLocale();
 
   useEffect(() => {
     const timer = setTimeout(onDismiss, 30_000);
@@ -22,10 +22,10 @@ export function MilestoneBanner({ event, onDismiss }: MilestoneBannerProps) {
     ? t.milestoneATH
     : (t.milestoneCrossed as string)
         .replace('{metal}', metalName)
-        .replace('{price}', event.threshold.toLocaleString(numberLocale));
+        .replace('{price}', localizeNum(event.threshold.toLocaleString(numberLocale)));
 
   const subtitle = (t.milestoneContext as string)
-    .replace('{previous}', event.previous.toLocaleString(numberLocale));
+    .replace('{previous}', localizeNum(event.previous.toLocaleString(numberLocale)));
 
   const bgClass = event.metal === 'gold'
     ? 'from-gold-400/12 to-gold-400/4 border-gold-400/20'

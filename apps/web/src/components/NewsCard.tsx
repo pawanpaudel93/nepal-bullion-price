@@ -4,14 +4,15 @@ import type { NewsItem } from 'nepal-bullion-price';
 function timeAgo(
   dateStr: string,
   labels: { justNow: string; minutesAgo: string; hoursAgo: string },
+  localizeNum: (v: string | number) => string,
 ): string {
   const now = Date.now();
   const then = new Date(dateStr).getTime();
   const diffMin = Math.floor((now - then) / 60_000);
   if (diffMin < 1) return labels.justNow;
-  if (diffMin < 60) return labels.minutesAgo.replace('{n}', String(diffMin));
+  if (diffMin < 60) return labels.minutesAgo.replace('{n}', localizeNum(diffMin));
   const diffHr = Math.floor(diffMin / 60);
-  if (diffHr < 24) return labels.hoursAgo.replace('{n}', String(diffHr));
+  if (diffHr < 24) return labels.hoursAgo.replace('{n}', localizeNum(diffHr));
   return new Date(dateStr).toLocaleDateString();
 }
 
@@ -22,7 +23,7 @@ const CATEGORY_COLORS: Record<string, string> = {
 };
 
 export function NewsCard({ item }: { item: NewsItem }) {
-  const { t } = useLocale();
+  const { t, localizeNum } = useLocale();
 
   return (
     <a
@@ -40,7 +41,7 @@ export function NewsCard({ item }: { item: NewsItem }) {
             </span>
             <span className="text-[11px] text-ink-faint">·</span>
             <span className="text-[11px] text-ink-faint">
-              {timeAgo(item.publishedAt, t)}
+              {timeAgo(item.publishedAt, t, localizeNum)}
             </span>
             {item.category && (
               <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${CATEGORY_COLORS[item.category] ?? ''}`}>

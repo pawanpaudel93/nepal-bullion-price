@@ -100,6 +100,7 @@ const translations = {
     badgeATHHunter: 'ATH Hunter',
     badgeLocked: 'Locked',
     // Prediction Game
+    predict: 'Predict',
     predictTomorrow: 'Predict Tomorrow',
     willGoldGoUpOrDown: 'Will gold go up or down tomorrow?',
     up: 'Up',
@@ -114,13 +115,7 @@ const translations = {
     goldFlat: 'Gold stayed flat — your prediction counts!',
     predictionStreak: 'Prediction streak',
     accuracy: 'Accuracy',
-    // Morning Digest
-    goodMorning: 'Good morning!',
-    goodAfternoon: 'Good afternoon!',
-    goodEvening: 'Good evening!',
     yesterdayPrediction: "Yesterday's prediction",
-    correct: 'Correct!',
-    wrong: 'Wrong',
     // Calculator
     calculator: 'Calculator',
     weight: 'Weight',
@@ -228,6 +223,7 @@ const translations = {
     badgeATHHunter: 'ATH शिकारी',
     badgeLocked: 'लक गरिएको',
     // Prediction Game
+    predict: 'अनुमान',
     predictTomorrow: 'भोलिको अनुमान',
     willGoldGoUpOrDown: 'भोलि सुन बढ्छ कि घट्छ?',
     up: 'बढ्छ',
@@ -242,13 +238,7 @@ const translations = {
     goldFlat: 'सुन स्थिर — तपाईंको अनुमान गनियो!',
     predictionStreak: 'अनुमान स्ट्रिक',
     accuracy: 'शुद्धता',
-    // Morning Digest
-    goodMorning: 'शुभ प्रभात!',
-    goodAfternoon: 'शुभ दिन!',
-    goodEvening: 'शुभ सन्ध्या!',
     yesterdayPrediction: 'हिजोको अनुमान',
-    correct: 'सही!',
-    wrong: 'गलत',
     // Calculator
     calculator: 'क्यालकुलेटर',
     weight: 'तौल',
@@ -263,10 +253,17 @@ const translations = {
 
 export type Translations = typeof translations.en;
 
+/** Convert ASCII digits to Nepali Devanagari digits */
+function toNepaliDigits(str: string): string {
+  return str.replace(/[0-9]/g, d => '०१२३४५६७८९'[+d]);
+}
+
 interface LocaleContextValue {
   lang: Lang;
   t: Translations;
   numberLocale: string;
+  /** Localize a raw number/string — converts digits to Nepali in NP mode */
+  localizeNum: (value: string | number) => string;
   toggleLang: () => void;
 }
 
@@ -298,7 +295,11 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
   const value = useMemo<LocaleContextValue>(() => ({
     lang,
     t: translations[lang],
-    numberLocale: 'en-IN', // always use Indian/Nepali lakh grouping (2,85,600)
+    numberLocale: 'en-IN', // always lakh grouping (2,85,600); localizeNum handles digit conversion
+    localizeNum: (v: string | number) => {
+      const s = String(v);
+      return lang === 'ne' ? toNepaliDigits(s) : s;
+    },
     toggleLang,
   }), [lang, toggleLang]);
 

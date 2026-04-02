@@ -8,17 +8,17 @@ interface TrendSectionProps {
 }
 
 export function TrendSection({ history, color }: TrendSectionProps) {
-  const { t, numberLocale } = useLocale();
+  const { t, numberLocale, localizeNum } = useLocale();
 
   if (history.length < 2) return null;
 
   const narratives = generateNarratives(history);
   const prices = history.map(h => h.price);
-  const dayLabels = history.map(h => h.date);
-  const formattedPrices = prices.map(p => `Rs ${p.toLocaleString(numberLocale)}`);
+  const dayLabels = history.map(h => localizeNum(h.date));
+  const formattedPrices = prices.map(p => `Rs ${localizeNum(p.toLocaleString(numberLocale))}`);
 
   const narrativeText = narratives
-    .map(n => formatNarrative(n, t as Record<string, string>))
+    .map(n => formatNarrative(n, t as Record<string, string>, localizeNum))
     .join(' · ');
 
   const bgColor = color === 'gold'

@@ -13,7 +13,7 @@ type Unit = 'tola' | 'gram';
 const GRAMS_PER_TOLA = 11.6638;
 
 export function CalculatorPage({ goldPricePerTola, silverPricePerTola }: CalculatorPageProps) {
-  const { t, numberLocale } = useLocale();
+  const { t, numberLocale, localizeNum } = useLocale();
   const [metal, setMetal] = useState<Metal>('gold');
   const [unit, setUnit] = useState<Unit>('tola');
   const [weightInput, setWeightInput] = useState('1');
@@ -78,7 +78,7 @@ export function CalculatorPage({ goldPricePerTola, silverPricePerTola }: Calcula
         </div>
 
         {/* Input fields */}
-        <div className="flex items-end gap-3 sm:gap-4 mb-4">
+        <div className="flex flex-col sm:flex-row sm:items-end gap-3 sm:gap-4 mb-4">
           <div className="flex-1">
             <label className="text-[11px] font-medium uppercase tracking-[0.15em] text-ink-faint mb-1.5 block">
               {t.weight}
@@ -87,7 +87,8 @@ export function CalculatorPage({ goldPricePerTola, silverPricePerTola }: Calcula
               <input
                 type="text"
                 inputMode="decimal"
-                value={mode === 'weight' ? weightInput : (result ? String(result.weight) : '')}
+                aria-label={t.weight}
+                value={mode === 'weight' ? weightInput : (result ? localizeNum(result.weight) : '')}
                 onChange={e => handleWeightChange(e.target.value)}
                 placeholder={t.enterWeight}
                 className="flex-1 px-3 py-3 text-[16px] bg-transparent text-ink dark:text-white outline-none"
@@ -95,6 +96,7 @@ export function CalculatorPage({ goldPricePerTola, silverPricePerTola }: Calcula
               <select
                 value={unit}
                 onChange={e => setUnit(e.target.value as Unit)}
+                aria-label={t.tola + '/' + t.gram}
                 className="px-3 py-3 bg-ink/3 dark:bg-white/5 border-l border-ink/10 dark:border-white/10 text-[13px] text-ink-muted dark:text-ink-faint outline-none cursor-pointer"
               >
                 <option value="tola">{t.tola}</option>
@@ -103,7 +105,11 @@ export function CalculatorPage({ goldPricePerTola, silverPricePerTola }: Calcula
             </div>
           </div>
 
-          <div className="text-xl text-ink-faint pb-3">⇄</div>
+          <div className="flex justify-center sm:pb-3 text-ink-faint">
+            <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 rotate-90 sm:rotate-0">
+              <path fillRule="evenodd" d="M13.2 2.24a.75.75 0 00.04 1.06l2.1 1.95H6.75a.75.75 0 000 1.5h8.59l-2.1 1.95a.75.75 0 101.02 1.1l3.5-3.25a.75.75 0 000-1.1l-3.5-3.25a.75.75 0 00-1.06.04zm-6.4 8a.75.75 0 00-1.06-.04l-3.5 3.25a.75.75 0 000 1.1l3.5 3.25a.75.75 0 101.02-1.1l-2.1-1.95h8.59a.75.75 0 000-1.5H4.66l2.1-1.95a.75.75 0 00.04-1.06z" clipRule="evenodd" />
+            </svg>
+          </div>
 
           <div className="flex-1">
             <label className="text-[11px] font-medium uppercase tracking-[0.15em] text-ink-faint mb-1.5 block">
@@ -114,7 +120,8 @@ export function CalculatorPage({ goldPricePerTola, silverPricePerTola }: Calcula
               <input
                 type="text"
                 inputMode="decimal"
-                value={mode === 'value' ? valueInput : (result ? result.value.toLocaleString(numberLocale) : '')}
+                aria-label={t.value}
+                value={mode === 'value' ? valueInput : (result ? localizeNum(result.value.toLocaleString(numberLocale)) : '')}
                 onChange={e => handleValueChange(e.target.value.replace(/,/g, ''))}
                 placeholder={t.enterValue}
                 className="flex-1 px-3 py-3 text-[16px] bg-transparent text-ink dark:text-white outline-none"
@@ -127,7 +134,7 @@ export function CalculatorPage({ goldPricePerTola, silverPricePerTola }: Calcula
         {pricePerUnit ? (
           <p className="text-[12px] text-ink-faint mb-4">
             {(t.basedOnRate as string)
-              .replace('{price}', pricePerUnit.toLocaleString(numberLocale))
+              .replace('{price}', localizeNum(pricePerUnit.toLocaleString(numberLocale)))
               .replace('{unit}', unit === 'tola' ? t.tola : t.gram)}
           </p>
         ) : null}

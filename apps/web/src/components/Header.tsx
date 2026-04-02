@@ -3,7 +3,7 @@ import { SunIcon, MoonIcon, RefreshIcon } from './Icons';
 import { useLocale } from '../i18n';
 import { StreakPill } from './StreakPill';
 
-export type Tab = 'prices' | 'news' | 'calculator';
+export type Tab = 'prices' | 'news' | 'predict' | 'calculator';
 
 interface HeaderProps {
   lastFetched: Date | null;
@@ -22,7 +22,7 @@ export function Header({
   activeTab, onTabChange,
   streak, bestStreak, badges, streakEmoji,
 }: HeaderProps) {
-  const { lang, t, toggleLang } = useLocale();
+  const { lang, t, localizeNum, toggleLang } = useLocale();
 
   const [isDark, setIsDark] = useState(() => {
     if (typeof window === 'undefined') return false;
@@ -52,7 +52,7 @@ export function Header({
           </h1>
           {lastFetched ? (
             <p className="text-[13px] text-ink-faint dark:text-ink-faint mt-2 font-light">
-              {t.updated} {lastFetched.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              {t.updated} {localizeNum(lastFetched.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }))}
             </p>
           ) : null}
         </div>
@@ -78,29 +78,31 @@ export function Header({
       </div>
 
       {/* Row 2: Tabs + Refresh */}
-      <div className="flex items-center justify-between">
-        <div className="flex rounded-full border border-ink/8 dark:border-white/8 overflow-hidden">
-          {(['prices', 'news', 'calculator'] as const).map(tab => (
+      <div className="flex items-center justify-between gap-2">
+        <div role="tablist" className="flex rounded-full border border-ink/8 dark:border-white/8 overflow-x-auto scrollbar-none min-w-0">
+          {(['prices', 'news', 'predict', 'calculator'] as const).map(tab => (
             <button
               key={tab}
+              role="tab"
+              aria-selected={activeTab === tab}
               onClick={() => onTabChange(tab)}
-              className={`px-4 py-1.5 text-[12px] font-medium tracking-wide cursor-pointer transition-all duration-300 focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:outline-none ${
+              className={`px-2 sm:px-4 py-1.5 text-[10px] sm:text-[12px] font-medium tracking-wide cursor-pointer transition-all duration-300 focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:outline-none whitespace-nowrap ${
                 activeTab === tab
                   ? 'bg-ink dark:bg-white text-white dark:text-ink'
                   : 'text-ink-muted dark:text-ink-faint hover:bg-ink/5 dark:hover:bg-white/5'
               }`}
             >
-              {tab === 'prices' ? t.prices : tab === 'news' ? t.news : t.calculator}
+              {tab === 'prices' ? t.prices : tab === 'news' ? t.news : tab === 'predict' ? t.predict : t.calculator}
             </button>
           ))}
         </div>
         <button
           onClick={onRefresh}
           disabled={isFetching}
-          className="inline-flex items-center gap-2 px-4 py-2 text-[13px] font-medium rounded-full bg-ink dark:bg-white text-white dark:text-ink hover:bg-ink-light dark:hover:bg-paper-warm focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-ink disabled:opacity-40 cursor-pointer transition-all duration-300"
+          className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 text-[12px] sm:text-[13px] font-medium rounded-full bg-ink dark:bg-white text-white dark:text-ink hover:bg-ink-light dark:hover:bg-paper-warm focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-ink disabled:opacity-40 cursor-pointer transition-all duration-300 shrink-0"
         >
           <RefreshIcon className={`w-3.5 h-3.5 ${isFetching ? 'animate-spin' : ''}`} />
-          {isFetching ? t.updating : t.refresh}
+          <span className="hidden sm:inline">{isFetching ? t.updating : t.refresh}</span>
         </button>
       </div>
     </header>

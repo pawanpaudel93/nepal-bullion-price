@@ -8,11 +8,12 @@ export interface Narrative {
 export function formatNarrative(
   narrative: Narrative,
   translations: Record<string, string>,
+  localizeNum?: (v: string | number) => string,
 ): string {
   let text = translations[narrative.key] ?? narrative.key;
   if (narrative.values) {
     for (const [k, v] of Object.entries(narrative.values)) {
-      text = text.replace(`{${k}}`, String(v));
+      text = text.replace(`{${k}}`, localizeNum ? localizeNum(v) : String(v));
     }
   }
   return `${narrative.emoji} ${text}`;

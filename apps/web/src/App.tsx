@@ -1,7 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useBullionPrices } from './hooks/useBullionPrices';
 import { useLocale } from './i18n';
 import { Header, type Tab } from './components/Header';
+
+const VALID_TABS: Tab[] = ['prices', 'news', 'predict', 'calculator'];
+
+function getTabFromHash(): Tab {
+  const hash = window.location.hash.slice(1);
+  return VALID_TABS.includes(hash as Tab) ? (hash as Tab) : 'prices';
+}
 import { PriceCard } from './components/PriceCard';
 import { GoldIcon, SilverIcon } from './components/Icons';
 import { NewsPage } from './components/NewsPage';
@@ -10,13 +17,27 @@ import { useStreak } from './hooks/useStreak';
 import { MilestoneBanner } from './components/MilestoneBanner';
 import { usePrediction } from './hooks/usePrediction';
 import { PredictionCard } from './components/PredictionCard';
-import { MorningDigest } from './components/MorningDigest';
 import { CalculatorPage } from './components/CalculatorPage';
 
 export default function App() {
   const { data, isLoading, isFetching, error, lastFetched, refresh } = useBullionPrices();
   const { t } = useLocale();
-  const [activeTab, setActiveTab] = useState<Tab>('prices');
+  const [activeTab, setActiveTab] = useState<Tab>(getTabFromHash);
+
+  const handleTabChange = useCallback((tab: Tab) => {
+    setActiveTab(tab);
+    if (tab === 'prices') {
+      history.replaceState(null, '', window.location.pathname);
+    } else {
+      window.location.hash = tab;
+    }
+  }, []);
+
+  useEffect(() => {
+    const onHashChange = () => setActiveTab(getTabFromHash());
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
 
   const { streak, bestStreak, badges, streakEmoji, awardBadge } = useStreak();
 
@@ -46,7 +67,7 @@ export default function App() {
           onRefresh={refresh}
           isFetching={isFetching}
           activeTab={activeTab}
-          onTabChange={setActiveTab}
+          onTabChange={handleTabChange}
           streak={streak}
           bestStreak={bestStreak}
           badges={badges}
@@ -55,15 +76,6 @@ export default function App() {
 
         {activeTab === 'prices' ? (
           <>
-            <MorningDigest
-              goldPrice={goldNepalPrice}
-              goldPrev={goldPrevPrice}
-              silverPrice={silverNepalPrice}
-              silverPrev={silverPrevPrice}
-              predictionResult={lastResult ? { correct: lastResult.correct } : null}
-              streak={streak}
-            />
-
             {activeMilestone ? (
               <MilestoneBanner event={activeMilestone} onDismiss={dismiss} />
             ) : null}
@@ -99,20 +111,22 @@ export default function App() {
                 />
               </div>
             )}
-
-            <PredictionCard
-              currentPrediction={currentPrediction}
-              lastResult={lastResult}
-              hasPredictedToday={hasPredictedToday}
-              hasResult={hasResult}
-              predictionStreak={predictionStreak}
-              accuracy={accuracy}
-              onPredict={predict}
-              onDismissResult={dismissResult}
-            />
           </>
         ) : activeTab === 'news' ? (
           <NewsPage />
+        ) : activeTab === 'predict' ? (
+          <PredictionCard
+            goldPrice={goldNepalPrice}
+            goldPrev={goldPrevPrice}
+            currentPrediction={currentPrediction}
+            lastResult={lastResult}
+            hasPredictedToday={hasPredictedToday}
+            hasResult={hasResult}
+            predictionStreak={predictionStreak}
+            accuracy={accuracy}
+            onPredict={predict}
+            onDismissResult={dismissResult}
+          />
         ) : (
           <CalculatorPage
             goldPricePerTola={goldNepalPrice}

@@ -8,7 +8,7 @@ interface FunComparisonProps {
 }
 
 export function FunComparison({ price, metal }: FunComparisonProps) {
-  const { t, numberLocale } = useLocale();
+  const { t, numberLocale, localizeNum } = useLocale();
   const comparisons = getComparisons(price, metal);
   const [index, setIndex] = useState(0);
   const [fading, setFading] = useState(false);
@@ -46,7 +46,7 @@ export function FunComparison({ price, metal }: FunComparisonProps) {
         <span className="text-[11px] opacity-60">{t.thatsRoughly}</span>
         {' '}
         <strong className="font-medium text-ink dark:text-white">
-          {current.count.toLocaleString(numberLocale)} {t[current.labelKey as keyof typeof t]}
+          {localizeNum(current.count.toLocaleString(numberLocale))} {t[current.labelKey as keyof typeof t]}
         </strong>
       </span>
     </button>

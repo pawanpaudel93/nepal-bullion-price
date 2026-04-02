@@ -31,9 +31,10 @@ function StaleBadge({ label }: { label: string }) {
 }
 
 export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, delay = '0ms' }: PriceCardProps) {
-  const { t, numberLocale } = useLocale();
+  const { lang, t, numberLocale, localizeNum } = useLocale();
   const nepalTola = nepalPrice ? getNepalPriceTola(nepalPrice) : null;
   const liveTola = livePrice?.perTola.estimatedPrice ?? null;
+  const isNe = lang === 'ne';
 
   return (
     <div
@@ -74,17 +75,17 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, delay = 
       {/* Nepal FENEGOSIDA Price — The Hero */}
       <div className="mb-8">
         <p className="text-[10px] ne-text-boost font-medium uppercase tracking-[0.2em] text-ink-faint dark:text-ink-faint mb-3">
-          {t.nepalPrice}{nepalPrice?.priceDate ? ` · ${nepalPrice.priceDate.replace(/,\s*\d{4}$/, '')}` : null}
+          {t.nepalPrice}{nepalPrice?.priceDate ? ` · ${localizeNum(nepalPrice.priceDate.replace(/,\s*\d{4}$/, ''))}` : null}
         </p>
         {nepalPrice ? (
           <>
             <p className={`font-mono text-[42px] font-bold leading-none tracking-tighter ${symbol === 'XAU' ? 'text-gold-color-shimmer' : 'text-silver-color-shimmer'}`}>
               {nepalTola !== null ? (
-                <>Rs <NumberFlow value={nepalTola} locales={numberLocale} /></>
+                <>Rs {isNe ? localizeNum(nepalTola.toLocaleString(numberLocale)) : <NumberFlow value={nepalTola} locales={numberLocale} />}</>
               ) : '\u2014'}
             </p>
             {nepalPrice.previousPrice != null && nepalTola !== null ? (
-              <PriceChange current={nepalTola} previous={nepalPrice.previousPrice} t={t} numberLocale={numberLocale} />
+              <PriceChange current={nepalTola} previous={nepalPrice.previousPrice} t={t} numberLocale={numberLocale} localizeNum={localizeNum} />
             ) : null}
             <p className="text-[13px] text-ink-muted dark:text-ink-faint mt-3 flex items-center gap-2.5 font-light">
               <span>{t.perTola}</span>
@@ -116,13 +117,13 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, delay = 
           <>
             <p className="font-mono text-2xl font-semibold text-ink dark:text-white tracking-tight">
               {liveTola !== null ? (
-                <>Rs <NumberFlow value={liveTola} locales={numberLocale} /></>
+                <>Rs {isNe ? localizeNum(liveTola.toLocaleString(numberLocale)) : <NumberFlow value={liveTola} locales={numberLocale} />}</>
               ) : '\u2014'}
             </p>
             <div className="flex items-center gap-2.5 text-[12px] text-ink-muted dark:text-ink-faint mt-2.5 font-light">
-              <span className="font-mono font-normal">{symbol}/USD ${livePrice.raw.usdPerOz.toFixed(2)}</span>
+              <span className="font-mono font-normal">{symbol}/USD ${localizeNum(livePrice.raw.usdPerOz.toFixed(2))}</span>
               <span className="w-[3px] h-[3px] rounded-full bg-ink-faint/30" />
-              <span className="font-mono font-normal">NPR {livePrice.raw.usdToNpr.toFixed(2)}</span>
+              <span className="font-mono font-normal">NPR {localizeNum(livePrice.raw.usdToNpr.toFixed(2))}</span>
               {livePrice.isStale ? <StaleBadge label={t.stale} /> : null}
             </div>
             <TaxBreakdown breakdown={livePrice.perTola} rates={livePrice.rates} />
@@ -135,7 +136,7 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, delay = 
   );
 }
 
-function PriceChange({ current, previous, t, numberLocale }: { current: number; previous: number; t: Translations; numberLocale: string }) {
+function PriceChange({ current, previous, t, numberLocale, localizeNum }: { current: number; previous: number; t: Translations; numberLocale: string; localizeNum: (v: string | number) => string }) {
   const diff = current - previous;
   if (diff === 0) return null;
 
@@ -150,10 +151,10 @@ function PriceChange({ current, previous, t, numberLocale }: { current: number; 
       <svg viewBox="0 0 12 12" fill="currentColor" className={`w-3 h-3 shrink-0 ${isUp ? '' : 'rotate-180'}`} aria-hidden="true">
         <path d="M6 2l4 5H2l4-5z" />
       </svg>
-      <span className="text-ink-muted dark:text-ink-faint font-mono font-normal">Rs {previous.toLocaleString(numberLocale)}</span>
+      <span className="text-ink-muted dark:text-ink-faint font-mono font-normal">Rs {localizeNum(previous.toLocaleString(numberLocale))}</span>
       <span className="text-ink-muted dark:text-ink-faint">→</span>
-      <span className="font-mono font-normal">Rs {current.toLocaleString(numberLocale)}</span>
-      <span>({isUp ? '+' : ''}{pct}%)</span>
+      <span className="font-mono font-normal">Rs {localizeNum(current.toLocaleString(numberLocale))}</span>
+      <span>({isUp ? '+' : ''}{localizeNum(pct)}%)</span>
     </p>
   );
 }

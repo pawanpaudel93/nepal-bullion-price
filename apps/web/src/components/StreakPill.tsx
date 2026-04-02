@@ -10,7 +10,7 @@ interface StreakPillProps {
 }
 
 export function StreakPill({ streak, bestStreak, badges, emoji }: StreakPillProps) {
-  const { t, numberLocale } = useLocale();
+  const { t, numberLocale, localizeNum } = useLocale();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -44,7 +44,7 @@ export function StreakPill({ streak, bestStreak, badges, emoji }: StreakPillProp
         aria-expanded={open}
       >
         <span>{emoji}</span>
-        <span className="font-mono text-[13px]">{streak}</span>
+        <span className="font-mono text-[13px]">{localizeNum(streak)}</span>
       </button>
 
       {open ? (

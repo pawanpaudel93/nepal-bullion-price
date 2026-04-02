@@ -11,7 +11,8 @@ interface TaxBreakdownProps {
 
 export function TaxBreakdown({ breakdown, rates }: TaxBreakdownProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const { t, numberLocale } = useLocale();
+  const { lang, t, numberLocale, localizeNum } = useLocale();
+  const isNe = lang === 'ne';
 
   return (
     <div className="mt-4">
@@ -30,16 +31,16 @@ export function TaxBreakdown({ breakdown, rates }: TaxBreakdownProps) {
         <div className="overflow-hidden">
           <div className="mt-3 text-[13px] bg-paper-warm/80 dark:bg-ink/40 rounded-2xl p-5 border border-ink/[0.03] dark:border-white/[0.03] backdrop-blur-sm">
             <div className="space-y-2.5 text-ink-muted dark:text-ink-faint">
-              <Row label={t.internationalBase} value={breakdown.basePrice} numberLocale={numberLocale} />
-              <Row label={`${t.customsDuty} ${(rates.customsDuty * 100).toFixed(0)}%`} value={breakdown.customsDuty} prefix="+" numberLocale={numberLocale} />
-              <Row label={`${t.bankMargin} ${(rates.bankMargin * 100).toFixed(1)}%`} value={breakdown.bankMargin} prefix="+" numberLocale={numberLocale} />
-              <Row label={`${t.dealerMargin} ${(rates.dealerMargin * 100).toFixed(1)}%`} value={breakdown.dealerMargin} prefix="+" numberLocale={numberLocale} />
-              <Row label={`${t.marketPremium} ${(rates.marketPremium * 100).toFixed(1)}%`} value={breakdown.marketPremium} prefix="+" numberLocale={numberLocale} />
+              <Row label={t.internationalBase} value={breakdown.basePrice} numberLocale={numberLocale} isNe={isNe} localizeNum={localizeNum} />
+              <Row label={`${t.customsDuty} ${localizeNum((rates.customsDuty * 100).toFixed(0))}%`} value={breakdown.customsDuty} prefix="+" numberLocale={numberLocale} isNe={isNe} localizeNum={localizeNum} />
+              <Row label={`${t.bankMargin} ${localizeNum((rates.bankMargin * 100).toFixed(1))}%`} value={breakdown.bankMargin} prefix="+" numberLocale={numberLocale} isNe={isNe} localizeNum={localizeNum} />
+              <Row label={`${t.dealerMargin} ${localizeNum((rates.dealerMargin * 100).toFixed(1))}%`} value={breakdown.dealerMargin} prefix="+" numberLocale={numberLocale} isNe={isNe} localizeNum={localizeNum} />
+              <Row label={`${t.marketPremium} ${localizeNum((rates.marketPremium * 100).toFixed(1))}%`} value={breakdown.marketPremium} prefix="+" numberLocale={numberLocale} isNe={isNe} localizeNum={localizeNum} />
             </div>
             <div className="h-px bg-ink/[0.04] dark:bg-white/[0.04] my-3" />
             <div className="flex justify-between font-semibold text-ink dark:text-white">
               <span>{t.estimatedRate}</span>
-              <span className="font-mono tabular-nums">Rs <NumberFlow value={breakdown.estimatedPrice} locales={numberLocale} /></span>
+              <span className="font-mono tabular-nums">Rs {isNe ? localizeNum(breakdown.estimatedPrice.toLocaleString(numberLocale)) : <NumberFlow value={breakdown.estimatedPrice} locales={numberLocale} />}</span>
             </div>
           </div>
         </div>
@@ -48,11 +49,11 @@ export function TaxBreakdown({ breakdown, rates }: TaxBreakdownProps) {
   );
 }
 
-function Row({ label, value, prefix, numberLocale }: { label: string; value: number; prefix?: string; numberLocale: string }) {
+function Row({ label, value, prefix, numberLocale, isNe, localizeNum }: { label: string; value: number; prefix?: string; numberLocale: string; isNe: boolean; localizeNum: (v: string | number) => string }) {
   return (
     <div className="flex justify-between">
       <span className="font-light">{prefix ? <span className="text-ink-faint mr-1">{prefix}</span> : null}{label}</span>
-      <span className="font-mono tabular-nums">Rs <NumberFlow value={value} locales={numberLocale} /></span>
+      <span className="font-mono tabular-nums">Rs {isNe ? localizeNum(value.toLocaleString(numberLocale)) : <NumberFlow value={value} locales={numberLocale} />}</span>
     </div>
   );
 }

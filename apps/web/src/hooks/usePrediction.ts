@@ -4,7 +4,7 @@ export type Direction = 'up' | 'down';
 
 interface PredictionState {
   currentPrediction: { date: string; direction: Direction } | null;
-  lastResult: { date: string; direction: Direction; actual: Direction; correct: boolean } | null;
+  lastResult: { date: string; direction: Direction; actual: Direction; correct: boolean; priceChange: number; pctChange: number } | null;
   predictionStreak: number;
   bestPredictionStreak: number;
   totalPredictions: number;
@@ -71,17 +71,21 @@ export function usePrediction(
 
     const today = getNepalDate();
     const yesterday = getYesterday(today);
-    const s = { ...state };
+    // Read fresh from localStorage to avoid stale closure over `state`
+    const s = { ...loadState() };
 
     if (s.currentPrediction && s.currentPrediction.date === yesterday) {
-      const actual: Direction = goldPrice >= goldPrevPrice ? 'up' : 'down';
-      const correct = goldPrice === goldPrevPrice ? true : s.currentPrediction.direction === actual;
+      const diff = goldPrice - goldPrevPrice;
+      const actual: Direction = diff >= 0 ? 'up' : 'down';
+      const correct = diff === 0 ? true : s.currentPrediction.direction === actual;
 
       s.lastResult = {
         date: yesterday,
         direction: s.currentPrediction.direction,
         actual,
         correct,
+        priceChange: Math.abs(diff),
+        pctChange: Math.round(Math.abs((diff / goldPrevPrice) * 100) * 10) / 10,
       };
       s.totalPredictions += 1;
       if (correct) {
@@ -102,7 +106,7 @@ export function usePrediction(
       saveState(s);
       setState(s);
     }
-  }, [goldPrice, goldPrevPrice]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [goldPrice, goldPrevPrice]);
 
   const today = getNepalDate();
   const hasPredictedToday = state.currentPrediction?.date === today;
@@ -127,18 +131,9 @@ export function usePrediction(
     });
   }, []);
 
-  const priceChange = goldPrice && goldPrevPrice ? goldPrice - goldPrevPrice : 0;
-  const pctChange = goldPrevPrice ? Math.abs((priceChange / goldPrevPrice) * 100) : 0;
-
-  const lastResultWithPrice = state.lastResult ? {
-    ...state.lastResult,
-    priceChange: Math.abs(priceChange),
-    pctChange: Math.round(pctChange * 10) / 10,
-  } : null;
-
   return {
     currentPrediction: hasPredictedToday ? state.currentPrediction!.direction : null,
-    lastResult: lastResultWithPrice,
+    lastResult: state.lastResult,
     hasPredictedToday,
     hasResult: state.lastResult !== null,
     predictionStreak: state.predictionStreak,
