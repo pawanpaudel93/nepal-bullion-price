@@ -19,6 +19,7 @@ import { usePrediction } from './hooks/usePrediction';
 import { PredictionCard } from './components/PredictionCard';
 import { GoldRushCard } from './components/GoldRushCard';
 import { PriceCrashCard } from './components/PriceCrashCard';
+import { GoldQuizCard } from './components/GoldQuizCard';
 import { CalculatorPage } from './components/CalculatorPage';
 
 export default function App() {
@@ -133,6 +134,7 @@ export default function App() {
             <div className="max-w-lg mx-auto w-full mt-4 flex flex-col gap-4">
               <GoldRushCard />
               <PriceCrashCard />
+              <GoldQuizCard />
             </div>
           </>
         ) : (
