@@ -20,6 +20,7 @@ import { PredictionCard } from './components/PredictionCard';
 import { GoldRushCard } from './components/GoldRushCard';
 import { PriceCrashCard } from './components/PriceCrashCard';
 import { GoldQuizCard } from './components/GoldQuizCard';
+import { GoldStackCard } from './components/GoldStackCard';
 import { CalculatorPage } from './components/CalculatorPage';
 
 export default function App() {
@@ -135,6 +136,7 @@ export default function App() {
               <GoldRushCard />
               <PriceCrashCard />
               <GoldQuizCard />
+              <GoldStackCard />
             </div>
           </>
         ) : (
