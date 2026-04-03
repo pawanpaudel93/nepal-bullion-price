@@ -357,6 +357,57 @@ export const quizQuestions: QuizQuestion[] = [
     correctIndex: 0,
     explanation: 'Gold has been found on every continent, including Antarctica (though mining there is banned).',
   },
+  // === ADDITIONAL QUESTIONS ===
+  {
+    id: 'w6',
+    category: 'weights',
+    question: 'What is a "bhari" in the Nepali gold trade?',
+    questionNP: 'नेपालमा सुनको "भरी" भनेको कति हो?',
+    options: ['1 tola', '10 tola', '100 grams', '1 kilogram'],
+    optionsNP: ['१ तोला', '१० तोला', '१०० ग्राम', '१ किलोग्राम'],
+    correctIndex: 1,
+    explanation: '1 bhari = 10 tola = approximately 116.6 grams of gold.',
+    explanationNP: '१ भरी = १० तोला = लगभग ११६.६ ग्राम सुन।',
+  },
+  {
+    id: 'g7',
+    category: 'world',
+    question: 'What is the London Bullion Market Association (LBMA)?',
+    options: [
+      'A gold jewelry brand',
+      'The global authority for gold/silver pricing standards',
+      'A British gold mine',
+      'A gold exchange-traded fund',
+    ],
+    correctIndex: 1,
+    explanation: 'The LBMA oversees the global precious metals market, setting the benchmark gold price twice daily.',
+  },
+  {
+    id: 'h7',
+    category: 'history',
+    question: 'What is "El Dorado"?',
+    options: [
+      'A gold mine in South Africa',
+      'A legendary city of gold sought by Spanish explorers',
+      'An ancient gold coin',
+      'A gold refining technique',
+    ],
+    correctIndex: 1,
+    explanation: 'El Dorado was a mythical city of gold that Spanish conquistadors spent centuries searching for in South America.',
+  },
+  {
+    id: 'p7',
+    category: 'purity',
+    question: 'What is "white gold" made of?',
+    options: [
+      'Bleached pure gold',
+      'Gold alloyed with palladium or nickel',
+      'Silver coated in gold',
+      'Platinum',
+    ],
+    correctIndex: 1,
+    explanation: 'White gold is a gold alloy mixed with white metals like palladium, nickel, or silver to give it a silvery appearance.',
+  },
 ];
 
 /** Get `count` random questions, no repeats */

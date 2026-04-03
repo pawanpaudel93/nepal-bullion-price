@@ -158,7 +158,7 @@ const translations = {
     tapToDrop: 'Tap to drop',
     // Gold Trader
     goldTrader: 'Gold Trader',
-    virtualTrading: 'Buy &amp; sell gold with virtual cash!',
+    virtualTrading: 'Buy & sell gold with virtual cash!',
     portfolio: 'Portfolio',
     cash: 'Cash',
     holdings: 'Holdings',
@@ -166,7 +166,7 @@ const translations = {
     sell: 'Sell',
     trade: 'Trade',
     tradeToday: 'Already traded today',
-    profitLoss: 'P&amp;L',
+    profitLoss: 'P&L',
     resetPortfolio: 'Reset Portfolio',
     confirmReset: 'Start fresh with Rs 500,000?',
     confirm: 'Confirm',
