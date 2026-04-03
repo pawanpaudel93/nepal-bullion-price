@@ -194,7 +194,7 @@ export function GoldQuizGame({ highScore, onGameEnd, onClose }: Props) {
               {currentQuestion.options.map((option, i) => {
                 const npOption = lang === 'ne' && currentQuestion.optionsNP?.[i];
                 const displayOption = npOption || option;
-                let btnClass = 'p-4 rounded-xl text-sm font-medium text-center transition-all duration-200 border ';
+                let btnClass = 'p-4 min-h-[44px] rounded-xl text-sm font-medium text-center transition-all duration-200 border ';
                 if (phase === 'feedback') {
                   if (i === currentQuestion.correctIndex) {
                     btnClass += 'bg-emerald-500/30 border-emerald-500 text-emerald-200';
