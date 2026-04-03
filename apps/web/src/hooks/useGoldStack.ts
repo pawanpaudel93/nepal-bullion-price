@@ -1,36 +1,36 @@
 import { useState, useCallback, useRef } from 'react';
 
-const STORAGE_KEY = 'bullion-gold-stack';
+const STORAGE_KEY = 'bullion-gold-blocks';
 
-interface GoldStackState {
+interface GoldBlocksState {
   highScore: number;
-  bestHeight: number;
+  bestLines: number;
   gamesPlayed: number;
 }
 
-function loadState(): GoldStackState {
+function loadState(): GoldBlocksState {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) return JSON.parse(raw);
   } catch { /* corrupted */ }
-  return { highScore: 0, bestHeight: 0, gamesPlayed: 0 };
+  return { highScore: 0, bestLines: 0, gamesPlayed: 0 };
 }
 
-function saveState(state: GoldStackState): void {
+function saveState(state: GoldBlocksState): void {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch { /* quota */ }
 }
 
 export function useGoldStack() {
-  const [state, setState] = useState<GoldStackState>(loadState);
+  const [state, setState] = useState<GoldBlocksState>(loadState);
   const isNewHighRef = useRef(false);
 
-  const submitScore = useCallback((score: number, height: number) => {
+  const submitScore = useCallback((score: number, lines: number) => {
     setState(prev => {
       const isNew = score > prev.highScore;
       isNewHighRef.current = isNew;
-      const next: GoldStackState = {
+      const next: GoldBlocksState = {
         highScore: Math.max(prev.highScore, score),
-        bestHeight: Math.max(prev.bestHeight, height),
+        bestLines: Math.max(prev.bestLines, lines),
         gamesPlayed: prev.gamesPlayed + 1,
       };
       saveState(next);
@@ -41,7 +41,7 @@ export function useGoldStack() {
 
   return {
     highScore: state.highScore,
-    bestHeight: state.bestHeight,
+    bestLines: state.bestLines,
     gamesPlayed: state.gamesPlayed,
     submitScore,
   };
