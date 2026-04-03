@@ -193,7 +193,7 @@ export function GoldStackGame({ highScore, onGameEnd, onClose }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex flex-col"
+      className="fixed inset-0 z-50 flex flex-col dark"
       style={{ background: 'linear-gradient(180deg, #0F0E0D 0%, #1C1917 40%, #292524 100%)' }}
       role="dialog"
       aria-label={t.goldStack}

@@ -144,7 +144,7 @@ export function GoldQuizGame({ highScore, onGameEnd, onClose }: Props) {
   const timerColor = timeLeft > 10 ? 'bg-emerald-500' : timeLeft > 5 ? 'bg-amber-500' : 'bg-red-500';
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col" style={{ background: 'linear-gradient(180deg, #0F0E0D 0%, #1C1917 40%, #292524 100%)' }} role="dialog" aria-label={t.goldQuiz}>
+    <div className="fixed inset-0 z-50 flex flex-col dark" style={{ background: 'linear-gradient(180deg, #0F0E0D 0%, #1C1917 40%, #292524 100%)' }} role="dialog" aria-label={t.goldQuiz}>
       {phase === 'start' && (
         <div className="flex-1 flex flex-col items-center justify-center gap-6 p-6">
           <p className="text-5xl">🧠</p>
