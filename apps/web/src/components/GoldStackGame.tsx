@@ -30,6 +30,11 @@ const GAME_WIDTH = 320;
 const INITIAL_SPEED = 2;
 const SPEED_INCREMENT = 0.3;
 
+const goldGradient = (shade: number) =>
+  shade === 0
+    ? 'linear-gradient(90deg, #F0D68A 0%, #D4A843 40%, #CA8A04 100%)'
+    : 'linear-gradient(90deg, #D4A843 0%, #CA8A04 40%, #A37E24 100%)';
+
 export function GoldStackGame({ highScore, onGameEnd, onClose }: Props) {
   const { t, localizeNum } = useLocale();
   const [phase, setPhase] = useState<Phase>('start');
@@ -38,7 +43,7 @@ export function GoldStackGame({ highScore, onGameEnd, onClose }: Props) {
   const [height, setHeight] = useState(0);
   const [perfectText, setPerfectText] = useState(false);
   const [fallingPieces, setFallingPieces] = useState<FallingPiece[]>([]);
-  const [slidingBar, setSlidingBar] = useState<{ x: number; width: number } | null>(null);
+  const [slidingBar, setSlidingBar] = useState<{ x: number; width: number }>({ x: 0, width: GAME_WIDTH });
 
   const rafRef = useRef<number | null>(null);
   const scoreRef = useRef(0);
@@ -48,6 +53,8 @@ export function GoldStackGame({ highScore, onGameEnd, onClose }: Props) {
   const slidingRef = useRef<{ x: number; width: number }>({ x: 0, width: GAME_WIDTH });
   const fallingIdRef = useRef(0);
   const gameActiveRef = useRef(false);
+  const lastUpdateRef = useRef(0);
+  const timeoutsRef = useRef<Set<ReturnType<typeof setTimeout>>>(new Set());
 
   const getSpeed = useCallback(() => {
     return INITIAL_SPEED + Math.floor(heightRef.current / 5) * SPEED_INCREMENT;
@@ -58,6 +65,8 @@ export function GoldStackGame({ highScore, onGameEnd, onClose }: Props) {
       cancelAnimationFrame(rafRef.current);
       rafRef.current = null;
     }
+    timeoutsRef.current.forEach(id => clearTimeout(id));
+    timeoutsRef.current.clear();
     gameActiveRef.current = false;
   }, []);
 
@@ -72,8 +81,10 @@ export function GoldStackGame({ highScore, onGameEnd, onClose }: Props) {
     heightRef.current = 0;
     directionRef.current = 1;
     slidingRef.current = { x: 0, width: GAME_WIDTH };
+    setSlidingBar({ x: 0, width: GAME_WIDTH });
     setFallingPieces([]);
     setPerfectText(false);
+    lastUpdateRef.current = 0;
     gameActiveRef.current = true;
     setPhase('playing');
   }, [cleanup]);
@@ -98,7 +109,11 @@ export function GoldStackGame({ highScore, onGameEnd, onClose }: Props) {
       }
 
       slidingRef.current = { ...bar, x: newX };
-      setSlidingBar({ ...slidingRef.current });
+      const now = performance.now();
+      if (now - lastUpdateRef.current > 33) {
+        setSlidingBar({ ...slidingRef.current });
+        lastUpdateRef.current = now;
+      }
       rafRef.current = requestAnimationFrame(animate);
     };
 
@@ -142,7 +157,8 @@ export function GoldStackGame({ highScore, onGameEnd, onClose }: Props) {
 
     if (isPerfect) {
       setPerfectText(true);
-      setTimeout(() => setPerfectText(false), 600);
+      const tid = setTimeout(() => { setPerfectText(false); timeoutsRef.current.delete(tid); }, 600);
+      timeoutsRef.current.add(tid);
     }
 
     if (!isPerfect) {
@@ -156,9 +172,11 @@ export function GoldStackGame({ highScore, onGameEnd, onClose }: Props) {
         side: isLeftOverhang ? 'left' : 'right',
       };
       setFallingPieces(prev => [...prev, piece]);
-      setTimeout(() => {
+      const tid = setTimeout(() => {
         setFallingPieces(prev => prev.filter(p => p.id !== id));
+        timeoutsRef.current.delete(tid);
       }, 600);
+      timeoutsRef.current.add(tid);
     }
 
     const newStack = [...stackRef.current, newBar];
@@ -171,15 +189,12 @@ export function GoldStackGame({ highScore, onGameEnd, onClose }: Props) {
 
   const visibleBars = 12;
   const cameraOffset = Math.max(0, stack.length - visibleBars) * BAR_HEIGHT;
-
-  const goldGradient = (shade: number) =>
-    shade === 0
-      ? 'linear-gradient(90deg, #F0D68A 0%, #D4A843 40%, #CA8A04 100%)'
-      : 'linear-gradient(90deg, #D4A843 0%, #CA8A04 40%, #A37E24 100%)';
+  const renderStart = Math.max(0, stack.length - visibleBars - 2);
 
   return (
     <div
-      className="fixed inset-0 z-50 flex flex-col bg-gradient-to-b from-[#1a1207] to-[#0d0a04]"
+      className="fixed inset-0 z-50 flex flex-col"
+      style={{ background: 'linear-gradient(180deg, #0F0E0D 0%, #1C1917 40%, #292524 100%)' }}
       role="dialog"
       aria-label={t.goldStack}
       onPointerDown={phase === 'playing' ? handleDrop : undefined}
@@ -194,7 +209,7 @@ export function GoldStackGame({ highScore, onGameEnd, onClose }: Props) {
           )}
           <button
             onClick={startGame}
-            className="mt-4 px-10 py-4 rounded-full bg-gold-500 text-ink font-bold text-lg cursor-pointer hover:bg-gold-400 transition-colors"
+            className="mt-4 px-10 py-4 rounded-full bg-gold-500 text-ink font-bold text-lg cursor-pointer hover:bg-gold-400 active:scale-95 transition-colors"
             aria-label={t.tapToStart}
           >
             {t.tapToStart}
@@ -205,9 +220,18 @@ export function GoldStackGame({ highScore, onGameEnd, onClose }: Props) {
 
       {phase === 'playing' && (
         <>
-          <div className="flex items-center justify-between px-4 py-3 pointer-events-none">
-            <p className="text-sm font-bold text-gold-200">{t.score}: {localizeNum(score)}</p>
-            <p className="text-sm text-ink-faint">{t.height}: {localizeNum(height)}</p>
+          <div className="flex items-center justify-between px-4 py-3 safe-area-top">
+            <button
+              onClick={() => { cleanup(); onClose(); }}
+              className="p-2 -m-1 text-white/50 hover:text-white transition-colors cursor-pointer pointer-events-auto"
+              aria-label="Close game"
+            >
+              <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+                <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+              </svg>
+            </button>
+            <p className="text-sm font-bold text-gold-200 pointer-events-none">{t.score}: {localizeNum(score)}</p>
+            <p className="text-sm text-ink-faint pointer-events-none">{t.height}: {localizeNum(height)}</p>
           </div>
 
           {perfectText && (
@@ -224,20 +248,23 @@ export function GoldStackGame({ highScore, onGameEnd, onClose }: Props) {
                 className="absolute bottom-0 left-0 right-0 transition-transform duration-200"
                 style={{ transform: `translateY(-${cameraOffset}px)` }}
               >
-                {stack.map((bar, i) => (
-                  <div
-                    key={i}
-                    className="absolute border border-gold-700/50"
-                    style={{
-                      left: bar.x,
-                      bottom: i * BAR_HEIGHT,
-                      width: bar.width,
-                      height: BAR_HEIGHT,
-                      background: goldGradient(bar.shade),
-                      boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.2), inset 0 -2px 4px rgba(0,0,0,0.15)',
-                    }}
-                  />
-                ))}
+                {stack.slice(renderStart).map((bar, idx) => {
+                  const i = renderStart + idx;
+                  return (
+                    <div
+                      key={i}
+                      className="absolute border border-gold-700/50"
+                      style={{
+                        left: bar.x,
+                        bottom: i * BAR_HEIGHT,
+                        width: bar.width,
+                        height: BAR_HEIGHT,
+                        background: goldGradient(bar.shade),
+                        boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.2), inset 0 -2px 4px rgba(0,0,0,0.15)',
+                      }}
+                    />
+                  );
+                })}
 
                 {fallingPieces.map(piece => (
                   <div
@@ -245,7 +272,7 @@ export function GoldStackGame({ highScore, onGameEnd, onClose }: Props) {
                     className="absolute border border-gold-700/50"
                     style={{
                       left: piece.x,
-                      bottom: stack.length * BAR_HEIGHT,
+                      bottom: (stack.length - 1) * BAR_HEIGHT,
                       width: piece.width,
                       height: BAR_HEIGHT,
                       background: goldGradient(stack.length % 2),
@@ -254,19 +281,17 @@ export function GoldStackGame({ highScore, onGameEnd, onClose }: Props) {
                   />
                 ))}
 
-                {slidingBar && (
-                  <div
-                    className="absolute border-2 border-gold-200/60"
-                    style={{
-                      left: slidingBar.x,
-                      bottom: stack.length * BAR_HEIGHT,
-                      width: slidingBar.width,
-                      height: BAR_HEIGHT,
-                      background: goldGradient(stack.length % 2),
-                      boxShadow: '0 0 12px rgba(212,168,67,0.4), inset 0 2px 4px rgba(255,255,255,0.3)',
-                    }}
-                  />
-                )}
+                <div
+                  className="absolute border-2 border-gold-200/60"
+                  style={{
+                    left: slidingBar.x,
+                    bottom: stack.length * BAR_HEIGHT,
+                    width: slidingBar.width,
+                    height: BAR_HEIGHT,
+                    background: goldGradient(stack.length % 2),
+                    boxShadow: '0 0 12px rgba(212,168,67,0.4), inset 0 2px 4px rgba(255,255,255,0.3)',
+                  }}
+                />
               </div>
 
               <div className="absolute top-8 left-0 right-0 text-center pointer-events-none">
@@ -287,7 +312,7 @@ export function GoldStackGame({ highScore, onGameEnd, onClose }: Props) {
           )}
           <p className="text-ink-faint text-sm">{t.height}: {localizeNum(height)} {t.bars}</p>
           <div className="flex gap-3 mt-4">
-            <button onClick={startGame} className="px-8 py-3 rounded-full bg-gold-500 text-ink font-bold cursor-pointer hover:bg-gold-400 transition-colors">{t.playAgain}</button>
+            <button onClick={startGame} className="px-8 py-3 rounded-full bg-gold-500 text-ink font-bold cursor-pointer hover:bg-gold-400 active:scale-95 transition-colors">{t.playAgain}</button>
             <button onClick={onClose} className="px-8 py-3 rounded-full bg-white/10 text-white font-bold cursor-pointer hover:bg-white/20 transition-colors">{t.cancel}</button>
           </div>
         </div>

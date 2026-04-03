@@ -15,8 +15,13 @@ const QUESTIONS_PER_ROUND = 10;
 const TIME_PER_QUESTION = 15;
 const MAX_LIVES = 3;
 
+const categoryLabels: Record<string, string> = {
+  history: 'History', nepal: 'Nepal Market', purity: 'Purity & Hallmarks',
+  weights: 'Weights & Measures', world: 'World Gold', funfact: 'Fun Facts',
+};
+
 export function GoldQuizGame({ highScore, onGameEnd, onClose }: Props) {
-  const { t, lang } = useLocale();
+  const { t, lang, localizeNum } = useLocale();
   const [phase, setPhase] = useState<Phase>('start');
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [questionIndex, setQuestionIndex] = useState(0);
@@ -138,22 +143,17 @@ export function GoldQuizGame({ highScore, onGameEnd, onClose }: Props) {
   const timerPercent = (timeLeft / TIME_PER_QUESTION) * 100;
   const timerColor = timeLeft > 10 ? 'bg-emerald-500' : timeLeft > 5 ? 'bg-amber-500' : 'bg-red-500';
 
-  const categoryLabels: Record<string, string> = {
-    history: 'History', nepal: 'Nepal Market', purity: 'Purity & Hallmarks',
-    weights: 'Weights & Measures', world: 'World Gold', funfact: 'Fun Facts',
-  };
-
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-gradient-to-b from-[#1a1207] to-[#0d0a04]" role="dialog" aria-label={t.goldQuiz}>
+    <div className="fixed inset-0 z-50 flex flex-col" style={{ background: 'linear-gradient(180deg, #0F0E0D 0%, #1C1917 40%, #292524 100%)' }} role="dialog" aria-label={t.goldQuiz}>
       {phase === 'start' && (
         <div className="flex-1 flex flex-col items-center justify-center gap-6 p-6">
           <p className="text-5xl">🧠</p>
           <h2 className="text-2xl font-bold text-gold-200">{t.goldQuiz}</h2>
           <p className="text-ink-faint text-sm text-center">{t.testYourKnowledge}</p>
           {highScore > 0 && (
-            <p className="text-xs text-ink-faint">{t.highScore}: <strong className="text-white">{highScore}</strong></p>
+            <p className="text-xs text-ink-faint">{t.highScore}: <strong className="text-white">{localizeNum(highScore)}</strong></p>
           )}
-          <button onClick={startGame} className="mt-4 px-10 py-4 rounded-full bg-gold-500 text-ink font-bold text-lg cursor-pointer hover:bg-gold-400 transition-colors" aria-label={t.play}>{t.play}</button>
+          <button onClick={startGame} className="mt-4 px-10 py-4 rounded-full bg-gold-500 text-ink font-bold text-lg cursor-pointer hover:bg-gold-400 active:scale-95 transition-colors" aria-label={t.play}>{t.play}</button>
           <button onClick={onClose} className="text-ink-faint text-sm underline cursor-pointer">{t.cancel}</button>
         </div>
       )}
@@ -163,14 +163,23 @@ export function GoldQuizGame({ highScore, onGameEnd, onClose }: Props) {
           <div className="h-1.5 bg-ink/30">
             <div className={`h-full ${timerColor} transition-all duration-1000 ease-linear`} style={{ width: `${timerPercent}%` }} />
           </div>
-          <div className="flex items-center justify-between px-4 py-3">
+          <div className="flex items-center justify-between px-4 py-3 safe-area-top">
+            <button
+              onClick={() => { clearTimer(); onClose(); }}
+              className="p-2 -m-1 text-white/50 hover:text-white transition-colors cursor-pointer"
+              aria-label="Close game"
+            >
+              <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+                <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+              </svg>
+            </button>
             <div className="flex gap-1">
               {Array.from({ length: MAX_LIVES }).map((_, i) => (
                 <span key={i} className={`text-lg ${i < lives ? 'opacity-100' : 'opacity-20'}`}>{i < lives ? '❤️' : '🖤'}</span>
               ))}
             </div>
-            <p className="text-sm text-ink-faint">{t.question} {questionIndex + 1}/{questions.length}</p>
-            <p className="text-sm font-bold text-gold-200">{score}</p>
+            <p className="text-sm text-ink-faint">{t.question} {localizeNum(questionIndex + 1)}/{localizeNum(questions.length)}</p>
+            <p className="text-sm font-bold text-gold-200">{localizeNum(score)}</p>
           </div>
           <div className="px-6 mb-2">
             <span className="inline-block px-3 py-1 rounded-full bg-gold-500/20 text-gold-200 text-xs font-medium">
@@ -222,18 +231,18 @@ export function GoldQuizGame({ highScore, onGameEnd, onClose }: Props) {
         <div className="flex-1 flex flex-col items-center justify-center gap-4 p-6">
           <p className="text-5xl">📊</p>
           <h2 className="text-2xl font-bold text-gold-200">{t.quizOver}</h2>
-          <p className="text-4xl font-bold text-white">{score}</p>
+          <p className="text-4xl font-bold text-white">{localizeNum(score)}</p>
           {score > highScore && score > 0 && (
             <p className="text-emerald-400 font-bold text-sm animate-pulse">{t.newHighScore}</p>
           )}
           <p className="text-ink-faint text-sm">
-            {t.questionsRight.replace('{n}', String(correctCount)).replace('{total}', String(answeredRef.current))}
+            {t.questionsRight.replace('{n}', localizeNum(correctCount)).replace('{total}', localizeNum(answeredRef.current))}
           </p>
           <p className="text-ink-faint text-xs">
-            {t.accuracy}: {answeredRef.current > 0 ? Math.round((correctCount / answeredRef.current) * 100) : 0}%
+            {t.accuracy}: {localizeNum(answeredRef.current > 0 ? Math.round((correctCount / answeredRef.current) * 100) : 0)}%
           </p>
           <div className="flex gap-3 mt-4">
-            <button onClick={startGame} className="px-8 py-3 rounded-full bg-gold-500 text-ink font-bold cursor-pointer hover:bg-gold-400 transition-colors">{t.playAgain}</button>
+            <button onClick={startGame} className="px-8 py-3 rounded-full bg-gold-500 text-ink font-bold cursor-pointer hover:bg-gold-400 active:scale-95 transition-colors">{t.playAgain}</button>
             <button onClick={onClose} className="px-8 py-3 rounded-full bg-white/10 text-white font-bold cursor-pointer hover:bg-white/20 transition-colors">{t.cancel}</button>
           </div>
         </div>

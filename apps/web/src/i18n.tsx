@@ -172,6 +172,11 @@ const translations = {
     confirm: 'Confirm',
     cancel: 'Cancel',
     noTradesYet: 'No trades yet',
+    comeBackTomorrow: 'Come back tomorrow!',
+    all: 'All',
+    cost: 'Cost',
+    proceeds: 'Proceeds',
+    recentTrades: 'Recent Trades',
     // Calculator
     calculator: 'Calculator',
     weight: 'Weight',
@@ -351,6 +356,11 @@ const translations = {
     confirm: 'पक्का',
     cancel: 'रद्द',
     noTradesYet: 'अहिलेसम्म ट्रेड छैन',
+    comeBackTomorrow: 'भोलि आउनुहोस्!',
+    all: 'सबै',
+    cost: 'लागत',
+    proceeds: 'आम्दानी',
+    recentTrades: 'हालका ट्रेडहरू',
     // Calculator
     calculator: 'क्यालकुलेटर',
     weight: 'तौल',

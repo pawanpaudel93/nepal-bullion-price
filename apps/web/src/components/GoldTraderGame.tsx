@@ -72,7 +72,8 @@ export function GoldTraderGame({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex flex-col bg-gradient-to-b from-[#1a1207] to-[#0d0a04] overflow-y-auto"
+      className="fixed inset-0 z-50 flex flex-col overflow-y-auto"
+      style={{ background: 'linear-gradient(180deg, #0F0E0D 0%, #1C1917 40%, #292524 100%)' }}
       role="dialog"
       aria-label={t.goldTrader}
     >
@@ -103,7 +104,7 @@ export function GoldTraderGame({
           </div>
           <div className="glass-card rounded-xl p-3">
             <p className="text-[10px] text-ink-faint uppercase tracking-wider">{t.holdings}</p>
-            <p className="text-lg font-bold text-gold-200">{localizeNum(goldTola.toFixed(2))} {t.tola}</p>
+            <p className="text-lg font-bold text-gold-200">{localizeNum(goldTola.toFixed(4))} {t.tola}</p>
           </div>
         </div>
 
@@ -118,7 +119,7 @@ export function GoldTraderGame({
           {hasTradedToday ? (
             <div className="text-center py-4">
               <p className="text-ink-faint text-sm">{t.tradeToday}</p>
-              <p className="text-xs text-ink-faint/60 mt-1">Come back tomorrow!</p>
+              <p className="text-xs text-ink-faint/60 mt-1">{t.comeBackTomorrow}</p>
             </div>
           ) : (
             <>
@@ -162,19 +163,19 @@ export function GoldTraderGame({
                   <button
                     key={qa}
                     onClick={() => setAmount(String(qa))}
-                    className="flex-1 py-1.5 rounded-lg bg-white/10 text-white text-xs font-medium cursor-pointer hover:bg-white/20 transition-colors"
+                    className="flex-1 py-2.5 rounded-lg bg-white/10 text-white text-xs font-medium cursor-pointer hover:bg-white/20 transition-colors"
                   >{localizeNum(qa)}</button>
                 ))}
                 <button
                   onClick={() => setAmount(String(action === 'buy' ? maxBuyable : maxSellable))}
-                  className="flex-1 py-1.5 rounded-lg bg-white/10 text-gold-200 text-xs font-medium cursor-pointer hover:bg-white/20 transition-colors"
-                >All</button>
+                  className="flex-1 py-2.5 rounded-lg bg-white/10 text-gold-200 text-xs font-medium cursor-pointer hover:bg-white/20 transition-colors"
+                >{t.all}</button>
               </div>
 
               {/* Trade summary + button */}
               {parsedAmount > 0 && (
                 <p className="text-xs text-ink-faint text-center">
-                  {action === 'buy' ? 'Cost' : 'Proceeds'}: Rs {localizeNum(Math.round(tradeTotal).toLocaleString('en-IN'))}
+                  {action === 'buy' ? t.cost : t.proceeds}: Rs {localizeNum(Math.round(tradeTotal).toLocaleString('en-IN'))}
                 </p>
               )}
               <button
@@ -194,13 +195,13 @@ export function GoldTraderGame({
 
         {/* Trade history */}
         <div className="glass-card rounded-xl p-4">
-          <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-ink-faint mb-2">Recent Trades</p>
+          <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-ink-faint mb-2">{t.recentTrades}</p>
           {trades.length === 0 ? (
             <p className="text-sm text-ink-faint text-center py-2">{t.noTradesYet}</p>
           ) : (
             <div className="space-y-2 max-h-48 overflow-y-auto">
               {trades.slice(0, 10).map((trade, i) => (
-                <div key={i} className="flex items-center justify-between text-xs">
+                <div key={`${trade.date}-${trade.action}-${i}`} className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
                     <span className={`font-bold ${trade.action === 'buy' ? 'text-emerald-400' : 'text-red-400'}`}>
                       {trade.action === 'buy' ? t.buy : t.sell}
