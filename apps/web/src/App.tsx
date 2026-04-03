@@ -21,6 +21,7 @@ import { GoldRushCard } from './components/GoldRushCard';
 import { PriceCrashCard } from './components/PriceCrashCard';
 import { GoldQuizCard } from './components/GoldQuizCard';
 import { GoldStackCard } from './components/GoldStackCard';
+import { GoldTraderCard } from './components/GoldTraderCard';
 import { CalculatorPage } from './components/CalculatorPage';
 
 export default function App() {
@@ -137,6 +138,7 @@ export default function App() {
               <PriceCrashCard />
               <GoldQuizCard />
               <GoldStackCard />
+              <GoldTraderCard goldPricePerTola={goldNepalPrice} />
             </div>
           </>
         ) : (
