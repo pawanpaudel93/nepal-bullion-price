@@ -130,7 +130,7 @@ Rates are configured **per metal** via `rates.gold` and `rates.silver`:
 | `rates.{metal}.customsDuty` | `number` | `0.10` (10%) | `0.10` (10%) | Customs duty rate |
 | `rates.{metal}.bankMargin` | `number` | `0.005` (0.5%) | `0.005` (0.5%) | Bank margin (NRB cap) |
 | `rates.{metal}.dealerMargin` | `number` | `0.005` (0.5%) | `0.005` (0.5%) | Dealer margin (NRB cap) |
-| `rates.{metal}.marketPremium` | `number` | `0.008` (0.8%) | `0.030` (3.0%) | Market premium (freight, insurance, Indian blend) |
+| `rates.{metal}.marketPremium` | `number` | `0.008` (0.8%) | `0.030` (3.0%) | Market premium (freight, insurance, Indian blend) *estimated, not officially confirmed* |
 | `apiKeys.goldApiIo` | `string` | — | — | goldapi.io API key (enables fallback) |
 | `apiKeys.asheshApiKey` | `string` | — | — | Ashesh widget API key (has public default) |
 | `apiKeys.gnewsApiKey` | `string` | — | — | GNews API key (enables news fallback) |
@@ -199,9 +199,9 @@ estimatedPrice = afterDealer + marketPremium     ← approx. FENEGOSIDA rate
 | Customs duty | 10% | 10% | Nepal Cabinet (Nov 2024) |
 | Bank margin | 0.5% | 0.5% | NRB cap |
 | Dealer margin | 0.5% | 0.5% | NRB cap |
-| Market premium | 0.8% | 3.0% | Freight, insurance, Indian blend |
+| Market premium | 0.8% | 3.0% | Freight, insurance, Indian blend *(estimated, not officially confirmed)* |
 
-The `estimatedPrice` approximates what FENEGOSIDA publishes as the daily rate. The market premium covers freight & insurance costs, CIF-based customs amplification, and the 75/25 Indian market price blend effect. A separate 2% luxury tax is charged at the point of sale on jewellery but is not part of the published rate.
+The `estimatedPrice` approximates what FENEGOSIDA publishes as the daily rate. The market premium covers freight & insurance costs, CIF-based customs amplification, and the 75/25 Indian market price blend effect. **The market premium rates (0.8% for gold, 3.0% for silver) are estimated values derived from back-testing against FENEGOSIDA prices — they are not officially published or confirmed figures.** A separate 2% luxury tax is charged at the point of sale on jewellery but is not part of the published rate.
 
 All rates are configurable per metal via `configure({ rates: { gold: { ... }, silver: { ... } } })`.
 
