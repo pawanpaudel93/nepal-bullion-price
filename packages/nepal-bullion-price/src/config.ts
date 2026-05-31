@@ -2,14 +2,14 @@ import type { Config, TaxRates, MetalRates } from './types.js';
 import { DEFAULT_CACHE_TTL_MS } from './constants.js';
 
 const DEFAULT_GOLD_RATES: TaxRates = {
-  customsDuty: 0.10,
+  customsDuty: 0.20,
   bankMargin: 0.005,
   dealerMargin: 0.005,
   marketPremium: 0.008,
 };
 
 const DEFAULT_SILVER_RATES: TaxRates = {
-  customsDuty: 0.10,
+  customsDuty: 0.20,
   bankMargin: 0.005,
   dealerMargin: 0.005,
   marketPremium: 0.030,

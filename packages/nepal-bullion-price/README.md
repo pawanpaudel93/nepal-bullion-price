@@ -100,7 +100,7 @@ const npNews = await getNews('np');  // Nepali only
 configure({
   rates: {
     gold: { customsDuty: 0.06 },
-    silver: { customsDuty: 0.10 },
+    silver: { customsDuty: 0.20 },
   },
   apiKeys: { goldApiIo: 'your-key' },
   cacheTtl: 10 * 60 * 1000, // 10 minutes
@@ -127,7 +127,7 @@ Rates are configured **per metal** via `rates.gold` and `rates.silver`:
 
 | Option | Type | Gold Default | Silver Default | Description |
 |--------|------|-------------|----------------|-------------|
-| `rates.{metal}.customsDuty` | `number` | `0.10` (10%) | `0.10` (10%) | Customs duty rate |
+| `rates.{metal}.customsDuty` | `number` | `0.20` (20%) | `0.20` (20%) | Customs duty rate |
 | `rates.{metal}.bankMargin` | `number` | `0.005` (0.5%) | `0.005` (0.5%) | Bank margin (NRB cap) |
 | `rates.{metal}.dealerMargin` | `number` | `0.005` (0.5%) | `0.005` (0.5%) | Dealer margin (NRB cap) |
 | `rates.{metal}.marketPremium` | `number` | `0.008` (0.8%) | `0.030` (3.0%) | Market premium (freight, insurance, Indian blend) *estimated, not officially confirmed* |
@@ -196,12 +196,12 @@ estimatedPrice = afterDealer + marketPremium     ← approx. FENEGOSIDA rate
 
 | Charge | Gold | Silver | Source |
 |--------|------|--------|--------|
-| Customs duty | 10% | 10% | Nepal Cabinet (Nov 2024) |
+| Customs duty | 20% | 20% | Nepal Budget 2083/84 |
 | Bank margin | 0.5% | 0.5% | NRB cap |
 | Dealer margin | 0.5% | 0.5% | NRB cap |
 | Market premium | 0.8% | 3.0% | Freight, insurance, Indian blend *(estimated, not officially confirmed)* |
 
-The `estimatedPrice` approximates what FENEGOSIDA publishes as the daily rate. The market premium covers freight & insurance costs, CIF-based customs amplification, and the 75/25 Indian market price blend effect. **The market premium rates (0.8% for gold, 3.0% for silver) are estimated values derived from back-testing against FENEGOSIDA prices — they are not officially published or confirmed figures.** A separate 2% luxury tax is charged at the point of sale on jewellery but is not part of the published rate.
+The `estimatedPrice` approximates what FENEGOSIDA publishes as the daily rate. The market premium covers freight & insurance costs, CIF-based customs amplification, and the 75/25 Indian market price blend effect. **The market premium rates (0.8% for gold, 3.0% for silver) are estimated values derived from back-testing against FENEGOSIDA prices — they are not officially published or confirmed figures.** The former 2% luxury tax on gold and silver jewellery has been scrapped. A separate 0.5% skill promotion fee may apply at final consumer sale, but it is not included in the published bullion rate estimate.
 
 All rates are configurable per metal via `configure({ rates: { gold: { ... }, silver: { ... } } })`.
 
