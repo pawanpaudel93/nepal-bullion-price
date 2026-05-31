@@ -3,13 +3,13 @@
 [![npm version](https://img.shields.io/npm/v/nepal-bullion-price)](https://www.npmjs.com/package/nepal-bullion-price)
 [![license](https://img.shields.io/npm/l/nepal-bullion-price)](https://github.com/pawanpaudel93/nepal-bullion-price/blob/main/LICENSE)
 
-Nepal gold and silver prices — FENEGOSIDA daily rates + live international prices with full tax breakdown.
+Nepal gold and silver prices — FENEGOSIDA daily rates + live international prices with estimate breakdown.
 
 ## Features
 
 - **Nepal daily rates** from FENEGOSIDA (3 fallback sources)
 - **Live international prices** (XAU/XAG → NPR per tola)
-- **Full tax breakdown** — customs duty, bank margin, dealer margin, market premium (separate rates for gold & silver)
+- **Estimate breakdown** — customs duty, importer margin, dealer margin, estimated adjustment (separate rates for gold & silver)
 - **USD/NPR forex** from Nepal Rastra Bank (2 fallbacks)
 - **News aggregation** — gold/silver news from Google News RSS, OnlineKhabar, and GNews API
 - **In-memory caching** with configurable TTL and stale fallback
@@ -66,19 +66,19 @@ const gold = await getNepalGoldPrice();
 const silver = await getNepalSilverPrice();
 // { price: 4505, unit: 'tola', perGram10: 3862, ... }
 
-// Live international price with Nepal duty breakdown
+// Live international price with Nepal estimate breakdown
 const live = await getLiveGoldPrice();
 // {
 //   raw: { usdPerOz: 4569.40, usdToNpr: 150.67 },
 //   perTola: {
 //     basePrice: 258140,
-//     customsDuty: 25814,
-//     bankMargin: 1420,
-//     dealerMargin: 1427,
-//     marketPremium: 2293,
-//     estimatedPrice: 289094
+//     customsDuty: 51628,
+//     importerMargin: 1549,
+//     dealerMargin: 1557,
+//     estimatedAdjustment: 2503,
+//     estimatedPrice: 315377
 //   },
-//   rates: { customsDuty: 0.1, bankMargin: 0.005, dealerMargin: 0.005, marketPremium: 0.008 },
+//   rates: { customsDuty: 0.2, importerMargin: 0.005, dealerMargin: 0.005, estimatedAdjustment: 0.008 },
 //   source: 'gold-api.com',
 //   updatedAt: '2026-03-25T04:26:12Z',
 //   isStale: false
@@ -96,7 +96,7 @@ const news = await getNews();       // all languages
 const npNews = await getNews('np');  // Nepali only
 // { items: [{ id, title, summary, url, source, language, publishedAt, category }], fetchedAt }
 
-// Override tax rates per metal or add API keys
+// Override estimate rates per metal or add API keys
 configure({
   rates: {
     gold: { customsDuty: 0.06 },
@@ -113,8 +113,8 @@ configure({
 |----------|---------|-------------|
 | `getNepalGoldPrice()` | `Promise<NepalGoldPrice>` | FENEGOSIDA daily gold rate (hallmark + tajabi) |
 | `getNepalSilverPrice()` | `Promise<NepalSilverPrice>` | FENEGOSIDA daily silver rate |
-| `getLiveGoldPrice()` | `Promise<LiveMetalPrice>` | Live XAU/USD → NPR with duty breakdown |
-| `getLiveSilverPrice()` | `Promise<LiveMetalPrice>` | Live XAG/USD → NPR with duty breakdown |
+| `getLiveGoldPrice()` | `Promise<LiveMetalPrice>` | Live XAU/USD → NPR with estimate breakdown |
+| `getLiveSilverPrice()` | `Promise<LiveMetalPrice>` | Live XAG/USD → NPR with estimate breakdown |
 | `getAllPrices()` | `Promise<AllPrices>` | All four in parallel (null on failure) |
 | `getNews(lang?)` | `Promise<NewsData>` | Aggregated gold/silver news (optional `'en'` or `'np'` filter) |
 | `configure(opts)` | `void` | Override rates, API keys, or cache TTL |
@@ -128,9 +128,9 @@ Rates are configured **per metal** via `rates.gold` and `rates.silver`:
 | Option | Type | Gold Default | Silver Default | Description |
 |--------|------|-------------|----------------|-------------|
 | `rates.{metal}.customsDuty` | `number` | `0.20` (20%) | `0.20` (20%) | Customs duty rate |
-| `rates.{metal}.bankMargin` | `number` | `0.005` (0.5%) | `0.005` (0.5%) | Bank margin (NRB cap) |
-| `rates.{metal}.dealerMargin` | `number` | `0.005` (0.5%) | `0.005` (0.5%) | Dealer margin (NRB cap) |
-| `rates.{metal}.marketPremium` | `number` | `0.008` (0.8%) | `0.030` (3.0%) | Market premium (freight, insurance, Indian blend) *estimated, not officially confirmed* |
+| `rates.{metal}.importerMargin` | `number` | `0.005` (0.5%) | `0.005` (0.5%) | Importer margin used in the estimate |
+| `rates.{metal}.dealerMargin` | `number` | `0.005` (0.5%) | `0.005` (0.5%) | Dealer margin used in the estimate |
+| `rates.{metal}.estimatedAdjustment` | `number` | `0.008` (0.8%) | `0.030` (3.0%) | Calibration for freight, insurance, local premium, and FENEGOSIDA-vs-spot gaps |
 | `apiKeys.goldApiIo` | `string` | — | — | goldapi.io API key (enables fallback) |
 | `apiKeys.asheshApiKey` | `string` | — | — | Ashesh widget API key (has public default) |
 | `apiKeys.gnewsApiKey` | `string` | — | — | GNews API key (enables news fallback) |
@@ -176,20 +176,20 @@ Each category tries providers in order. If all fail, cached (stale) data is retu
 
 News items are keyword-filtered for gold/silver relevance, deduplicated, categorized (gold/silver/market), and cached for 1 hour.
 
-## Duty Breakdown
+## Estimate Breakdown
 
-Live prices are converted from USD/oz to NPR/tola (1 tola = 11.6638 g, 1 troy oz = 31.1035 g) using the **NRB sell rate** (the rate importers pay when buying USD), then Nepal import charges are applied sequentially:
+Live prices are converted from USD/oz to NPR/tola (1 tola = 11.6638 g, 1 troy oz = 31.1035 g) using the **NRB sell rate** (the rate importers pay when buying USD), then Nepal import costs and estimate adjustments are applied sequentially:
 
 ```
 basePrice      = round((usdPerOz / 31.1035) × 11.6638 × usdToNpr)
 customsDuty    = round(basePrice × customsDutyRate)
 afterCustoms   = basePrice + customsDuty
-bankMargin     = round(afterCustoms × bankMarginRate)
-afterBank      = afterCustoms + bankMargin
-dealerMargin   = round(afterBank × dealerMarginRate)
-afterDealer    = afterBank + dealerMargin
-marketPremium  = round(afterDealer × marketPremiumRate)
-estimatedPrice = afterDealer + marketPremium     ← approx. FENEGOSIDA rate
+importerMargin      = round(afterCustoms × importerMarginRate)
+afterImporter       = afterCustoms + importerMargin
+dealerMargin        = round(afterImporter × dealerMarginRate)
+afterDealer         = afterImporter + dealerMargin
+estimatedAdjustment = round(afterDealer × estimatedAdjustmentRate)
+estimatedPrice      = afterDealer + estimatedAdjustment     ← approx. FENEGOSIDA rate
 ```
 
 ### Default rates
@@ -197,11 +197,11 @@ estimatedPrice = afterDealer + marketPremium     ← approx. FENEGOSIDA rate
 | Charge | Gold | Silver | Source |
 |--------|------|--------|--------|
 | Customs duty | 20% | 20% | Nepal Budget 2083/84 |
-| Bank margin | 0.5% | 0.5% | NRB cap |
-| Dealer margin | 0.5% | 0.5% | NRB cap |
-| Market premium | 0.8% | 3.0% | Freight, insurance, Indian blend *(estimated, not officially confirmed)* |
+| Importer margin | 0.5% | 0.5% | Industry pricing practice |
+| Dealer margin | 0.5% | 0.5% | Industry pricing practice |
+| Estimated adjustment | 0.8% | 3.0% | Freight, insurance, local premium, and FENEGOSIDA-vs-spot calibration |
 
-The `estimatedPrice` approximates what FENEGOSIDA publishes as the daily rate. The market premium covers freight & insurance costs, CIF-based customs amplification, and the 75/25 Indian market price blend effect. **The market premium rates (0.8% for gold, 3.0% for silver) are estimated values derived from back-testing against FENEGOSIDA prices — they are not officially published or confirmed figures.** The former 2% luxury tax on gold and silver jewellery has been scrapped. A separate 0.5% skill promotion fee may apply at final consumer sale, but it is not included in the published bullion rate estimate.
+The `estimatedPrice` approximates what FENEGOSIDA publishes as the daily rate. The estimated adjustment covers freight & insurance costs, local premiums, CIF-based customs amplification, and FENEGOSIDA-vs-spot calibration. **The estimated adjustment rates (0.8% for gold, 3.0% for silver) are derived from market back-testing and are not officially published or confirmed figures.** The former 2% luxury tax on gold and silver jewellery has been scrapped. A separate 0.5% skill promotion fee may apply at final consumer sale, but it is not included in the published bullion rate estimate.
 
 All rates are configurable per metal via `configure({ rates: { gold: { ... }, silver: { ... } } })`.
 
@@ -217,8 +217,8 @@ This package includes an MCP (Model Context Protocol) server so AI assistants li
 |------|-------------|
 | `get_nepal_gold_price` | FENEGOSIDA daily gold rate + yesterday's price |
 | `get_nepal_silver_price` | FENEGOSIDA daily silver rate + yesterday's price |
-| `get_live_gold_price` | Live XAU/USD → NPR with customs, bank margin, dealer margin, market premium breakdown |
-| `get_live_silver_price` | Live XAG/USD → NPR with customs, bank margin, dealer margin, market premium breakdown |
+| `get_live_gold_price` | Live XAU/USD → NPR with customs, importer margin, dealer margin, estimated adjustment |
+| `get_live_silver_price` | Live XAG/USD → NPR with customs, importer margin, dealer margin, estimated adjustment |
 | `get_all_prices` | All prices at once |
 
 ### Setup

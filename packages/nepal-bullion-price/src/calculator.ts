@@ -1,11 +1,11 @@
-import type { TaxBreakdown, TaxRates } from './types.js';
+import type { EstimateBreakdown, EstimateRates } from './types.js';
 import { GRAMS_PER_TROY_OZ, GRAMS_PER_TOLA } from './constants.js';
 
-export function calculateTaxBreakdown(
+export function calculateEstimateBreakdown(
   usdPerOz: number,
   usdToNpr: number,
-  rates: TaxRates,
-): TaxBreakdown {
+  rates: EstimateRates,
+): EstimateBreakdown {
   const basePrice = Math.round(
     (usdPerOz / GRAMS_PER_TROY_OZ) * GRAMS_PER_TOLA * usdToNpr,
   );
@@ -13,21 +13,21 @@ export function calculateTaxBreakdown(
   const customsDuty = Math.round(basePrice * rates.customsDuty);
   const afterCustoms = basePrice + customsDuty;
 
-  const bankMargin = Math.round(afterCustoms * rates.bankMargin);
-  const afterBank = afterCustoms + bankMargin;
+  const importerMargin = Math.round(afterCustoms * rates.importerMargin);
+  const afterImporter = afterCustoms + importerMargin;
 
-  const dealerMargin = Math.round(afterBank * rates.dealerMargin);
-  const afterDealer = afterBank + dealerMargin;
+  const dealerMargin = Math.round(afterImporter * rates.dealerMargin);
+  const afterDealer = afterImporter + dealerMargin;
 
-  const marketPremium = Math.round(afterDealer * rates.marketPremium);
-  const estimatedPrice = afterDealer + marketPremium;
+  const estimatedAdjustment = Math.round(afterDealer * rates.estimatedAdjustment);
+  const estimatedPrice = afterDealer + estimatedAdjustment;
 
   return {
     basePrice,
     customsDuty,
-    bankMargin,
+    importerMargin,
     dealerMargin,
-    marketPremium,
+    estimatedAdjustment,
     estimatedPrice,
   };
 }

@@ -1,15 +1,15 @@
 import { useState } from 'react';
-import type { TaxBreakdown as TaxBreakdownType, TaxRates } from 'nepal-bullion-price';
+import type { EstimateBreakdown as EstimateBreakdownType, EstimateRates } from 'nepal-bullion-price';
 import NumberFlow from '@number-flow/react';
 import { ChevronDownIcon } from './Icons';
 import { useLocale } from '../i18n';
 
-interface TaxBreakdownProps {
-  breakdown: TaxBreakdownType;
-  rates: TaxRates;
+interface EstimateBreakdownProps {
+  breakdown: EstimateBreakdownType;
+  rates: EstimateRates;
 }
 
-export function TaxBreakdown({ breakdown, rates }: TaxBreakdownProps) {
+export function EstimateBreakdown({ breakdown, rates }: EstimateBreakdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { lang, t, numberLocale, localizeNum } = useLocale();
   const isNe = lang === 'ne';
@@ -33,9 +33,9 @@ export function TaxBreakdown({ breakdown, rates }: TaxBreakdownProps) {
             <div className="space-y-2.5 text-ink-muted dark:text-ink-faint">
               <Row label={t.internationalBase} value={breakdown.basePrice} numberLocale={numberLocale} isNe={isNe} localizeNum={localizeNum} />
               <Row label={`${t.customsDuty} ${localizeNum((rates.customsDuty * 100).toFixed(0))}%`} value={breakdown.customsDuty} prefix="+" numberLocale={numberLocale} isNe={isNe} localizeNum={localizeNum} />
-              <Row label={`${t.bankMargin} ${localizeNum((rates.bankMargin * 100).toFixed(1))}%`} value={breakdown.bankMargin} prefix="+" numberLocale={numberLocale} isNe={isNe} localizeNum={localizeNum} />
+              <Row label={`${t.importerMargin} ${localizeNum((rates.importerMargin * 100).toFixed(1))}%`} value={breakdown.importerMargin} prefix="+" numberLocale={numberLocale} isNe={isNe} localizeNum={localizeNum} />
               <Row label={`${t.dealerMargin} ${localizeNum((rates.dealerMargin * 100).toFixed(1))}%`} value={breakdown.dealerMargin} prefix="+" numberLocale={numberLocale} isNe={isNe} localizeNum={localizeNum} />
-              <Row label={`${t.marketPremium} ${localizeNum((rates.marketPremium * 100).toFixed(1))}%`} value={breakdown.marketPremium} prefix="+" numberLocale={numberLocale} isNe={isNe} localizeNum={localizeNum} />
+              <Row label={`${t.estimatedAdjustment} ${localizeNum((rates.estimatedAdjustment * 100).toFixed(1))}%`} value={breakdown.estimatedAdjustment} prefix="+" numberLocale={numberLocale} isNe={isNe} localizeNum={localizeNum} />
             </div>
             <div className="h-px bg-ink/[0.04] dark:bg-white/[0.04] my-3" />
             <div className="flex justify-between font-semibold text-ink dark:text-white">

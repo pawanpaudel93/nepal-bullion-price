@@ -1,6 +1,6 @@
 import type { NepalGoldPrice, NepalSilverPrice, LiveMetalPrice } from 'nepal-bullion-price';
 import NumberFlow from '@number-flow/react';
-import { TaxBreakdown } from './TaxBreakdown';
+import { EstimateBreakdown } from './EstimateBreakdown';
 import { SourceLink } from './SourceLink';
 import { useLocale, type Translations } from '../i18n';
 import { TrendSection } from './TrendSection';
@@ -126,7 +126,7 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, delay = 
               <span className="font-mono font-normal">NPR {localizeNum(livePrice.raw.usdToNpr.toFixed(2))}</span>
               {livePrice.isStale ? <StaleBadge label={t.stale} /> : null}
             </div>
-            <TaxBreakdown breakdown={livePrice.perTola} rates={livePrice.rates} />
+            <EstimateBreakdown breakdown={livePrice.perTola} rates={livePrice.rates} />
           </>
         ) : (
           <p className="text-lg text-ink-faint font-light">{t.unavailable}</p>
@@ -158,5 +158,4 @@ function PriceChange({ current, previous, t, numberLocale, localizeNum }: { curr
     </p>
   );
 }
-
 

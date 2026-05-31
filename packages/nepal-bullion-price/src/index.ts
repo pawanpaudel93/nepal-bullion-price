@@ -1,7 +1,7 @@
 import { Cache } from './cache.js';
 import { getConfig, configure, resetConfig } from './config.js';
 import { fetchWithFallback } from './fallback.js';
-import { calculateTaxBreakdown } from './calculator.js';
+import { calculateEstimateBreakdown } from './calculator.js';
 import { fetchFenegosida } from './providers/nepal-price/fenegosida.js';
 import { fetchAshesh } from './providers/nepal-price/ashesh.js';
 import { fetchHamropatro } from './providers/nepal-price/hamropatro.js';
@@ -180,7 +180,7 @@ async function buildLivePrice(symbol: 'XAU' | 'XAG'): Promise<LiveMetalPrice> {
 
   const config = getConfig();
   const metalRates = symbol === 'XAU' ? config.rates.gold : config.rates.silver;
-  const breakdown = calculateTaxBreakdown(
+  const breakdown = calculateEstimateBreakdown(
     live.data.priceUsd,
     forex.data.usdToNpr,
     metalRates,
@@ -206,7 +206,7 @@ async function buildLivePriceFromForex(
   const live = await fetchLivePrice(symbol);
   const config = getConfig();
   const metalRates = symbol === 'XAU' ? config.rates.gold : config.rates.silver;
-  const breakdown = calculateTaxBreakdown(live.data.priceUsd, forex.data.usdToNpr, metalRates);
+  const breakdown = calculateEstimateBreakdown(live.data.priceUsd, forex.data.usdToNpr, metalRates);
   return {
     raw: { usdPerOz: live.data.priceUsd, usdToNpr: forex.data.usdToNpr },
     perTola: breakdown,
@@ -259,6 +259,6 @@ export async function getNews(lang?: 'en' | 'np'): Promise<import('./types.js').
 export { configure, resetConfig } from './config.js';
 export type {
   NepalGoldPrice, NepalSilverPrice, LiveMetalPrice,
-  TaxBreakdown, TaxRates, MetalRates, AllPrices, Config,
+  EstimateBreakdown, EstimateRates, MetalRates, AllPrices, Config,
   ProviderResult, NewsItem, NewsData,
 } from './types.js';

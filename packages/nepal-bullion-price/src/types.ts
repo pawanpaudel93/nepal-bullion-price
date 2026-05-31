@@ -25,12 +25,12 @@ export interface NepalSilverPrice {
   isStale: boolean;
 }
 
-export interface TaxBreakdown {
+export interface EstimateBreakdown {
   basePrice: number;
   customsDuty: number;
-  bankMargin: number;
+  importerMargin: number;
   dealerMargin: number;
-  marketPremium: number;
+  estimatedAdjustment: number;
   estimatedPrice: number;
 }
 
@@ -39,23 +39,23 @@ export interface LiveMetalPrice {
     usdPerOz: number;
     usdToNpr: number;
   };
-  perTola: TaxBreakdown;
-  rates: TaxRates;
+  perTola: EstimateBreakdown;
+  rates: EstimateRates;
   source: string;
   updatedAt: string;
   isStale: boolean;
 }
 
-export interface TaxRates {
+export interface EstimateRates {
   customsDuty: number;
-  bankMargin: number;
+  importerMargin: number;
   dealerMargin: number;
-  marketPremium: number;
+  estimatedAdjustment: number;
 }
 
 export interface MetalRates {
-  gold: TaxRates;
-  silver: TaxRates;
+  gold: EstimateRates;
+  silver: EstimateRates;
 }
 
 export interface Config {

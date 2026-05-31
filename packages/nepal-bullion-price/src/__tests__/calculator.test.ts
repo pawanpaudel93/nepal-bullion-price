@@ -1,33 +1,33 @@
 import { describe, it, expect } from 'vitest';
-import { calculateTaxBreakdown } from '../calculator.js';
+import { calculateEstimateBreakdown } from '../calculator.js';
 
-describe('calculateTaxBreakdown', () => {
+describe('calculateEstimateBreakdown', () => {
   const rates = {
-    customsDuty: 0.10,
-    bankMargin: 0.005,
+    customsDuty: 0.20,
+    importerMargin: 0.005,
     dealerMargin: 0.005,
-    marketPremium: 0.008,
+    estimatedAdjustment: 0.008,
   };
 
   it('matches the expected calculation', () => {
-    const result = calculateTaxBreakdown(4508.90, 150.49, rates);
+    const result = calculateEstimateBreakdown(4508.90, 150.49, rates);
     expect(result.basePrice).toBe(254454);
-    expect(result.customsDuty).toBe(25445);
-    expect(result.bankMargin).toBe(1399);
-    expect(result.dealerMargin).toBe(1406);
-    expect(result.marketPremium).toBe(2262);
-    expect(result.estimatedPrice).toBe(284966);
+    expect(result.customsDuty).toBe(50891);
+    expect(result.importerMargin).toBe(1527);
+    expect(result.dealerMargin).toBe(1534);
+    expect(result.estimatedAdjustment).toBe(2467);
+    expect(result.estimatedPrice).toBe(310873);
   });
 
   it('works with different rates', () => {
     const customRates = { ...rates, customsDuty: 0.06 };
-    const result = calculateTaxBreakdown(2000, 130, customRates);
+    const result = calculateEstimateBreakdown(2000, 130, customRates);
     expect(result.basePrice).toBeGreaterThan(0);
     expect(result.estimatedPrice).toBeGreaterThan(result.basePrice);
   });
 
   it('handles zero price', () => {
-    const result = calculateTaxBreakdown(0, 150, rates);
+    const result = calculateEstimateBreakdown(0, 150, rates);
     expect(result.basePrice).toBe(0);
     expect(result.estimatedPrice).toBe(0);
   });

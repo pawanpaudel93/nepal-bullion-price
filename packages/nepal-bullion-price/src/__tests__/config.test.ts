@@ -7,13 +7,13 @@ describe('config', () => {
   it('returns default config', () => {
     const config = getConfig();
     expect(config.rates.gold.customsDuty).toBe(0.20);
-    expect(config.rates.gold.bankMargin).toBe(0.005);
+    expect(config.rates.gold.importerMargin).toBe(0.005);
     expect(config.rates.gold.dealerMargin).toBe(0.005);
-    expect(config.rates.gold.marketPremium).toBe(0.008);
+    expect(config.rates.gold.estimatedAdjustment).toBe(0.008);
     expect(config.rates.silver.customsDuty).toBe(0.20);
-    expect(config.rates.silver.bankMargin).toBe(0.005);
+    expect(config.rates.silver.importerMargin).toBe(0.005);
     expect(config.rates.silver.dealerMargin).toBe(0.005);
-    expect(config.rates.silver.marketPremium).toBe(0.030);
+    expect(config.rates.silver.estimatedAdjustment).toBe(0.030);
     expect(config.cacheTtl).toBe(300_000);
     expect(config.apiKeys).toEqual({});
   });
@@ -22,7 +22,7 @@ describe('config', () => {
     configure({ rates: { gold: { customsDuty: 0.06 } } });
     const config = getConfig();
     expect(config.rates.gold.customsDuty).toBe(0.06);
-    expect(config.rates.gold.bankMargin).toBe(0.005);
+    expect(config.rates.gold.importerMargin).toBe(0.005);
     expect(config.rates.silver.customsDuty).toBe(0.20);
   });
 

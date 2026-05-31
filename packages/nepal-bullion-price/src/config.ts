@@ -1,18 +1,18 @@
-import type { Config, TaxRates, MetalRates } from './types.js';
+import type { Config, EstimateRates, MetalRates } from './types.js';
 import { DEFAULT_CACHE_TTL_MS } from './constants.js';
 
-const DEFAULT_GOLD_RATES: TaxRates = {
+const DEFAULT_GOLD_RATES: EstimateRates = {
   customsDuty: 0.20,
-  bankMargin: 0.005,
+  importerMargin: 0.005,
   dealerMargin: 0.005,
-  marketPremium: 0.008,
+  estimatedAdjustment: 0.008,
 };
 
-const DEFAULT_SILVER_RATES: TaxRates = {
+const DEFAULT_SILVER_RATES: EstimateRates = {
   customsDuty: 0.20,
-  bankMargin: 0.005,
+  importerMargin: 0.005,
   dealerMargin: 0.005,
-  marketPremium: 0.030,
+  estimatedAdjustment: 0.030,
 };
 
 const DEFAULT_CONFIG: Config = {
@@ -39,7 +39,7 @@ export function getConfig(): Config {
  *   explicit reset/refresh calls between tenants.
  */
 export function configure(partial: {
-  rates?: { gold?: Partial<TaxRates>; silver?: Partial<TaxRates> };
+  rates?: { gold?: Partial<EstimateRates>; silver?: Partial<EstimateRates> };
   apiKeys?: Config['apiKeys'];
   cacheTtl?: number;
 }): void {
