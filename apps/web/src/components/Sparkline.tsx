@@ -3,7 +3,9 @@ import { useId } from 'react';
 interface SparklineProps {
   data: number[];
   color: 'gold' | 'silver';
+  /** Axis labels, one per point; empty strings are skipped. */
   labels?: string[];
+  /** Hover tooltip text, one per point. */
   formattedPrices?: string[];
   className?: string;
 }
@@ -28,6 +30,8 @@ export function Sparkline({ data, color, labels, formattedPrices, className = ''
   const range = max - min || 1;
 
   const xPositions = data.map((_, i) => padX + (i / (data.length - 1)) * (width - padX * 2));
+  const step = (width - padX * 2) / (data.length - 1);
+  const showDots = data.length <= 10;
 
   const getY = (val: number) => chartTop + padY + ((max - val) / range) * (chartHeight - padY * 2);
 
@@ -42,10 +46,10 @@ export function Sparkline({ data, color, labels, formattedPrices, className = ''
   const gradientId = `spark-fill-${id}`;
   const strokeColor = color === 'gold'
     ? 'var(--color-gold-500)'
-    : 'var(--color-silver-500)';
+    : 'var(--spark-silver-stroke)';
   const fillColorStart = color === 'gold'
     ? 'var(--color-gold-400)'
-    : 'var(--color-silver-400)';
+    : 'var(--spark-silver-fill)';
   const labelFill = 'var(--color-ink-faint)';
 
   const tipHidden = { opacity: 0, transition: 'opacity 0.15s', pointerEvents: 'none' as const };
@@ -75,21 +79,22 @@ export function Sparkline({ data, color, labels, formattedPrices, className = ''
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      {/* Dots */}
+      {/* Dots — only for short series; dense series read better as a clean line */}
       {data.map((val, i) => {
         const cx = xPositions[i];
         const cy = getY(val);
         const isLast = i === data.length - 1;
-        return isLast ? (
-          <g key={i}>
-            <circle cx={cx} cy={cy} r={4.5} fill={strokeColor} />
-            <circle cx={cx} cy={cy} r={2} fill="var(--color-paper, #FAFAF9)" />
-          </g>
-        ) : (
-          <circle key={i} cx={cx} cy={cy} r={2} fill={strokeColor} opacity={0.5} />
-        );
+        if (isLast) {
+          return (
+            <g key={i}>
+              <circle cx={cx} cy={cy} r={4.5} fill={strokeColor} />
+              <circle cx={cx} cy={cy} r={2} fill="var(--color-paper, #FAFAF9)" />
+            </g>
+          );
+        }
+        return showDots ? <circle key={i} cx={cx} cy={cy} r={2} fill={strokeColor} opacity={0.5} /> : null;
       })}
-      {/* Interactive hover areas + tooltips */}
+      {/* Interactive hover columns + tooltips (one column per point, so targets never overlap) */}
       {data.map((val, i) => {
         const cx = xPositions[i];
         const cy = getY(val);
@@ -99,7 +104,7 @@ export function Sparkline({ data, color, labels, formattedPrices, className = ''
         const tipY = tipAbove ? chartTop - 2 + tipSpace : chartBottom + 8;
         return (
           <g key={i} className="spark-pt" style={{ cursor: 'pointer' }}>
-            <circle cx={cx} cy={cy} r={12} fill="transparent" />
+            <rect x={cx - step / 2} y={0} width={step} height={chartBottom + tipSpaceBottom} fill="transparent" />
             {!isLast && <circle className="spark-dot-hover" cx={cx} cy={cy} r={3.5} fill={strokeColor} style={dotHoverHidden} />}
             {formattedPrices?.[i] ? (
               <text
@@ -108,7 +113,7 @@ export function Sparkline({ data, color, labels, formattedPrices, className = ''
                 y={tipY}
                 textAnchor={anchor}
                 fill={strokeColor}
-                fontSize={6}
+                fontSize={6.5}
                 fontFamily="ui-monospace, monospace"
                 fontWeight={700}
                 style={tipHidden}
@@ -119,7 +124,7 @@ export function Sparkline({ data, color, labels, formattedPrices, className = ''
           </g>
         );
       })}
-      {labels ? labels.map((label, i) => (
+      {labels ? labels.map((label, i) => label ? (
         <text
           key={i}
           x={xPositions[i]}
@@ -131,7 +136,7 @@ export function Sparkline({ data, color, labels, formattedPrices, className = ''
         >
           {label}
         </text>
-      )) : null}
+      ) : null) : null}
     </svg>
   );
 }

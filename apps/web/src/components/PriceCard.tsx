@@ -7,6 +7,7 @@ import { TrendSection } from './TrendSection';
 import { ShareButton } from './ShareButton';
 import { getMarketMood } from '../utils/marketMood';
 import { FunComparison } from './FunComparison';
+import { getRateFreshness } from '../utils/dates';
 
 interface PriceCardProps {
   title: string;
@@ -21,6 +22,27 @@ function getNepalPriceTola(price: NepalGoldPrice | NepalSilverPrice): number {
   return 'hallmark' in price ? price.hallmark : price.price;
 }
 
+function RateDateLabel({ priceDate }: { priceDate: string | null }) {
+  const { t, formatDate } = useLocale();
+  const freshness = getRateFreshness(priceDate);
+  const label = freshness === 'pending' || freshness === 'holiday' ? t.latestRate : t.todayRate;
+  return (
+    <>
+      <p className="text-[11px] ne-text-boost font-semibold uppercase tracking-[0.18em] text-ink-muted dark:text-ink-faint mb-3 flex items-center gap-2">
+        {freshness === 'today' ? (
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" aria-hidden="true" />
+        ) : null}
+        <span>{label}{priceDate ? ` · ${formatDate(priceDate)}` : null}</span>
+      </p>
+      {freshness === 'pending' || freshness === 'holiday' ? (
+        <p className="-mt-1.5 mb-3 text-[12px] text-amber-700 dark:text-amber-300/90 font-light">
+          {freshness === 'pending' ? t.ratePending : t.rateHoliday}
+        </p>
+      ) : null}
+    </>
+  );
+}
+
 function StaleBadge({ label }: { label: string }) {
   return (
     <span className="inline-flex items-center gap-1.5 text-amber-600 dark:text-amber-400 font-normal">
@@ -31,10 +53,16 @@ function StaleBadge({ label }: { label: string }) {
 }
 
 export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, delay = '0ms' }: PriceCardProps) {
-  const { lang, t, numberLocale, localizeNum, localizeDate } = useLocale();
+  const { lang, t, numberLocale, localizeNum } = useLocale();
   const nepalTola = nepalPrice ? getNepalPriceTola(nepalPrice) : null;
   const liveTola = livePrice?.perTola.estimatedPrice ?? null;
   const isNe = lang === 'ne';
+
+  const displayPrice = nepalTola;
+  const displayPrev = nepalPrice?.previousPrice ?? null;
+  const tajabi = nepalPrice && 'tajabi' in nepalPrice ? nepalPrice.tajabi : null;
+  const premiumPct = nepalTola && liveTola ? ((nepalTola - liveTola) / liveTola) * 100 : null;
+  const fmt = (v: number) => localizeNum(v.toLocaleString(numberLocale));
 
   return (
     <div
@@ -74,25 +102,28 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, delay = 
 
       {/* Nepal FENEGOSIDA Price — The Hero */}
       <div className="mb-8">
-        <p className="text-[10px] ne-text-boost font-medium uppercase tracking-[0.2em] text-ink-faint dark:text-ink-faint mb-3">
-          {t.nepalPrice}{nepalPrice?.priceDate ? ` · ${localizeDate(nepalPrice.priceDate.replace(/,\s*\d{4}$/, ''))}` : null}
-        </p>
+        <RateDateLabel priceDate={nepalPrice?.priceDate ?? null} />
         {nepalPrice ? (
           <>
-            <p className={`font-mono text-[42px] font-bold leading-none tracking-tighter ${symbol === 'XAU' ? 'text-gold-color-shimmer' : 'text-silver-color-shimmer'}`}>
-              {nepalTola !== null ? (
-                <>Rs {isNe ? localizeNum(nepalTola.toLocaleString(numberLocale)) : <NumberFlow value={nepalTola} locales={numberLocale} />}</>
+            <p className={`font-mono text-[40px] sm:text-[42px] font-bold leading-none tracking-tighter ${symbol === 'XAU' ? 'text-gold-color-shimmer' : 'text-silver-color-shimmer'}`}>
+              {displayPrice !== null ? (
+                <>Rs {isNe ? fmt(displayPrice) : <NumberFlow value={displayPrice} locales={numberLocale} />}</>
               ) : '\u2014'}
             </p>
-            {nepalPrice.previousPrice != null && nepalTola !== null ? (
-              <PriceChange current={nepalTola} previous={nepalPrice.previousPrice} t={t} numberLocale={numberLocale} localizeNum={localizeNum} />
+            {displayPrev != null && displayPrice !== null ? (
+              <PriceChange current={displayPrice} previous={displayPrev} t={t} numberLocale={numberLocale} localizeNum={localizeNum} />
             ) : null}
-            <p className="text-[13px] text-ink-muted dark:text-ink-faint mt-3 flex items-center gap-2.5 font-light">
+            <p className="text-[13px] text-ink-muted dark:text-ink-faint mt-3 flex flex-wrap items-center gap-x-2.5 gap-y-1 font-light">
               <span>{t.perTola}</span>
-              <span className="w-[3px] h-[3px] rounded-full bg-ink-faint/30" />
+              <span className="w-[3px] h-[3px] rounded-full bg-ink-faint/40" aria-hidden="true" />
               <SourceLink name={nepalPrice.source} />
               {nepalPrice.isStale ? <StaleBadge label={t.stale} /> : null}
             </p>
+            {tajabi ? (
+              <p className="text-[13px] text-ink-muted dark:text-ink-faint mt-1.5 font-light">
+                {t.tajabi} <span className="font-mono font-normal text-ink dark:text-white/90">Rs {fmt(tajabi)}</span>
+              </p>
+            ) : null}
             {nepalTola !== null ? (
               <FunComparison price={nepalTola} metal={symbol === 'XAU' ? 'gold' : 'silver'} />
             ) : null}
@@ -110,8 +141,8 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, delay = 
 
       {/* Live International Price */}
       <div>
-        <p className="text-[10px] ne-text-boost font-medium uppercase tracking-[0.2em] text-ink-faint dark:text-ink-faint mb-3">
-          {t.liveEstimatedPrice}
+        <p className="text-[11px] ne-text-boost font-semibold uppercase tracking-[0.18em] text-ink-muted dark:text-ink-faint mb-3">
+          {t.liveEstimatedPrice} <span className="normal-case tracking-normal font-light">· {t.perTola}</span>
         </p>
         {livePrice ? (
           <>
@@ -120,12 +151,17 @@ export function PriceCard({ title, icon, symbol, nepalPrice, livePrice, delay = 
                 <>Rs {isNe ? localizeNum(liveTola.toLocaleString(numberLocale)) : <NumberFlow value={liveTola} locales={numberLocale} />}</>
               ) : '\u2014'}
             </p>
-            <div className="flex items-center gap-2.5 text-[12px] text-ink-muted dark:text-ink-faint mt-2.5 font-light">
+            <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[12px] text-ink-muted dark:text-ink-faint mt-2.5 font-light">
               <span className="font-mono font-normal">{symbol}/USD ${localizeNum(livePrice.raw.usdPerOz.toFixed(2))}</span>
               <span className="w-[3px] h-[3px] rounded-full bg-ink-faint/30" />
               <span className="font-mono font-normal">NPR {localizeNum(livePrice.raw.usdToNpr.toFixed(2))}</span>
               {livePrice.isStale ? <StaleBadge label={t.stale} /> : null}
             </div>
+            {premiumPct !== null && Math.abs(premiumPct) >= 0.05 ? (
+              <p className="text-[12px] text-ink-muted dark:text-ink-faint mt-2 font-light">
+                {(premiumPct > 0 ? t.premiumAbove : t.premiumBelow).replace('{pct}', localizeNum(Math.abs(premiumPct).toFixed(1)))}
+              </p>
+            ) : null}
             <EstimateBreakdown breakdown={livePrice.perTola} rates={livePrice.rates} />
           </>
         ) : (

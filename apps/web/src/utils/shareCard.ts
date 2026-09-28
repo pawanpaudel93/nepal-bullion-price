@@ -1,3 +1,4 @@
+import { formatShortDate } from './dates';
 interface ShareCardData {
   metal: 'gold' | 'silver';
   metalName: string;
@@ -105,10 +106,8 @@ export async function generateShareImage(data: ShareCardData): Promise<Blob> {
   ctx.textAlign = 'left';
   ctx.fillText('Nepal Bullion', pad + 22 * s + 16, pad + 34);
 
-  // Date (BS date if available, else Gregorian)
-  const displayDate = data.priceDate
-    ? data.priceDate.replace(/,\s*\d{4}$/, '')
-    : data.date;
+  // Date the rate was published (falls back to fetch date)
+  const displayDate = formatShortDate(data.priceDate ?? data.date);
   ctx.fillStyle = MUTED;
   ctx.font = '400 22px system-ui, sans-serif';
   ctx.textAlign = 'right';

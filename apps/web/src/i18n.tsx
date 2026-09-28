@@ -1,3 +1,4 @@
+import { formatShortDate } from './utils/dates';
 import { createContext, useContext, useState, useCallback, useEffect, useMemo, type ReactNode } from 'react';
 
 export type Lang = 'en' | 'ne';
@@ -39,6 +40,23 @@ const translations = {
     priceUp: 'Price increased by',
     priceDown: 'Price decreased by',
     from: 'from',
+    // Rate freshness + units
+    todayRate: "Today's rate",
+    latestRate: 'Latest rate',
+    ratePending: "Today's rate isn't out yet — usually published around 11 AM",
+    rateHoliday: 'Market closed on Saturday — showing the last published rate',
+    tajabi: 'Tajabi',
+    trend: 'Trend',
+    range7: '7D',
+    range30: '30D',
+    trendChange: '{change} since {date}',
+    rangeHigh: 'High',
+    rangeLow: 'Low',
+    premiumAbove: 'Nepal rate is {pct}% above this estimate',
+    premiumBelow: 'Nepal rate is {pct}% below this estimate',
+    loadError: "Couldn't load the latest prices.",
+    showingSaved: 'Showing the last saved prices.',
+    tryAgain: 'Try again',
     // Narratives
     weeklyTrend: '7-Day Trend',
     biggest_jump: 'Biggest jump this week',
@@ -221,6 +239,23 @@ const translations = {
     priceUp: 'मूल्य बढ्यो',
     priceDown: 'मूल्य घट्यो',
     from: 'बाट',
+    // Rate freshness + units
+    todayRate: 'आजको दर',
+    latestRate: 'पछिल्लो दर',
+    ratePending: 'आजको दर अझै आएको छैन — प्रायः बिहान ११ बजेतिर प्रकाशित हुन्छ',
+    rateHoliday: 'शनिबार बजार बन्द — पछिल्लो प्रकाशित दर देखाइएको छ',
+    tajabi: 'तेजाबी',
+    trend: 'प्रवृत्ति',
+    range7: '७ दिन',
+    range30: '३० दिन',
+    trendChange: '{date} देखि {change}',
+    rangeHigh: 'उच्च',
+    rangeLow: 'न्यून',
+    premiumAbove: 'नेपाल दर यो अनुमानभन्दा {pct}% बढी छ',
+    premiumBelow: 'नेपाल दर यो अनुमानभन्दा {pct}% कम छ',
+    loadError: 'नवीनतम मूल्य ल्याउन सकिएन।',
+    showingSaved: 'पछिल्लो सुरक्षित मूल्य देखाइएको छ।',
+    tryAgain: 'फेरि प्रयास',
     // Narratives
     weeklyTrend: '७-दिने प्रवृत्ति',
     biggest_jump: 'यस हप्ताको सबैभन्दा ठूलो वृद्धि',
@@ -369,7 +404,8 @@ const translations = {
   },
 } as const;
 
-export type Translations = typeof translations.en;
+// Values are plain strings so both languages satisfy the same shape
+export type Translations = { [K in keyof typeof translations.en]: string };
 
 /** Convert ASCII digits to Nepali Devanagari digits */
 function toNepaliDigits(str: string): string {
@@ -400,6 +436,8 @@ interface LocaleContextValue {
   localizeNum: (value: string | number) => string;
   /** Localize a BS date string — converts month names and digits to Nepali in NP mode */
   localizeDate: (value: string) => string;
+  /** Format a YYYY-MM-DD date as a short localized label, e.g. "Sep 27" */
+  formatDate: (iso: string) => string;
   toggleLang: () => void;
 }
 
@@ -437,6 +475,10 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
       return lang === 'ne' ? toNepaliDigits(s) : s;
     },
     localizeDate: (v: string) => lang === 'ne' ? toNepaliDate(v) : v,
+    formatDate: (iso: string) => {
+      const label = formatShortDate(iso, lang);
+      return lang === 'ne' ? toNepaliDigits(label) : label;
+    },
     toggleLang,
   }), [lang, toggleLang]);
 

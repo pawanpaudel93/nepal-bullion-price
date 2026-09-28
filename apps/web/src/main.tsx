@@ -20,7 +20,7 @@ const queryClient = new QueryClient({
 });
 
 // localStorage may be unavailable in private browsing or restricted environments
-const CACHE_VERSION = 3; // bump when AllPrices schema changes (v3: added history + priceDate)
+const CACHE_VERSION = 4; // bump when AllPrices schema changes (v4: ISO history dates, nullable tajabi)
 let persister: ReturnType<typeof createSyncStoragePersister> | undefined;
 try {
   persister = createSyncStoragePersister({

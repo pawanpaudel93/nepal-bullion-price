@@ -38,7 +38,9 @@ export function ShareButton({ metal, metalName, price, previousPrice, history, d
     setSharing(true);
 
     try {
-      const narratives = history && history.length >= 2 ? generateNarratives(history) : [];
+      // The share card shows the recent week
+      const recent = history ? history.slice(-7) : null;
+      const narratives = recent && recent.length >= 2 ? generateNarratives(recent) : [];
       const narrativeText = narratives
         .map(n => formatNarrative(n, t as Record<string, string>))
         .join(' · ');
@@ -48,7 +50,7 @@ export function ShareButton({ metal, metalName, price, previousPrice, history, d
         metalName,
         price,
         previousPrice,
-        history,
+        history: recent,
         narrativeText,
         numberLocale,
         date,

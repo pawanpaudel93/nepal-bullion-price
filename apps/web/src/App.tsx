@@ -24,6 +24,23 @@ import { GoldStackCard } from './components/GoldStackCard';
 import { GoldTraderCard } from './components/GoldTraderCard';
 import { CalculatorPage } from './components/CalculatorPage';
 
+function PriceCardSkeleton() {
+  return (
+    <div className="glass-card rounded-3xl p-8 animate-pulse" aria-hidden="true">
+      <div className="flex items-center gap-3 mb-8">
+        <div className="w-10 h-10 rounded-xl bg-ink/8 dark:bg-white/8" />
+        <div className="h-6 w-24 rounded bg-ink/8 dark:bg-white/8" />
+      </div>
+      <div className="h-3 w-32 rounded bg-ink/6 dark:bg-white/6 mb-4" />
+      <div className="h-10 w-56 rounded-lg bg-ink/10 dark:bg-white/10 mb-4" />
+      <div className="h-3 w-40 rounded bg-ink/6 dark:bg-white/6 mb-8" />
+      <div className="h-28 rounded-xl bg-ink/5 dark:bg-white/5 mb-8" />
+      <div className="h-3 w-36 rounded bg-ink/6 dark:bg-white/6 mb-4" />
+      <div className="h-7 w-40 rounded-lg bg-ink/8 dark:bg-white/8" />
+    </div>
+  );
+}
+
 export default function App() {
   const { data, isLoading, isFetching, error, lastFetched, refresh } = useBullionPrices();
   const { t } = useLocale();
@@ -86,34 +103,43 @@ export default function App() {
             ) : null}
 
             {error ? (
-              <div className="mb-8 p-4 glass-card rounded-2xl text-red-700 dark:text-red-400 text-sm animate-fade-up" role="alert">
-                {error}
+              <div className="mb-6 p-4 glass-card rounded-2xl text-sm animate-fade-up flex flex-wrap items-center justify-between gap-3" role="alert">
+                <p className="text-red-700 dark:text-red-400">
+                  {t.loadError}{data ? <span className="text-ink-muted dark:text-ink-faint"> {t.showingSaved}</span> : null}
+                </p>
+                <button
+                  onClick={refresh}
+                  disabled={isFetching}
+                  className="px-3 py-1.5 rounded-full border border-ink/10 dark:border-white/10 text-[12px] font-medium text-ink dark:text-white hover:bg-ink/5 dark:hover:bg-white/5 disabled:opacity-40 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400"
+                >
+                  {t.tryAgain}
+                </button>
               </div>
             ) : null}
 
             {isLoading && !data ? (
-              <div className="flex flex-col items-center justify-center py-32 gap-5 animate-fade-up" role="status">
-                <div className="animate-spin rounded-full h-7 w-7 border-[1.5px] border-gold-200 dark:border-gold-700 border-t-gold-500" />
-                <p className="text-[13px] text-ink-faint font-light tracking-wide">{t.fetchingPrices}</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-7" role="status" aria-label={t.fetchingPrices}>
+                <PriceCardSkeleton />
+                <PriceCardSkeleton />
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-7">
-                <PriceCard
-                  title={t.gold}
-                  icon={<GoldIcon className="w-10 h-10" />}
-                  symbol="XAU"
-                  nepalPrice={data?.gold.nepal ?? null}
-                  livePrice={data?.gold.live ?? null}
-                  delay="50ms"
-                />
-                <PriceCard
-                  title={t.silver}
-                  icon={<SilverIcon className="w-10 h-10" />}
-                  symbol="XAG"
-                  nepalPrice={data?.silver.nepal ?? null}
-                  livePrice={data?.silver.live ?? null}
-                  delay="150ms"
-                />
+                  <PriceCard
+                    title={t.gold}
+                    icon={<GoldIcon className="w-10 h-10" />}
+                    symbol="XAU"
+                    nepalPrice={data?.gold.nepal ?? null}
+                    livePrice={data?.gold.live ?? null}
+                    delay="50ms"
+                  />
+                  <PriceCard
+                    title={t.silver}
+                    icon={<SilverIcon className="w-10 h-10" />}
+                    symbol="XAG"
+                    nepalPrice={data?.silver.nepal ?? null}
+                    livePrice={data?.silver.live ?? null}
+                    delay="150ms"
+                  />
               </div>
             )}
           </>
