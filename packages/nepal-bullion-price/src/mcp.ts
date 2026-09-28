@@ -10,7 +10,7 @@ import {
 
 const server = new McpServer({
   name: 'nepal-bullion-price',
-  version: '0.3.1',
+  version: '0.4.0',
 });
 
 server.tool(

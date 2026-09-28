@@ -1,6 +1,6 @@
 {
   "name": "nepal-bullion-price",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Nepal gold and silver prices — FENEGOSIDA daily rates + live international prices with estimate breakdown",
   "type": "module",
   "main": "./dist/index.cjs",
