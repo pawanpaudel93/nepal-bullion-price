@@ -1,10 +1,13 @@
 export interface NepalGoldPrice {
   hallmark: number;
-  tajabi: number;
+  /** Tajabi (standard) gold per tola. null when the source no longer publishes it. */
+  tajabi: number | null;
   unit: 'tola';
   perGram10: number;
   previousPrice: number | null;
+  /** Daily trading-day prices, oldest → newest. `date` is YYYY-MM-DD (AD). */
   history: { date: string; price: number }[] | null;
+  /** Date (YYYY-MM-DD, Nepal time) the source published this rate. */
   priceDate: string | null;
   source: string;
   date: string;
@@ -17,7 +20,9 @@ export interface NepalSilverPrice {
   unit: 'tola';
   perGram10: number;
   previousPrice: number | null;
+  /** Daily trading-day prices, oldest → newest. `date` is YYYY-MM-DD (AD). */
   history: { date: string; price: number }[] | null;
+  /** Date (YYYY-MM-DD, Nepal time) the source published this rate. */
   priceDate: string | null;
   source: string;
   date: string;
@@ -81,10 +86,10 @@ export interface AllPrices {
 
 export interface NepalPriceData {
   goldHallmark: number;
-  goldTajabi: number;
+  goldTajabi: number | null;
   silver: number;
   goldHallmarkPerGram10: number;
-  goldTajabiPerGram10: number;
+  goldTajabiPerGram10: number | null;
   silverPerGram10: number;
   previousGoldHallmark: number | null;
   previousSilver: number | null;

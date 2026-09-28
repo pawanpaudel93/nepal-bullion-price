@@ -1,114 +1,115 @@
-import * as cheerio from 'cheerio';
 import { DEFAULT_TIMEOUT_MS } from '../../constants.js';
 import type { NepalPriceData } from '../../types.js';
 
-/**
- * Parse the weekly chart data from the inline Google Charts script.
- * Format: ['day',tolaPrice,gram10Price], e.g. ['12',285600,244855]
- * Returns arrays of day labels and tola prices ordered oldest → newest.
- * Saturday is skipped in Nepal (weekly holiday), so days are not consecutive.
- */
-const CHART_ENTRY_RE = /\['(\d+)',(\d+(?:\.\d+)?),/g;
+// fenegosida.org is a client-rendered SPA; its rates come from this JSON API.
+const API_BASE = 'https://api.fenegosida.org/api/website/v1/Dashboard';
+const HISTORY_DAYS = 30;
 
-function parseChartData(html: string, varName: string): { days: number[]; prices: number[] } {
-  const regex = new RegExp(`var\\s+${varName}\\s*=\\s*google\\.visualization\\.arrayToDataTable\\(\\[([\\s\\S]*?)\\]\\)`);
-  const match = html.match(regex);
-  if (!match) return { days: [], prices: [] };
+const MONTHS: Record<string, string> = {
+  Jan: '01', Feb: '02', Mar: '03', Apr: '04', May: '05', Jun: '06',
+  Jul: '07', Aug: '08', Sep: '09', Oct: '10', Nov: '11', Dec: '12',
+};
 
-  const entries = [...match[1].matchAll(CHART_ENTRY_RE)];
-  return {
-    days: entries.map(m => parseInt(m[1], 10)),
-    prices: entries.map(m => parseFloat(m[2])),
-  };
+interface TodayRate {
+  todayDate: string;
+  yestardayDate: string;
+  rateType: string;
+  todayBaseRatePerGram: number;
+  yestardayBaseRatePerGram: number;
+}
+
+interface ChartEntry {
+  date: string;
+  year: string;
+  month: string;
+  day: string;
+  gm: number;
+  tola: number;
+}
+
+interface ChartResponse {
+  goldData?: ChartEntry[];
+  silverData?: ChartEntry[];
+}
+
+type History = { date: string; price: number }[];
+
+/** Convert an ISO timestamp to its calendar date in Nepal (YYYY-MM-DD). */
+export function toNptDate(iso: string): string {
+  return new Date(iso).toLocaleDateString('en-CA', { timeZone: 'Asia/Kathmandu' });
 }
 
 /**
- * Build history entries from chart data.
- * FENEGOSIDA chart day labels are Nepali calendar (BS) day-of-month numbers,
- * which don't map directly to Gregorian dates. Instead of attempting BS→AD
- * conversion, we store the BS day label as the date identifier. The gaps
- * between day labels are the same in both calendars (1 BS day = 1 AD day),
- * so the sparkline shape is accurate.
- * Saturday and public holidays are skipped — only trading days appear.
+ * Build history from chart entries (oldest → newest).
+ * The chart forward-fills Saturdays (weekly market holiday) and days after the
+ * last published rate, so both are dropped to keep only real trading days.
  * Returns null if fewer than 2 data points.
  */
-export function buildHistory(
-  days: number[],
-  prices: number[],
-): { date: string; price: number }[] | null {
-  if (days.length < 2 || days.length !== prices.length) return null;
+export function buildHistory(entries: ChartEntry[], publishedDate: string): History | null {
+  const history = entries
+    .filter(e => e.day !== 'Saturday' && e.tola > 0 && MONTHS[e.month])
+    .map(e => ({
+      date: `${e.year}-${MONTHS[e.month]}-${e.date.padStart(2, '0')}`,
+      price: e.tola,
+    }))
+    .filter(e => e.date <= publishedDate)
+    .sort((a, b) => a.date.localeCompare(b.date));
 
-  return days.map((day, i) => ({
-    date: String(day),
-    price: prices[i],
-  }));
+  return history.length >= 2 ? history : null;
+}
+
+async function getJson<T>(path: string): Promise<T> {
+  const res = await fetch(`${API_BASE}/${path}`, {
+    headers: { Accept: 'application/json' },
+    signal: AbortSignal.timeout(DEFAULT_TIMEOUT_MS),
+  });
+  if (!res.ok) throw new Error(`fenegosida API returned ${res.status}`);
+  return res.json() as Promise<T>;
 }
 
 export async function fetchFenegosida(): Promise<NepalPriceData> {
-  const res = await fetch('https://fenegosida.org/', {
-    signal: AbortSignal.timeout(DEFAULT_TIMEOUT_MS),
-  });
-  if (!res.ok) throw new Error(`fenegosida.org returned ${res.status}`);
+  const [rates, chart] = await Promise.all([
+    getJson<TodayRate[]>('today'),
+    // History is a nice-to-have; don't fail the whole provider without it.
+    getJson<ChartResponse>(`WeeklyChartRate?weekmonthyear=${HISTORY_DAYS}`).catch(() => null),
+  ]);
 
-  const html = await res.text();
-  const $ = cheerio.load(html);
-
-  // Block 0 = per 10g (labels "10 grm"), Block 1 = per tola (labels "1 tola")
-  const headerRates = $('#header-rate');
-  const gramBlock = headerRates.first();
-  const tolaBlock = headerRates.last();
-
-  const parseBlock = (block: ReturnType<typeof $>) => {
-    const golds = block.find('.rate-gold.post b')
-      .map((_, el) => parseInt($(el).text().replace(/,/g, ''), 10))
-      .get();
-    const silvers = block.find('.rate-silver.post b')
-      .map((_, el) => parseInt($(el).text().replace(/,/g, ''), 10))
-      .get();
-    return { golds, silver: silvers[0] ?? 0 };
-  };
-
-  const tola = parseBlock(tolaBlock);
-  const gram = parseBlock(gramBlock);
-
-  if (tola.golds.length < 2) {
-    throw new Error('Failed to parse fenegosida.org prices');
+  if (!Array.isArray(rates) || rates.length === 0) {
+    throw new Error('Empty response from fenegosida API');
   }
 
-  if (!tola.golds[0] || tola.golds[0] < 1000) {
-    throw new Error('Suspicious gold price from fenegosida.org: ' + tola.golds[0]);
+  // rateType labels are Nepali, e.g. "छापावाल सुन (१ तोला)", "असली चाँदी दर (१० ग्राम)"
+  const find = (metal: string, unit: string) =>
+    rates.find(r => r.rateType?.includes(metal) && r.rateType.includes(unit));
+
+  const goldTola = find('सुन', 'तोला');
+  const goldGram = find('सुन', 'ग्राम');
+  const silverTola = find('चाँदी', 'तोला');
+  const silverGram = find('चाँदी', 'ग्राम');
+
+  const hallmark = goldTola?.todayBaseRatePerGram ?? 0;
+  const silver = silverTola?.todayBaseRatePerGram ?? 0;
+  if (hallmark < 1000) {
+    throw new Error('Suspicious gold price from fenegosida API: ' + hallmark);
+  }
+  if (silver < 100) {
+    throw new Error('Suspicious silver price from fenegosida API: ' + silver);
   }
 
-  // Extract the BS (Nepali calendar) date of the price from the page
-  const rateDateDay = $('.rate-date-day').first().text().trim();
-  const rateDateMonth = $('.rate-date-month').first().text().trim();
-  const rateDateYear = $('.rate-date-year').first().text().trim();
-  const priceDate = rateDateDay && rateDateMonth
-    ? `${rateDateMonth} ${rateDateDay}${rateDateYear ? `, ${rateDateYear}` : ''}`
-    : null;
-
-  // Extract weekly chart data (skips Saturday — Nepal's weekly holiday)
-  // data = gold weekly, data2 = silver weekly
-  const goldChart = parseChartData(html, 'data');
-  const silverChart = parseChartData(html, 'data2');
-
-  const previousGoldHallmark = goldChart.prices.length >= 2 ? goldChart.prices[goldChart.prices.length - 2] : null;
-  const previousSilver = silverChart.prices.length >= 2 ? silverChart.prices[silverChart.prices.length - 2] : null;
-
-  const todayStr = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kathmandu' });
+  const publishedDate = toNptDate(goldTola!.todayDate);
 
   return {
-    goldHallmark: tola.golds[0],
-    goldTajabi: tola.golds[1],
-    silver: tola.silver,
-    goldHallmarkPerGram10: gram.golds[0] ?? 0,
-    goldTajabiPerGram10: gram.golds[1] ?? 0,
-    silverPerGram10: gram.silver,
-    previousGoldHallmark,
-    previousSilver,
-    goldHistory: buildHistory(goldChart.days, goldChart.prices),
-    silverHistory: buildHistory(silverChart.days, silverChart.prices),
-    priceDate,
-    date: todayStr,
+    goldHallmark: hallmark,
+    goldTajabi: null, // FENEGOSIDA no longer publishes a Tajabi rate
+    silver,
+    goldHallmarkPerGram10: goldGram?.todayBaseRatePerGram ?? 0,
+    goldTajabiPerGram10: null,
+    silverPerGram10: silverGram?.todayBaseRatePerGram ?? 0,
+    previousGoldHallmark: goldTola!.yestardayBaseRatePerGram || null,
+    previousSilver: silverTola!.yestardayBaseRatePerGram || null,
+    goldHistory: chart?.goldData ? buildHistory(chart.goldData, publishedDate) : null,
+    silverHistory: chart?.silverData ? buildHistory(chart.silverData, publishedDate) : null,
+    priceDate: publishedDate,
+    date: toNptDate(new Date().toISOString()),
   };
 }

@@ -15,7 +15,7 @@ const server = new McpServer({
 
 server.tool(
   'get_nepal_gold_price',
-  'Get today\'s FENEGOSIDA gold price in Nepal (hallmark + tajabi) per tola and per 10 grams, with yesterday\'s price for comparison',
+  'Get today\'s FENEGOSIDA gold price in Nepal (hallmark, plus tajabi where the source still publishes it) per tola and per 10 grams, with yesterday\'s price for comparison',
   {},
   async () => {
     const price = await getNepalGoldPrice();

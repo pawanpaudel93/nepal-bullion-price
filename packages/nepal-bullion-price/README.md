@@ -47,15 +47,15 @@ import {
 const gold = await getNepalGoldPrice();
 // {
 //   hallmark: 273900,
-//   tajabi: 0,
+//   tajabi: null,               // no longer published by FENEGOSIDA (ashesh fallback only)
 //   unit: 'tola',
 //   perGram10: 234825,
 //   previousPrice: 275000,       // yesterday's hallmark (null if unavailable)
-//   history: [                   // 7-day chart data (null for fallback providers)
-//     { date: '18', price: 275000 },
-//     { date: '19', price: 273900 }
+//   history: [                   // ~30 trading days, oldest → newest (null for ashesh)
+//     { date: '2026-03-23', price: 275000 },
+//     { date: '2026-03-24', price: 273900 }
 //   ],
-//   priceDate: 'Chaitra 11',    // Nepali calendar date (BS), not Gregorian
+//   priceDate: '2026-03-24',    // date the rate was published (Nepal time)
 //   source: 'fenegosida.org',
 //   date: '2026-03-24',
 //   updatedAt: '2026-03-24T04:15:00.000Z',
@@ -111,7 +111,7 @@ configure({
 
 | Function | Returns | Description |
 |----------|---------|-------------|
-| `getNepalGoldPrice()` | `Promise<NepalGoldPrice>` | FENEGOSIDA daily gold rate (hallmark + tajabi) |
+| `getNepalGoldPrice()` | `Promise<NepalGoldPrice>` | FENEGOSIDA daily gold rate (hallmark; tajabi when available) |
 | `getNepalSilverPrice()` | `Promise<NepalSilverPrice>` | FENEGOSIDA daily silver rate |
 | `getLiveGoldPrice()` | `Promise<LiveMetalPrice>` | Live XAU/USD → NPR with estimate breakdown |
 | `getLiveSilverPrice()` | `Promise<LiveMetalPrice>` | Live XAG/USD → NPR with estimate breakdown |
