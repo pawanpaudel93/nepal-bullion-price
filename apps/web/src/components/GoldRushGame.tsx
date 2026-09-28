@@ -54,9 +54,9 @@ export function GoldRushGame({ highScore, onGameEnd, onClose }: GoldRushGameProp
   const [isNewHigh, setIsNewHigh] = useState(false);
   const [shaking, setShaking] = useState(false);
 
-  const spawnTimerRef = useRef<ReturnType<typeof setTimeout>>();
-  const gcTimerRef = useRef<ReturnType<typeof setInterval>>();
-  const shakeTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const spawnTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const gcTimerRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
+  const shakeTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const coinIdRef = useRef(0);
   const floatIdRef = useRef(0);
   const tappedRef = useRef(new Set<number>());

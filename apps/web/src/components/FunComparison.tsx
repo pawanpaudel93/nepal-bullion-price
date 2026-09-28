@@ -12,7 +12,7 @@ export function FunComparison({ price, metal }: FunComparisonProps) {
   const comparisons = getComparisons(price, metal);
   const [index, setIndex] = useState(0);
   const [fading, setFading] = useState(false);
-  const fadeTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const fadeTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const advance = useCallback(() => {
     clearTimeout(fadeTimerRef.current);
